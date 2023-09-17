@@ -1,12 +1,12 @@
-package dev.triamylo.learnwebapp;
+package dev.triamylo.learnwebapp.Models;
 
-public class JustAGuy {
+public class AGuy {
 
     private String firstName;
     private String lastName;
     private int alter;
 
-    public JustAGuy(String firstName, String lastName, int alter){
+    public AGuy(String firstName, String lastName, int alter){
         this.firstName = firstName;
         this.lastName = lastName;
         this.alter = alter;
