@@ -16,23 +16,28 @@
 <div class="h4 container mt-5 mb-5">
     Hier ist eine Form zum Ausfuellen!
 </div>
-
-<form class="container">
+<!-- action="#" means that the form will do nothing on the action, but it will the thymeleaf and redirect this to the
+    register site with the post method. That means that the values will be post from the client to server.
+    The object define with that object from our program is the values connected. For each input we define one property
+    of our model object-->
+<!--/*@thymesVar id="user" type="user"*/-->
+<form class="container" th:action="@{/register}" th:object="${user}" method="POST">
 
     <div class="mb-3">
-        <label for="text" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5">Vorname</label>
-        <input type="text" class="form-control border border-secondary rounded" id="text" placeholder="Vorname">
+        <label for="firstName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+               style="--bs-bg-opacity:.5" th:text="Vorname"></label>
+        <input type="text" th:field="*{firstName}" class="form-control border border-secondary rounded" id="firstName" placeholder="Vorname"/>
     </div>
 
     <div class="mb-3">
         <label for="nachname" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
                style="--bs-bg-opacity:.5">Nachname</label>
-        <input type="password" class="form-control  border border-secondary rounded" id="nachname"
+        <input type="text" th:field="*{lastName}" id="nachname" class="form-control  border border-secondary rounded"
                placeholder="Nachname">
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Submit</button>
+
 </form>
 
 
