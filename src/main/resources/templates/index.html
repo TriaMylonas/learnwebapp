@@ -1,11 +1,55 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+
+<!-- I use the container class from Bootstrap to be more response my web app.  -->
+<!-- also I use the existing classes from Bootstrap to change the style on my html web side quick and easy
+    I want to learn working a little with them-->
+<div class="m-2">
+    <div class="h2 container  bg-primary p-2 text-white bg-opacity-75">
+        I am learning Web Application Entwicklung!
+    </div>
+</div>
+
+<div class="h4 container mt-5 mb-5">
+    Hier ist eine Form zum Ausfuellen!
+</div>
+<!-- action="#" means that the form will do nothing on the action, but it will the thymeleaf and redirect this to the
+    register site with the post method. That means that the values will be post from the client to server.
+    The object define with that object from our program is the values connected. For each input we define one property
+    of our model object-->
+<!--/*@thymesVar id="user" type="user"*/-->
+<form class="container" th:action="@{/register}" th:object="${user}" method="POST">
+
+    <div class="mb-3">
+        <label for="firstName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+               style="--bs-bg-opacity:.5" th:text="Vorname"></label>
+        <input type="text" th:field="*{firstName}" class="form-control border border-secondary rounded" id="firstName"
+               placeholder="Vorname"/>
+    </div>
+
+    <div class="mb-3">
+        <label for="nachname" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+               style="--bs-bg-opacity:.5">Nachname</label>
+        <input type="text" th:field="*{lastName}" id="nachname" class="form-control  border border-secondary rounded"
+               placeholder="Nachname">
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit</button>
+
+</form>
+
+
+</body>
+
 <head>
     <meta charset="UTF-8">
-    <title>Start Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>Learn Bootstrap</title>
 </head>
-<body>
-    <h1 > Hello World!!! </h1>
-    <p>This is the Start page of my new Web Application!</p>
-</body>
+
 </html>
