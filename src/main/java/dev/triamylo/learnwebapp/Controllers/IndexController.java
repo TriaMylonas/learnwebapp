@@ -7,16 +7,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class IndexController {
 
 
-
     @GetMapping("/")
-    public String startSite(Model model){
-        User user = new User("","");
+    public String startSite(Model model) {
+        User user = new User("", "");
         model.addAttribute("user", user);
         return "index";
     }
@@ -24,7 +22,7 @@ public class IndexController {
 //    @GetMapping("/")
 
     @PostMapping("/register")
-    public String registerSite(@ModelAttribute("user") User aUser, Model model){
+    public String registerSite(@ModelAttribute("user") User aUser, Model model) {
 
 //        model.addAttribute("User",aUser);
         return "register";

@@ -6,7 +6,7 @@ public class User {
     private String lastName;
 
 
-    public User(String firstName, String lastName){
+    public User(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -29,6 +29,6 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("Hello World! Iam %s %s!!",firstName,lastName);
+        return String.format("Hello World! Iam %s %s!!", firstName, lastName);
     }
 }
