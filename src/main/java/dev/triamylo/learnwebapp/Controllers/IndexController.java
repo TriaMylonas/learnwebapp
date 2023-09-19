@@ -13,13 +13,14 @@ public class IndexController {
 
 
     /*get method is when the client ask for the current url and I must (server side) give him
-    * something back. When it is a Controller I must give the client html view back. When it is a
-    * RestController I give back Object as JSON in the regel.
+    * something back.
+    * When it is a @Controller I must give the client html view back.
+    * When it is a @RestController I give back Object as JSON in the regel.
     */
     @GetMapping("/")
     public String startSite(Model model) {
         // I initialise one object, so that the form in the html can bind with it.
-        User user = new User("tria", "myl");
+        User user = new User("", "");
         //I pass it to the model (html) through model and attribute name "user"
         // with "user" obj I have bind my form through Thymeleaf to.
         model.addAttribute("user", user);
@@ -39,8 +40,6 @@ public class IndexController {
     */
     @PostMapping("/register")
     public String registerSite(@ModelAttribute("user") User aUser, Model model) {
-        // here I take the values from the html and put them in the obj user.
-        model.addAttribute("User",aUser);
         return "register";
     }
 
