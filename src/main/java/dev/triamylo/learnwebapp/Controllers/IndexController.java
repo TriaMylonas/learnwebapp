@@ -13,7 +13,7 @@ public class IndexController {
 
 
     /*get method is when the client ask for the current url and I must (server side) give him
-    * something back. When it is a Controller I must give the client html view back. When its a
+    * something back. When it is a Controller I must give the client html view back. When it is a
     * RestController I give back Object as JSON in the regel.
     */
     @GetMapping("/")
@@ -31,7 +31,7 @@ public class IndexController {
 
 
     /* with post method I take values from the client to server side.
-    * here I take the values that the client put in the form on index.xtml
+    * here I take the values that the client put in the form on index.html
     * when he clicks Submit in the form the values will go to the /register url
     * and I will then start the registerSite() method from this controller.
     * if there is a need of a logic I will be writing it in a Service class and
