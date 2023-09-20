@@ -2,11 +2,16 @@ package dev.triamylo.learnwebapp.Controllers;
 
 
 import dev.triamylo.learnwebapp.Models.User;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Controller
 public class IndexController {
@@ -20,7 +25,7 @@ public class IndexController {
     @GetMapping("/")
     public String startSite(Model model) {
         // I initialise one object, so that the form in the html can bind with it.
-        User user = new User("", "");
+        User user = new User();
         //I pass it to the model (html) through model and attribute name "user"
         // with "user" obj I have bind my form through Thymeleaf to.
         model.addAttribute("user", user);
@@ -39,8 +44,12 @@ public class IndexController {
     * call it from this method.
     */
     @PostMapping("/")
-    public String registerSite(@ModelAttribute("user") User aUser) {
-        return "register";
+    public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult) {
+
+         if (bindingResult.hasErrors())
+            return "index";
+        else
+            return "register";
     }
 
 

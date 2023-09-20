@@ -19,13 +19,27 @@
     Du bist register!!!
 </div>
 
+<!-- this is a paragraf to show the first name of the register user-->
 <div class="container">
-    <p class="form-control  border border-secondary rounded" th:text="'Vorname: ' + ${user.firstName}"></p>
+    <p class="form-control  border border-secondary rounded" th:text="'Vorname: ' + ${user.firstName}">Vorname</p>
 </div>
 
+<!-- this is a paragraf to show the last name of the register user-->
 <div class="container">
-    <p class="form-control  border border-secondary rounded" th:text="'Nachname: ' + ${user.lastName}"></p>
+    <p class="form-control  border border-secondary rounded" th:text="'Nachname: ' + ${user.lastName}">Nachname</p>
 </div>
+
+<!-- this is a paragraf to show the day of birth of the register user-->
+<div class="container">
+    <p class="form-control  border border-secondary rounded" th:text="'Geburtstag Datum: ' + ${user.dob}">Geburtstag Datum</p>
+</div>
+
+<!-- this is a paragraf to show the height of the register user-->
+<div class="container">
+    <p class="form-control  border border-secondary rounded" th:text="'Laenge in cm: ' + ${user.height}">Länge in cm</p>
+</div>
+
+
 
 <div class="container">
     <a th:href="@{/}">
