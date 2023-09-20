@@ -38,8 +38,8 @@ public class IndexController {
     * if there is a need of a logic I will be writing it in a Service class and
     * call it from this method.
     */
-    @PostMapping("/register")
-    public String registerSite(@ModelAttribute("user") User aUser, Model model) {
+    @PostMapping("/")
+    public String registerSite(@ModelAttribute("user") User aUser) {
         return "register";
     }
 
