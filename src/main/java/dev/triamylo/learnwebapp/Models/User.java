@@ -1,10 +1,8 @@
 package dev.triamylo.learnwebapp.Models;
 
 import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class User {
     @NotEmpty
@@ -21,7 +19,7 @@ public class User {
     @Min(1)
     private int height;
 
-    public User(){
+    public User() {
 
     }
 
