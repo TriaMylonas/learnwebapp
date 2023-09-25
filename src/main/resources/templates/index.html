@@ -36,11 +36,11 @@
     <div class="mb-3">
         <label for="firstName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
                style="--bs-bg-opacity:.5" th:text="Vorname">Vorname</label>
-        <input type="text" th:field="${user.firstName}" class="form-control border border-secondary rounded" id="firstName"
+        <input type="text" th:field="*{firstName}" class="form-control border border-secondary rounded" id="firstName"
                placeholder="Vorname"/>
 
 <!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors()}" th:errors="${user.firstName}">
+        <div class="container" th:if="${#fields.hasErrors('firstName')}" th:errors="${user.firstName}">
         </div>
 
 
@@ -50,10 +50,12 @@
 
 <!-- the second field of the form, the last name  -->
     <div class="mb-3">
-        <label for="nachname" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+        <label for="lastName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
                style="--bs-bg-opacity:.5">Nachname</label>
-        <input type="text" th:field="${user.lastName}" id="nachname" class="form-control  border border-secondary rounded"
+        <input type="text" th:field="${user.lastName}" id="lastName" class="form-control  border border-secondary rounded"
                placeholder="Nachname">
+        <div class="container" th:if="${#fields.hasErrors('lastName')}" th:errors="${user.lastName}">
+        </div>
     </div>
 
 
@@ -64,7 +66,7 @@
             Day of birth
         </label>
         <!-- the type here is date because I need a date input from the user-->
-        <input type="date" th:field="${user.dob}" id="dob" class="form-control  border border-secondary rounded"
+        <input type="date" th:field="*{dob}" id="dob" class="form-control  border border-secondary rounded"
                placeholder="day of birth">
 
 <!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
@@ -79,11 +81,11 @@
                 style="--bs-bg-opacity:.5">
             height in cm
         </label>
-        <input type="text" th:field="${user.height}" id="height" class="form-control  border border-secondary rounded"
+        <input type="number" th:field="*{height}" id="height" class="form-control  border border-secondary rounded"
             placeholder="height in cm">
 
 <!--        validation of the height as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors()}" th:errors="${user.height}">
+        <div class="container" th:if="${#fields.hasErrors('height')}" th:errors="${user.height}">
         </div>
     </div>
 
