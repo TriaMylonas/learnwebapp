@@ -9,6 +9,9 @@ public class User {
     @NotNull
     @Size(min = 1, max = 10)
     private String firstName;
+    @NotEmpty
+    @NotNull
+    @Size(min = 2, max = 12)
     private String lastName;
 
 
