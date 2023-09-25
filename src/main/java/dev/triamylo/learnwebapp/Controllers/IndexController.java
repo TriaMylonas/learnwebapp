@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -87,6 +88,12 @@ public class IndexController {
         //after that I pass it to the model, and he will display it in the website
         String formatDob = aUser.getDob().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
         model.addAttribute("formatDob", formatDob);
+
+        // Format the height with a dot as thousands separator and three decimal places
+        //and add it to the model as String, so it can be displayed from thymeleaf.
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formatHeight = decimalFormat.format(aUser.getHeight());
+        model.addAttribute("formatHeight", formatHeight);
         return "register";
 
     }
