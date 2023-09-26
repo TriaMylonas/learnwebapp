@@ -20,8 +20,7 @@ import java.util.List;
 public class IndexController {
 
 
-    /*get method is when the client ask for the current url and I must (server side) give him
-     * something back.
+    /*get method is when the client ask for the current url and I must (server side) give him something back.
      * When it is a @Controller I must give the client html view back.
      * When it is a @RestController I give back Object as JSON in the regel.
      */
@@ -38,6 +37,9 @@ public class IndexController {
         return "index";
     }
 
+    /**
+     * I create a list with 100 users and I pass it to the model attribute for the variable "users"
+     */
     @GetMapping("/users")
     public String users(Model model) {
         List<User> users = new ArrayList<>();
@@ -45,7 +47,9 @@ public class IndexController {
             users.add(new User("firstName " + i, "lastName " + i, LocalDate.now(), 1500 + i));
         }
 
+        int usersSize = users.size();
         model.addAttribute("users", users);
+        model.addAttribute("usersSize", usersSize);
         return "user";
     }
 
