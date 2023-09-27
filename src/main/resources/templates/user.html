@@ -47,6 +47,7 @@
     <tr  th:each="user,status:${users}">
 
         <td th:text="*{status.index + 1}"></td>
+        <td th:text="*{user.uuid}"></td>
         <td th:text="*{user.firstName}"></td>
         <td th:text="*{user.lastName}"></td>
         <td th:text="*{#temporals.format(user.dob, 'dd.MM.yyyy')}"></td>
