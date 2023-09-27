@@ -1,10 +1,14 @@
-package dev.triamylo.learnwebapp.Models;
+package dev.triamylo.learnwebapp.model;
 
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class User {
+
+    private String uuid;
+
     @NotEmpty
     @NotNull
     @Size(min = 1, max = 10)
@@ -31,6 +35,14 @@ public class User {
         this.lastName = lastName;
         this.dob = dob;
         this.height = height;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public LocalDate getDob() {
@@ -70,5 +82,18 @@ public class User {
     @Override
     public String toString() {
         return String.format("Hello World! Iam %s %s!!", firstName, lastName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(uuid, user.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid);
     }
 }
