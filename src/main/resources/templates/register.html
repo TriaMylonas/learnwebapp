@@ -39,7 +39,7 @@
     <!-- instead of giving the ${object.field} I give a variable ${formatDob} from the Model in the controller.
          With this way I can have the format of the date I want in my model, regardless of the format of the object in the application.-->
     <p class="form-control  "
-       th:text="${#temporals.format(user.dob,'dd.MM.yy') }">
+       th:text="${#temporals.format(user.dob,'dd.MM.yyyy') }">
     </p>
 </div>
 

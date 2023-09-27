@@ -49,17 +49,17 @@
         <td th:text="*{status.index + 1}"></td>
         <td th:text="*{user.firstName}"></td>
         <td th:text="*{user.lastName}"></td>
-        <td th:text="*{user.dob}"></td>
-        <td th:text="*{user.height}"></td>
+        <td th:text="*{#temporals.format(user.dob, 'dd.MM.yyyy')}"></td>
+        <td th:text="*{#numbers.formatInteger(user.height, 0,'POINT')}"></td>
     </tr>
     </tbody>
     <!-- this is a footer, and he will go at the end of my table -->
     <tfoot class="table-group-divider">
     <tr>
 <!--        colspan is to expand this cell in 4 others cells-->
-        <td colspan="4" class="text-right text-bold">Die Summe alle Nutzer ist: </td>
+        <td colspan="5" class="text-right text-bold">Die Summe alle Nutzer ist: </td>
 <!--        this is a value that I take from the controller. Here I need the size of the user list.-->
-        <td th:text="${usersSize}"></td>
+        <td th:text="${users.size()}"></td>
     </tr>
     </tfoot>
 
