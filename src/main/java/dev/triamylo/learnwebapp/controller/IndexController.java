@@ -39,9 +39,7 @@ public class IndexController {
         return "index";
     }
 
-    /**
-     * I create a list with 100 users and I pass it to the model attribute for the variable "users"
-     */
+
     @GetMapping("/users")
     public String users(Model model) {
 
@@ -50,6 +48,11 @@ public class IndexController {
         model.addAttribute("users", users);
         return "user";
     }
+
+
+
+
+
 
     @GetMapping("/users/delete/{uuid}")
     public String delete(@PathVariable String uuid) {
@@ -90,7 +93,7 @@ public class IndexController {
         //I add the new user after the validation to my list of users
         userService.add(aUser);
 
-        return "register";
+        return "redirect:/users";
 
     }
 

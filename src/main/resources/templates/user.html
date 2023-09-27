@@ -51,7 +51,7 @@
         <td th:text="*{user.firstName}"></td>
         <td th:text="*{user.lastName}"></td>
         <td th:text="*{#temporals.format(user.dob, 'dd.MM.yyyy')}"></td>
-        <td th:text="*{#numbers.formatInteger(user.height, 0,'POINT')}"></td>
+        <td th:text="*{#numbers.formatInteger(user.height, 0,'POINT') + ' cm'}"></td>
         <td class="table-cell">
             <button type="button" class="btn btn-sm btn-outline-danger me-2">
                 Löschen
@@ -73,10 +73,15 @@
     </tr>
     </tfoot>
 </table>
+
+
+
 <div class="container mt-5 mb-5">
-    <button type="button" class="btn btn-success ">
-        Neue
-    </button>
+    <a th:href="@{/}">
+        <button type="button" class="btn btn-success ">
+            Neue
+        </button>
+    </a>
 </div>
 </body>
 </html>
