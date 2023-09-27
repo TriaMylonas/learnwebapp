@@ -26,7 +26,6 @@ public class UserService {
         users.add(user);
     }
 
-
     public void delete(String uuid) {
         // I have made it with for loop, but IDE suggest me this...
         users.removeIf(user -> user.getUuid().equals(uuid));

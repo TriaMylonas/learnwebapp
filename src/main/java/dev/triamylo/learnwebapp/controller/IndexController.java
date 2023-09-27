@@ -89,6 +89,7 @@ public class IndexController {
 
         //I add the new user after the validation to my list of users
         userService.add(aUser);
+
         return "register";
 
     }

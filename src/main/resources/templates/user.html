@@ -10,7 +10,7 @@
 </head>
 <body>
 <!--header-->
-<div class="m-2">
+<div class="m-2" >
     <div class="h2 container-lg  bg-primary p-2 text-white bg-opacity-75">
         I am learning Web Application Entwicklung!
     </div>
@@ -27,18 +27,18 @@
         crossorigin="anonymous"></script>
 
 
-<!--bootstrap scrip-->
 <table class="table table-striped table-bordered container">
     <thead class="table-group-divider">
     <tr >
         <th scope="col">#</th>
+        <th scope="col">ID</th>
         <th scope="col">Vorname</th>
         <th scope="col">Nachname</th>
         <th scope="col">Geburtsdatum</th>
         <th scope="col">Länge</th>
+        <th scope="col">Optionen</th>
     </tr>
     </thead>
-
 
     <tbody class="table-group-divider ">
     <!--    th:each is a foreach loop that go through the list of users and pass one at the time in the user variable-->
@@ -52,7 +52,16 @@
         <td th:text="*{user.lastName}"></td>
         <td th:text="*{#temporals.format(user.dob, 'dd.MM.yyyy')}"></td>
         <td th:text="*{#numbers.formatInteger(user.height, 0,'POINT')}"></td>
+        <td class="table-cell">
+            <button type="button" class="btn btn-sm btn-outline-danger me-2">
+                Löschen
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary ">
+                Ändern
+            </button>
+        </td>
     </tr>
+
     </tbody>
     <!-- this is a footer, and he will go at the end of my table -->
     <tfoot class="table-group-divider">
@@ -63,9 +72,11 @@
         <td th:text="${users.size()}"></td>
     </tr>
     </tfoot>
-
-
-
 </table>
+<div class="container mt-5 mb-5">
+    <button type="button" class="btn btn-success ">
+        Neue
+    </button>
+</div>
 </body>
 </html>
