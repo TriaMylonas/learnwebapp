@@ -10,102 +10,57 @@
 <body>
 
 
-<!-- I use the container class from Bootstrap to be more response my web app.  -->
-<!-- also I use the existing classes from Bootstrap to change the style on my html web side quick and easy
-    I want to learn working a little with them-->
+<!-- Header-->
 <div class="m-2" >
-    <div class="h2 container-lg  bg-primary p-2 text-white bg-opacity-75">
+    <div class="h2 container-lg  bg-primary p-2 text-white bg-opacity-75 col-md-12
+                d-flex justify-content-center align-items-center">
         I am learning Web Application Entwicklung!
     </div>
 </div>
 
-<div class="h4 container mt-5 mb-5">
-    Hier ist eine Form zum Ausfüllen!
+<!-- Text-->
+<div class="h4 container mt-5 mb-5 col-md-8 d-flex justify-content-center align-items-center">
+    Hier befinden wir uns auf der Startseite!
+
+</div>
+
+<!-- Image-->
+<div class="container d-flex align-items-center">
+    <img th:src="@{/list_image.png}" alt="A check list Icon" class="mx-auto img-fluid">
 </div>
 
 
-<!-- action="#" means that the form will do nothing on the action, but it will the thymeleaf and redirect this to the
-    register site with the post method. That means that the values will be post from the client to server.
-    The object define with that object from our program is the values connected. For each input we define one property
-    of our model object-->
-<!--/*@thymesVar id="user" type="user"*/-->
-<form class="container" th:action="@{/}" th:object="${user}" method="POST">
+<!--Buttons-->
+<div class="col-md-12 d-flex justify-content-center align-items-center">
+    <a th:href="@{/users}">
+        <button type="button" class="btn btn-primary mt-5">
+            Zur List
+        </button>
+    </a>
+</div>
 
-
-<!-- the first field of the form, the first name -->
-    <div class="mb-3">
-        <label for="firstName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5" th:text="Vorname">Vorname</label>
-        <input type="text" th:field="*{firstName}" class="form-control border border-secondary rounded" id="firstName"
-               placeholder="Vorname"/>
-
-<!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors('firstName')}" th:errors="${user.firstName}">
-        </div>
-
-
-
-    </div>
-
-
-<!-- the second field of the form, the last name  -->
-    <div class="mb-3">
-        <label for="lastName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5">Nachname</label>
-        <input type="text" th:field="${user.lastName}" id="lastName" class="form-control  border border-secondary rounded"
-               placeholder="Nachname">
-        <div class="container" th:if="${#fields.hasErrors('lastName')}" th:errors="${user.lastName}">
-        </div>
-    </div>
-
-
-<!--    the third field of the form, the date of birth-->
-    <div class="mb-3">
-        <label for="dob" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5">
-            Day of birth
-        </label>
-        <!-- the type here is date because I need a date input from the user-->
-        <input type="date" th:field="*{dob}" id="dob" class="form-control  border border-secondary rounded"
-               placeholder="day of birth">
-
-<!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors('dob')}" th:errors="${user.dob}" > </div>
-
-    </div>
-
-
-<!--    the forth field of the form, the height in cm -->
-    <div class="mb-3" >
-        <label for="height" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-                style="--bs-bg-opacity:.5">
-            height in cm
-        </label>
-        <input type="number" th:field="*{height}" id="height" class="form-control  border border-secondary rounded"
-            placeholder="height in cm">
-
-<!--        validation of the height as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors('height')}" th:errors="${user.height}">
-        </div>
-    </div>
-
-<div>
-    <button type="submit"
-            class="btn btn-primary mt-3">
-        Submit
-    </button>
-
+<div class="col-md-12 d-flex justify-content-center align-items-center">
     <span>
-        <a th:href="@{/users}">
-            <button type="button" class="btn btn-warning mt-3 mx-3">
-                Zum List
+        <a th:href="@{/formula}">
+            <button type="button" class="btn btn-warning mt-3 mx-3 ">
+                Add neue
             </button>
         </a>
     </span>
-
 </div>
 
-</form>
+
+
+<!-- Text-->
+<div class="h4 container mt-5 mb-5 col-md-6 d-flex justify-content-center align-items-center">
+    Sie können die Liste mit der Nutzer sehen, wenn Sie die "Zur List" Button klicken.
+</div>
+
+<div class="h4 container mt-5 mb-5 col-md-6 d-flex justify-content-center align-items-center">
+    Sie können neue Nutzer in der List zufügen, wenn Sie die "Add neue" Button klicken.
+</div>
+
+
 
 
 </body>

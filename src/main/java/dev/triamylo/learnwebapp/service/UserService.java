@@ -30,4 +30,8 @@ public class UserService {
         // I have made it with for loop, but IDE suggest me this...
         users.removeIf(user -> user.getUuid().equals(uuid));
     }
+
+
+
+
 }
