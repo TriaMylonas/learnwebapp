@@ -30,7 +30,8 @@
     of our model object-->
 <!--/*@thymesVar id="user" type="user"*/-->
 <form class="container" th:action="@{/formula}" th:object="${user}" method="POST">
-
+<!--    das in sehr interessant!-->
+    <input type="hidden" th:field="*{uuid}"/>
 
 <!-- the first field of the form, the first name -->
     <div class="mb-3">
