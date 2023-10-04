@@ -14,6 +14,8 @@ import java.util.UUID;
 @Service
 public class UserService {
 
+
+//    die durch das UserRepository ersetzt werden. Wir brauchen nicht mehr die Ram users List.
     private final List<User> users = new ArrayList<>();
 
 
@@ -32,6 +34,20 @@ public class UserService {
     }
 
 
+    public User get(String uuid){
+         return users.stream().filter(user -> user.getUuid().equals(uuid)).findFirst().orElse(null);
+    }
 
 
+    public void update(User aUser) {
+        User altUser = get(aUser.getUuid());
+        if(altUser == null){
+            return;
+        }
+
+        altUser.setFirstName(aUser.getFirstName());
+        altUser.setLastName(aUser.getLastName());
+        altUser.setDob(aUser.getDob());
+        altUser.setHeight(aUser.getHeight());
+    }
 }
