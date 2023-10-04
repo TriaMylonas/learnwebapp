@@ -31,7 +31,6 @@
     <thead class="table-group-divider">
     <tr >
         <th scope="col">#</th>
-        <th scope="col">ID</th>
         <th scope="col">Vorname</th>
         <th scope="col">Nachname</th>
         <th scope="col">Geburtsdatum</th>
@@ -46,19 +45,24 @@
     <!-- user is variable for the actual object list, and the status is variable to keep track the Iteration of this loop  -->
     <tr  th:each="user,status:${users}">
 
-        <td th:text="*{status.index + 1}"></td>
-        <td th:text="*{user.uuid}"></td>
-        <td th:text="*{user.firstName}"></td>
-        <td th:text="*{user.lastName}"></td>
-        <td th:text="*{#temporals.format(user.dob, 'dd.MM.yyyy')}"></td>
-        <td th:text="*{#numbers.formatInteger(user.height, 0,'POINT') + ' cm'}"></td>
+        <td th:text="${status.index + 1}"></td>
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.lastName}"></td>
+        <td th:text="${#temporals.format(user.dob, 'dd.MM.yyyy')}"></td>
+        <td th:text="${#numbers.formatInteger(user.height, 0,'POINT') + ' cm'}"></td>
+
         <td class="table-cell">
-            <button type="button" class="btn btn-sm btn-outline-danger me-2">
-                Löschen
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-primary ">
-                Ändern
-            </button>
+            <a th:href="@{'/users/delete/'+ ${user.getUuid()}}">
+                <button type="button" class="btn btn-sm btn-outline-danger me-2">
+                    Löschen
+                </button>
+            </a>
+
+            <a th:href="@{'/users/update/'+ ${user.getUuid()}}">
+                <button type="button" class="btn btn-sm btn-outline-primary ">
+                    Ändern
+                </button>
+            </a>
         </td>
     </tr>
 
