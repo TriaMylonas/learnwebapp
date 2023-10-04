@@ -57,11 +57,23 @@ public class IndexController {
     }
 
 
+    @GetMapping("/users/update/{uuid}")
+    public  String update(@PathVariable String uuid, Model model){
+
+        User user = userService.get(uuid);
+        if (user != null){
+            model.addAttribute("user", user);
+            return "formula";
+        }
+
+        return "redirect:/users";
+    }
 
     @GetMapping("/users/delete/{uuid}")
     public String delete(@PathVariable String uuid) {
 
         userService.delete(uuid);
+        //with redirect, will refresh the page users!
         return "redirect:/users";
     }
 
@@ -95,9 +107,16 @@ public class IndexController {
             return "formula";
         }
 
-        //I add the new user after the validation to my list of users
-        userService.add(aUser);
+        //that means that is a new user without ID until now.
+        if(aUser.getUuid() == null || aUser.getUuid().isEmpty()){
+            //I add the new user after the validation to my list of users
+            userService.add(aUser);
+        }
+        else{
+            userService.update(aUser);
+        }
 
+        //redirect to refresh the page.
         return "redirect:/users";
 
     }
