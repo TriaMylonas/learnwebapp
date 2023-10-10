@@ -1,12 +1,21 @@
 package dev.triamylo.learnwebapp.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
+
 public class User {
 
+    @Id
+    @UuidGenerator
     private String uuid;
 
     @NotEmpty
@@ -41,9 +50,6 @@ public class User {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 
     public LocalDate getDob() {
         return dob;
