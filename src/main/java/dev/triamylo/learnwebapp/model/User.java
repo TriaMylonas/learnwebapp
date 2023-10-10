@@ -1,9 +1,6 @@
 package dev.triamylo.learnwebapp.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -11,7 +8,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
-
+//the default name of the table will be user, as the class.But I can change it with the @Table(name="my_name")
+@Table(name = "my_user")
 public class User {
 
     @Id
@@ -35,6 +33,7 @@ public class User {
     @Min(1)
     private int height;
 
+    //the empty constructor exist only for the sake of JPA (Java Persistence API)
     public User() {
 
     }
