@@ -1,0 +1,4 @@
+2023-10-10 12:00:59 jdbc[14]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "[*]FROM INFORMATION_SCHEMA.USERS"
+Syntax error in SQL statement "[*]FROM INFORMATION_SCHEMA.USERS"; SQL statement:
+FROM INFORMATION_SCHEMA.USERS [42000-220]
