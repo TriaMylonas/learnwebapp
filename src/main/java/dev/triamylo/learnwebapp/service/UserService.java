@@ -52,5 +52,6 @@ public class UserService {
         altUser.setLastName(aUser.getLastName());
         altUser.setDob(aUser.getDob());
         altUser.setHeight(aUser.getHeight());
+        userRepository.save(altUser);
     }
 }

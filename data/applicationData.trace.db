@@ -2,3 +2,43 @@
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "[*]FROM INFORMATION_SCHEMA.USERS"
 Syntax error in SQL statement "[*]FROM INFORMATION_SCHEMA.USERS"; SQL statement:
 FROM INFORMATION_SCHEMA.USERS [42000-220]
+2023-10-11 12:26:15 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; erwartet "identifier"
+Syntax error in SQL statement "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; expected "identifier"; SQL statement:
+create table user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid)) [42001-220]
+2023-10-11 12:26:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; erwartet "identifier"
+Syntax error in SQL statement "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; expected "identifier"; SQL statement:
+select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from user u1_0 [42001-220]
+2023-10-11 12:27:54 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; erwartet "identifier"
+Syntax error in SQL statement "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; expected "identifier"; SQL statement:
+select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from user u1_0 [42001-220]
+2023-10-11 12:33:43 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; erwartet "identifier"
+Syntax error in SQL statement "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; expected "identifier"; SQL statement:
+select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from user u1_0 [42001-220]
+2023-10-11 12:35:09 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; erwartet "identifier"
+Syntax error in SQL statement "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; expected "identifier"; SQL statement:
+create table user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid)) [42001-220]
+2023-10-11 12:35:20 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; erwartet "identifier"
+Syntax error in SQL statement "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; expected "identifier"; SQL statement:
+select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from user u1_0 [42001-220]
+2023-10-11 12:35:56 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; erwartet "identifier"
+Syntax error in SQL statement "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; expected "identifier"; SQL statement:
+create table user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid)) [42001-220]
+2023-10-11 12:36:04 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; erwartet "identifier"
+Syntax error in SQL statement "select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from [*]user u1_0"; expected "identifier"; SQL statement:
+select u1_0.uuid,u1_0.dob,u1_0.first_name,u1_0.height,u1_0.last_name from user u1_0 [42001-220]
+2023-10-11 12:36:44 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "insert into [*]user (dob,first_name,height,last_name,uuid) values (?,?,?,?,?)"; erwartet "identifier"
+Syntax error in SQL statement "insert into [*]user (dob,first_name,height,last_name,uuid) values (?,?,?,?,?)"; expected "identifier"; SQL statement:
+insert into user (dob,first_name,height,last_name,uuid) values (?,?,?,?,?) [42001-220]
+2023-10-11 12:44:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax Fehler in SQL Befehl "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; erwartet "identifier"
+Syntax error in SQL statement "create table [*]user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid))"; expected "identifier"; SQL statement:
+create table user (uuid varchar(255) not null, dob date not null, first_name varchar(10) not null, height integer not null check (height>=1), last_name varchar(12) not null, primary key (uuid)) [42001-220]

@@ -8,18 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Controller
 public class IndexController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public IndexController(UserService userService) {
+        this.userService = userService;
+    }
 
 
     /*get method is when the client ask for the current url and I must (server side) give him something back.
@@ -27,9 +27,7 @@ public class IndexController {
      * When it is a @RestController I give back Object as JSON in the regel.
      */
     @GetMapping("/")
-    public String startSite(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
+    public String startSite() {
         return "index";
     }
 
@@ -39,7 +37,7 @@ public class IndexController {
 
         // I initialise one object, so that the form in the html can bind with it.
         User user = new User();
-        //I pass it to the model (html) through model and attribute name "user"
+
         // with "user" obj I have bind my form through Thymeleaf to.
         model.addAttribute("user", user);
         return "formula";
@@ -86,7 +84,7 @@ public class IndexController {
      * call it from this method.
      */
     @PostMapping("/formula")
-    public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model) {
+    public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult) {
 
 
         // here in the Controller I can also validate the connection between my objects and the model.
@@ -107,11 +105,12 @@ public class IndexController {
         }
 
         //that means that is a new user without ID until now.
-        if(aUser.getUuid() == null || aUser.getUuid().isEmpty()){
+        if( aUser.getUuid() == null || aUser.getUuid().isEmpty()){
             //I add the new user after the validation to my list of users
             userService.add(aUser);
         }
         else{
+
             userService.update(aUser);
         }
 

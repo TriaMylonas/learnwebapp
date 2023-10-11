@@ -30,8 +30,13 @@
     of our model object-->
 <!--/*@thymesVar id="user" type="user"*/-->
 <form class="container" th:action="@{/formula}" th:object="${user}" method="POST">
-<!--    das in sehr interessant!-->
-    <input type="hidden" th:field="*{uuid}"/>
+
+
+    <!--    das in sehr interessant!-->
+    <input type="hidden" th:field="*{uuid}" th:id="uuid"/>
+
+
+
 
 <!-- the first field of the form, the first name -->
     <div class="mb-3">
@@ -68,7 +73,7 @@
         </label>
         <!-- the type here is date because I need a date input from the user-->
         <input type="date" th:field="*{dob}" id="dob" class="form-control  border border-secondary rounded"
-               placeholder="day of birth">
+               placeholder="day of birth" min="1980-01-01" max="2000-01-01">
 
 <!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
         <div class="container" th:if="${#fields.hasErrors('dob')}" th:errors="${user.dob}" > </div>
