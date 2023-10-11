@@ -29,7 +29,6 @@ public class IndexController {
     @GetMapping("/")
     public String startSite(Model model) {
         User user = new User();
-
         model.addAttribute("user", user);
         return "index";
     }

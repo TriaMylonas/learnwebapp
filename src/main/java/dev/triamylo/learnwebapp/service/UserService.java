@@ -1,12 +1,11 @@
 package dev.triamylo.learnwebapp.service;
 
 import dev.triamylo.learnwebapp.model.User;
+import dev.triamylo.learnwebapp.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This service can add, update or delete users. The service shows the know user.
@@ -14,32 +13,37 @@ import java.util.UUID;
 @Service
 public class UserService {
 
+    final
+    UserRepository userRepository;
 
-//    die durch das UserRepository ersetzt werden. Wir brauchen nicht mehr die Ram users List.
-    private final List<User> users = new ArrayList<>();
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+
 
 
     public List<User> list(){
-     return Collections.unmodifiableList(users);
+     return (List<User>) userRepository.findAll();
     }
 
     public void add(User user){
-        users.add(user);
+        userRepository.save(user);
     }
 
     public void delete(String uuid) {
-        // I have made it with for loop, but IDE suggest me this...
-        users.removeIf(user -> user.getUuid().equals(uuid));
+        userRepository.deleteById(uuid);
     }
 
-
     public User get(String uuid){
-         return users.stream().filter(user -> user.getUuid().equals(uuid)).findFirst().orElse(null);
+        return userRepository.findById(uuid).orElse(null);
     }
 
 
     public void update(User aUser) {
-        User altUser = get(aUser.getUuid());
+
+        User altUser = userRepository.findById(aUser.getUuid()).orElse(null);
+
         if(altUser == null){
             return;
         }
