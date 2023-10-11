@@ -10,7 +10,7 @@
 <body>
 
 <div class="m-2">
-    <div class="h2 container bg-primary p-2 text-white bg-opacity-75">
+    <div class="h2 container-lg bg-primary p-2 text-white bg-opacity-75">
         I am learning Web Application Entwicklung!
     </div>
 </div>
@@ -19,17 +19,45 @@
     Du bist register!!!
 </div>
 
+<!-- this is a paragraf to show the first name of the register user-->
 <div class="container">
-    <p class="form-control  border border-secondary rounded" th:text="'Vorname: ' + ${user.firstName}"></p>
+    <div>Vorname:</div>
+    <p class="form-control "
+       th:text="${user.firstName}"></p>
 </div>
 
+<!-- this is a paragraf to show the last name of the register user-->
 <div class="container">
-    <p class="form-control  border border-secondary rounded" th:text="'Nachname: ' + ${user.lastName}"></p>
+    <div>Nachname:</div>
+    <p class="form-control "
+       th:text="${user.lastName}"></p>
 </div>
 
+<!-- this is a paragraf to show the day of birth of the register user-->
 <div class="container">
-    <a href="/">
-        <button type="button"> Zurueck</button>
+    <div>Geburtstag Datum:</div>
+    <!-- instead of giving the ${object.field} I give a variable ${formatDob} from the Model in the controller.
+         With this way I can have the format of the date I want in my model, regardless of the format of the object in the application.-->
+    <p class="form-control  "
+       th:text="${#temporals.format(user.dob,'dd.MM.yyyy') }">
+    </p>
+</div>
+
+<!-- this is a paragraf to show the height of the register user-->
+<div class="container">
+    <div>Länge in cm:</div>
+    <label class="form-control"
+           th:text="${#numbers.formatInteger(user.height,0,'POINT')}">
+    </label>
+</div>
+
+
+<div class="container">
+    <a th:href="@{/}">
+        <button class="mt-4"
+                type="button">
+            Zurück
+        </button>
     </a>
 </div>
 
