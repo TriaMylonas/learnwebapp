@@ -85,8 +85,6 @@ public class IndexController {
      */
     @PostMapping("/formula")
     public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult) {
-
-
         // here in the Controller I can also validate the connection between my objects and the model.
         if (aUser.getDob() != null) {
             // that is the value that will come from the form.

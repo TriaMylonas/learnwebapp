@@ -1,22 +1,32 @@
 package dev.triamylo.learnwebapp.service;
 
 import dev.triamylo.learnwebapp.model.User;
+import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class UserServiceTest {
 
 
     private  UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
     @BeforeEach
     void setUp(){
-        userService = new UserService();
+
+        userRepository.deleteAll();
+        userService = new UserService(userRepository);
+
     }
 
 
@@ -97,6 +107,8 @@ class UserServiceTest {
 
         //delete the User from the list. (We need to pass the ID as String for parameter)
         userService.delete(testUser1.getUuid());
+        //reload the list from the database
+        userList = userService.list();
 
         //check if the user is deleted and the method works how it supposes to.
         assertTrue(userList.isEmpty());
@@ -105,7 +117,7 @@ class UserServiceTest {
 
     @Test
     @DisplayName("positive- (User id) of the service, if returns the user")
-    void get() {
+    void testGet() {
 
         //create a user first of all :)
         User testUser1 = new User("Tria1", "Mylo1", LocalDate.of(1971, 1, 1), 195);

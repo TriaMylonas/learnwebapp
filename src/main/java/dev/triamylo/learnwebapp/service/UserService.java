@@ -13,8 +13,8 @@ import java.util.*;
 @Service
 public class UserService {
 
-    final
-    UserRepository userRepository;
+
+    private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -52,6 +52,7 @@ public class UserService {
         altUser.setLastName(aUser.getLastName());
         altUser.setDob(aUser.getDob());
         altUser.setHeight(aUser.getHeight());
+
         userRepository.save(altUser);
     }
 }
