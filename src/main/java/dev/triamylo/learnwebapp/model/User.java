@@ -25,7 +25,6 @@ public class User {
     private String lastName;
 
 
-    @Past(message = "muss in der Vergangenheit sein")
     @NotNull
     private LocalDate dob;
 
