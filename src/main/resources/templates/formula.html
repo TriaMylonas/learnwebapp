@@ -72,8 +72,8 @@
             Day of birth
         </label>
         <!-- the type here is date because I need a date input from the user-->
-        <input type="date" th:field="*{dob}" id="dob" class="form-control  border border-secondary rounded"
-               placeholder="day of birth" min="1980-01-01" max="2000-01-01">
+        <input type="date" th:value="${user.dob}" th:name="|user.dob|" id="dob" class="form-control  border border-secondary rounded"
+               min="1980-01-01" max="2000-01-01">
 
 <!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
         <div class="container" th:if="${#fields.hasErrors('dob')}" th:errors="${user.dob}" > </div>
