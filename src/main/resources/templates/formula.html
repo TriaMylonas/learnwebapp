@@ -72,7 +72,7 @@
             Day of birth
         </label>
         <!-- the type here is date because I need a date input from the user-->
-        <input type="date" th:value="${user.dob}" th:name="|user.dob|" id="dob" class="form-control  border border-secondary rounded"
+        <input type="date" th:field="${user.dob}" id="dob" class="form-control  border border-secondary rounded"
                min="1980-01-01" max="2000-01-01">
 
 <!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
