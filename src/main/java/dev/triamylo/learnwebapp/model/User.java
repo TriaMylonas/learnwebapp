@@ -1,8 +1,14 @@
 package dev.triamylo.learnwebapp.model;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.UuidGenerator;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -24,8 +30,8 @@ public class User {
     @Size(min = 2, max = 12)
     private String lastName;
 
-
     @NotNull
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
 
     @Min(1)
@@ -46,7 +52,9 @@ public class User {
         return uuid;
     }
 
-    public void setUuid(String uuid){this.uuid = uuid;}
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
 
     public LocalDate getDob() {

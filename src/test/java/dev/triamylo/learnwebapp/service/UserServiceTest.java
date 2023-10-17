@@ -25,7 +25,7 @@ class UserServiceTest {
     void setUp(){
 
         userRepository.deleteAll();
-        userService = new UserService(userRepository);
+        userService = new UserServiceImpl(userRepository);
 
     }
 
