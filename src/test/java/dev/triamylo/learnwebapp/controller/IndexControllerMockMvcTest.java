@@ -19,7 +19,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -45,12 +44,10 @@ class IndexControllerMockMvcTest {
             u.setFirstName("firstName-" + i);
             u.setLastName("lastName-" + i);
             u.setDob(LocalDate.of(1992, 1, i));
-            u.setHeight(180+i);
+            u.setHeight(180 + i);
             userList.add(u);
         }
     }
-
-
 
 
     @Test
@@ -99,7 +96,7 @@ class IndexControllerMockMvcTest {
         assertFalse(users.isEmpty());
         assertNotNull(users);
         assertEquals(10, users.size());
-        assertEquals("firstName-2",users.get(1).getFirstName());
+        assertEquals("firstName-2", users.get(1).getFirstName());
     }
 
     @Test
@@ -109,7 +106,7 @@ class IndexControllerMockMvcTest {
         String targetUuid = "uuid-1";
         User expectedUser = new User(
                 "updatedFirstName", "updatedLastName",
-                LocalDate.of(1990,5,5), 175
+                LocalDate.of(1990, 5, 5), 175
         );
         expectedUser.setUuid(targetUuid);
 
@@ -123,7 +120,7 @@ class IndexControllerMockMvcTest {
                 .andExpect(model().attributeExists("user"));
 
         //I will take again the model to see if the list is inside
-        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}",targetUuid))
+        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", targetUuid))
                 .andReturn()
                 .getModelAndView()
                 .getModel();
@@ -170,6 +167,18 @@ class IndexControllerMockMvcTest {
                         .content(formData))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/users"));
+    }
 
+    @Test
+    void registerSiteNegative() throws Exception {
+        // Create a user like the browser as a string and send it to the /formula with post, but this time will be
+        // no valid, so I can make the negative test also. I give without name
+        String falseFormData = "uuid=&firstName=&lastName=testLastname&dob=1995-05-05&height=55";
+        //now I must be redirected to formula because my values was not right
+        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .content(falseFormData))
+                .andExpect(status().isOk())
+                .andExpect(view().name("formula"));
     }
 }
