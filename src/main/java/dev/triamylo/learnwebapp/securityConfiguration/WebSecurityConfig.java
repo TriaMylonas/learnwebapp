@@ -35,14 +35,27 @@ public class WebSecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user =
-                User.withDefaultPasswordEncoder()
-                        .username("user")
-                        .password("1")
-                        .roles("USER") //
-                        .build();
 
-        return new InMemoryUserDetailsManager(user);
+
+        UserDetails user =  User.withDefaultPasswordEncoder()
+                                .username("user")
+                                .password("1")
+                                .roles("USER")
+                                .build();
+
+        UserDetails user2 = User.withDefaultPasswordEncoder()
+                                .username("user2")
+                                .password("2")
+                                .roles("ADMIN")
+                                .build();
+
+        UserDetails user3 = User.withDefaultPasswordEncoder()
+                                .username("user3")
+                                .password("3")
+                                .build();
+
+
+        return new InMemoryUserDetailsManager(user, user2, user3);
     }
         // zwei user mit ADMIN role by spring alle Rolle wird mit GROß
 }
