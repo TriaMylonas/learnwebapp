@@ -60,11 +60,15 @@
 
 <!-- Login/Logout Buttons -->
 <div class="col-md-12 d-flex justify-content-center align-items-center">
-    <a th:href="@{/login}">
-        <button type="button" class="btn btn-success mt-5 mx-3 ">
-            Login
-        </button>
-    </a>
+
+<!--    Button visible only wenn someone is not login/authenticated-->
+    <th:block th:if="${not #authorization.expression('isAuthenticated()')}">
+        <a th:href="@{/login}">
+            <button type="button" class="btn btn-success mt-5 mx-3 ">
+                Login
+            </button>
+        </a>
+    </th:block>
 
 
 <!--    Button visible only to authenticated users.-->
