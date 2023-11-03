@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +33,7 @@
 <!--Buttons-->
 <div class="col-md-12 d-flex justify-content-center align-items-center">
     <a th:href="@{/users}">
-        <button type="button" class="btn btn-primary mt-5">
+        <button sec:authorize="hasAnyRole('ADMIN','USER')" type="button" class="btn btn-primary mt-5">
             Zur List
         </button>
     </a>
@@ -51,7 +51,8 @@
 
 
 <!-- Text-->
-<div class="h4 container mt-5 mb-5 col-md-6 d-flex justify-content-center align-items-center">
+<div class="h4 container mt-5 mb-5 col-md-6 d-flex justify-content-center align-items-center"
+    sec:authorize="hasAnyRole('ADMIN','USER')">
     Sie können die Liste mit der Nutzer sehen, wenn Sie die "Zur List" Button klicken.
 </div>
 
