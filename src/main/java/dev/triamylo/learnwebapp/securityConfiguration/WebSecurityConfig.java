@@ -32,7 +32,7 @@ public class WebSecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)  // das ist die default site from the security. (permitAll) I don't need to have permit to access in the login form.
-                .logout(LogoutConfigurer::permitAll); //(permitAll) I don't need to have permit to access in the logout form.
+                .logout((logout) -> logout.logoutSuccessUrl("/").permitAll()); //(permitAll) I don't need to have permit to access in the logout form & goes to the start site again.
 
         return http.build();
     }
