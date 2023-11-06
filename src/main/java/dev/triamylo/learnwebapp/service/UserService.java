@@ -3,6 +3,7 @@ package dev.triamylo.learnwebapp.service;
 import dev.triamylo.learnwebapp.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     List<User> list();
@@ -15,5 +16,5 @@ public interface UserService {
 
     void update(User aUser);
 
-    User findByName(String name);
+    Optional<User> findByName(String name);
 }
