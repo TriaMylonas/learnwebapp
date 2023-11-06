@@ -45,7 +45,7 @@ public class WebSecurityConfig {
         List<UserDetails> users = new ArrayList<>();
 
         UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
+                .username("1")
                 .password("1")
                 .roles("USER")
                 .build();
@@ -53,7 +53,7 @@ public class WebSecurityConfig {
         users.add(user);
 
         UserDetails user2 = User.withDefaultPasswordEncoder()
-                .username("user2")
+                .username("2")
                 .password("2")
                 .roles("ADMIN")
                 .build();
