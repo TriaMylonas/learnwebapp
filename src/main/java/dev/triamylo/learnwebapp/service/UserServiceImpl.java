@@ -63,10 +63,14 @@ public class UserServiceImpl implements UserService {
 
 
     //find the user objekt by his name from the database
+    //TODO --> auch Test für diese Methode !
     @Override
     public Optional<User> findByName(String name) {
 
         List<User> users = (List<User>) userRepository.findAll();
+
+        //TODO --> ich muss nicht alle User von den Datenbank load! ich muss etwas machen, dem in der Datenbank zucht und mir das Ergebnisse zurück gibt (Denis hat mir aud Teams Kapitel gesicht)
+
         return users.stream().filter(user -> user.getFirstName().equals(name)).findFirst();
 
 /*        for (User user:users){
@@ -77,6 +81,5 @@ public class UserServiceImpl implements UserService {
  *        return null;
 */
     }
-
 
 }
