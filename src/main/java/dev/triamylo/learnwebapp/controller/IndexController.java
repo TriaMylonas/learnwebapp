@@ -66,14 +66,31 @@ public class IndexController {
     // TODO --> test in den Controller
 
     @GetMapping("/users/update/{uuid}")
-    public String update(@PathVariable String uuid, Model model) {
-
+    public String update(@PathVariable String uuid, Model model, Principal principal) {
         User user = userService.get(uuid);
+
         if (user != null) {
-            model.addAttribute("user", user);
-            addDoBRanges(model);
-            return "formula";
+
+            //if the user is admin, he can do with all the user.
+            if (hasAdminRole(principal)) {
+                model.addAttribute("user", user);
+                addDoBRanges(model);
+                return "formula";
+            }
+
+            //if the user is "ROLE_USER" (just a user) then he can update only his stats
+            if(hasUserRole(principal)){
+                //he must be the same user!
+                if (user.getFirstName().equals(principal.getName())){
+                    model.addAttribute("user", user);
+                    addDoBRanges(model);
+                    return "formula";
+                }
+                return "/error/ErrorNotAuthorized";
+            }
+
         }
+
 
         return "redirect:/users";
     }
@@ -87,12 +104,12 @@ public class IndexController {
          *  and to redirect to my custom error site I used this:
          * .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedPage("error/ErrorNotAuthorized"));
          */
-        if (isUserAdmin(principal)) {
+        if (hasAdminRole(principal)) {
             userService.delete(uuid);
             //with redirect, will refresh the page users!
             return "redirect:/users";
         } else
-            return "redirect:error/ErrorNotAuthorized";
+            return "redirect:/error/ErrorNotAuthorized";
     }
 
 
@@ -146,7 +163,7 @@ public class IndexController {
 
 
     // check if the login user is Admin
-    private boolean isUserAdmin(Principal principal) {
+    private boolean hasAdminRole(Principal principal) {
 
         if (principal instanceof UsernamePasswordAuthenticationToken user) {
 
@@ -160,7 +177,20 @@ public class IndexController {
         }
 
         return false;
+    }
 
+    // check if the login user has user role
+    private boolean hasUserRole(Principal principal){
+        if(principal instanceof UsernamePasswordAuthenticationToken user){
+            Collection<GrantedAuthority> authorities = user.getAuthorities();
+
+            for (GrantedAuthority role : authorities){
+                if(role.toString().equals("ROLE_USER")){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
