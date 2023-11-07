@@ -1,4 +1,4 @@
-package dev.triamylo.learnwebapp.securityConfiguration;
+package dev.triamylo.learnwebapp.configuration;
 
 
 import org.springframework.context.annotation.Bean;
@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -27,13 +26,14 @@ public class WebSecurityConfig {
         //all can use the home page and can add new user, all the others musst be authenticated
         http.authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/formula", "/images/**").permitAll()
-                        .requestMatchers( "/users/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
-                        .requestMatchers("users","/users/update/**").hasAnyRole("ADMIN","USER")
+                        .requestMatchers("/users/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
+                        .requestMatchers("users", "/users/update/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest()
                         .authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)  // das ist die default site from the security. (permitAll) I don't need to have permit to access in the login form.
-                .logout((logout) -> logout.logoutSuccessUrl("/").permitAll()); //(permitAll) I don't need to have permit to access in the logout form & goes to the start site again.
-
+                .logout((logout) -> logout.logoutSuccessUrl("/").permitAll()) //(permitAll) I don't need to have permit to access in the logout form & goes to the start site again.
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling.accessDeniedPage("error/ErrorNotAuthorized"));
         return http.build();
     }
 
