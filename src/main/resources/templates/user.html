@@ -53,7 +53,8 @@
 
         <td class="table-cell">
             <a th:href="@{'/users/delete/'+ ${user.getUuid()}}">
-                <button type="button" class="btn btn-sm btn-outline-danger me-2">
+                <!--    Button visible only to authorized users (ROLE_ADMIN) only they can delete someone.-->
+                <button type="button" class="btn btn-sm btn-outline-danger me-2" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                     Löschen
                 </button>
             </a>
