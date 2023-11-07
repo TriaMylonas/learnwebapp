@@ -32,7 +32,7 @@ public class WebSecurityConfig {
                         .anyRequest()
                         .authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)  // das ist die default site from the security. (permitAll) I don't need to have permit to access in the login form.
-                .logout(LogoutConfigurer::permitAll); //(permitAll) I don't need to have permit to access in the logout form.
+                .logout((logout) -> logout.logoutSuccessUrl("/").permitAll()); //(permitAll) I don't need to have permit to access in the logout form & goes to the start site again.
 
         return http.build();
     }
@@ -45,7 +45,7 @@ public class WebSecurityConfig {
         List<UserDetails> users = new ArrayList<>();
 
         UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
+                .username("1")
                 .password("1")
                 .roles("USER")
                 .build();
@@ -53,7 +53,7 @@ public class WebSecurityConfig {
         users.add(user);
 
         UserDetails user2 = User.withDefaultPasswordEncoder()
-                .username("user2")
+                .username("2")
                 .password("2")
                 .roles("ADMIN")
                 .build();

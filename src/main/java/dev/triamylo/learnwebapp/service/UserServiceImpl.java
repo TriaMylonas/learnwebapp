@@ -59,4 +59,24 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(altUser);
     }
+
+
+
+    //find the user objekt by his name from the database
+    @Override
+    public Optional<User> findByName(String name) {
+
+        List<User> users = (List<User>) userRepository.findAll();
+        return users.stream().filter(user -> user.getFirstName().equals(name)).findFirst();
+
+/*        for (User user:users){
+ *            if(user.getFirstName().equals(name)){
+ *                return user;
+ *            }
+ *        }
+ *        return null;
+*/
+    }
+
+
 }
