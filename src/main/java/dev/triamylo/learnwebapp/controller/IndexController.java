@@ -5,6 +5,8 @@ import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.security.Principal;
+import java.util.Collection;
 import java.util.List;
 
 @Controller
@@ -58,6 +62,9 @@ public class IndexController {
         return "user";
     }
 
+
+    // TODO --> test in den Controller
+
     @GetMapping("/users/update/{uuid}")
     public String update(@PathVariable String uuid, Model model) {
 
@@ -72,11 +79,20 @@ public class IndexController {
     }
 
     @GetMapping("/users/delete/{uuid}")
-    public String delete(@PathVariable String uuid) {
+    public String delete(@PathVariable String uuid, Principal principal) {
 
-        userService.delete(uuid);
-        //with redirect, will refresh the page users!
-        return "redirect:/users";
+        /* Trainings reasons!
+         * that's not necessary because I only allow admin access to delete in the securityConfig!
+         *   .requestMatchers("/users/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
+         *  and to redirect to my custom error site I used this:
+         * .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedPage("error/ErrorNotAuthorized"));
+         */
+        if (isUserAdmin(principal)) {
+            userService.delete(uuid);
+            //with redirect, will refresh the page users!
+            return "redirect:/users";
+        } else
+            return "redirect:error/ErrorNotAuthorized";
     }
 
 
@@ -88,7 +104,7 @@ public class IndexController {
      * call it from this method.
      */
     @PostMapping("/formula")
-    public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model) {
+    public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model, Principal principal) {
 
         // here in the Controller I can also validate the connection between my objects and the model.
         if (aUser.getDob() != null) {
@@ -122,10 +138,29 @@ public class IndexController {
 
     }
 
-//    extra prüfung, dass die Daten die ich von der Form bekomme, sind richtig.
+    //    extra prüfung, dass die Daten die ich von der Form bekomme, sind richtig.
     private void addDoBRanges(Model model) {
         model.addAttribute("dobMin", MIN_DOB_YEAR + "-01-01");
         model.addAttribute("dobMax", MAX_DOB_YEAR + "-01-01");
+    }
+
+
+    // check if the login user is Admin
+    private boolean isUserAdmin(Principal principal) {
+
+        if (principal instanceof UsernamePasswordAuthenticationToken user) {
+
+            Collection<GrantedAuthority> authorities = user.getAuthorities();
+
+            for (GrantedAuthority role : authorities) {
+                if (role.toString().equals("ROLE_ADMIN")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
     }
 
 }
