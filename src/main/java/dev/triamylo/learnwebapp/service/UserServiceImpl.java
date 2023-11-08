@@ -67,19 +67,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByName(String name) {
 
-        List<User> users = (List<User>) userRepository.findAll();
+        return userRepository.findByFirstName(name);
 
-        //TODO --> ich muss nicht alle User von den Datenbank load! ich muss etwas machen, dem in der Datenbank zucht und mir das Ergebnisse zurück gibt (Denis hat mir aud Teams Kapitel gesicht)
-
-        return users.stream().filter(user -> user.getFirstName().equals(name)).findFirst();
-
-/*        for (User user:users){
- *            if(user.getFirstName().equals(name)){
- *                return user;
- *            }
- *        }
- *        return null;
-*/
     }
 
 }

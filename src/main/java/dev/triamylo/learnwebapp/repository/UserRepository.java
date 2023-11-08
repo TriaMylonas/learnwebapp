@@ -4,6 +4,8 @@ import dev.triamylo.learnwebapp.model.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface UserRepository extends CrudRepository<User,String> {
 
@@ -18,4 +20,6 @@ public interface UserRepository extends CrudRepository<User,String> {
      * can I just used them!
      *
      */
+
+    Optional<User> findByFirstName(String firstname);
 }
