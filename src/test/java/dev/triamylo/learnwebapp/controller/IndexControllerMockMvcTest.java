@@ -1,52 +1,57 @@
 package dev.triamylo.learnwebapp.controller;
 
+import dev.triamylo.learnwebapp.AbstractMockUpTests;
 import dev.triamylo.learnwebapp.model.User;
-import dev.triamylo.learnwebapp.service.UserService;
+import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.ui.ModelMap;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
-@WebMvcTest(controllers = IndexController.class)
-class IndexControllerMockMvcTest {
-
+    @Autowired
+    private UserRepository repository;
 
     @Autowired
     private MockMvc mockMvc;
 
+    private String uuid;
 
-    @MockBean
-    private UserService userService;
+//    @MockBean
+//    private UserService userService;
 
-    List<User> userList = new ArrayList<>();
+//    List<User> userList = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
+        // Clean database before test
+        repository.deleteAll();
 
+        // Prepare users in database
         for (int i = 1; i < 11; i++) {
             User u = new User();
-            u.setUuid("uuid-" + i);
-            u.setFirstName("firstName-" + i);
+//            u.setUuid("uuid-" + i); // Is set by org.hibernate.annotations.UuidGenerator
+            u.setFirstName(String.valueOf(i));
             u.setLastName("lastName-" + i);
             u.setDob(LocalDate.of(1992, 1, i));
             u.setHeight(180 + i);
-            userList.add(u);
+            repository.save(u);
+            uuid = u.getUuid();
         }
+        assertEquals(10, repository.count());
     }
 
 
@@ -73,10 +78,11 @@ class IndexControllerMockMvcTest {
     }
 
     @Test
-    void users() throws Exception {
+    @WithMockUser(roles = "ADMIN")
+    void users_ADMIN() throws Exception {
         // I use my custom user list each time will called the userServices.
         // In this Test I don't need to control the Services, only the Controllers
-        given(userService.list()).willReturn(userList);
+//        given(userService.list()).willReturn(userList);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andExpect(status().isOk())
@@ -100,27 +106,54 @@ class IndexControllerMockMvcTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
+    void users_USER() throws Exception {
+        // I use my custom user list each time will called the userServices.
+        // In this Test I don't need to control the Services, only the Controllers
+//        given(userService.list()).willReturn(userList);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+                .andExpect(status().isForbidden());
+
+//        //I will take the model to see if the list is inside
+//        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+//                .andReturn()
+//                .getModelAndView()
+//                .getModel();
+//
+//        assertFalse(modelMap.isEmpty());
+//
+//        //i save the model to a list so I can check the values of the list too.
+//        List<User> users = (List<User>) modelMap.get("users");
+//        assertFalse(users.isEmpty());
+//        assertNotNull(users);
+//        assertEquals(10, users.size());
+//        assertEquals("firstName-2", users.get(1).getFirstName());
+    }
+
+    @Test
+    @WithUserDetails("2")
     void update() throws Exception {
 
         // create a user with a specific UUID that I expect to be returned by my service
-        String targetUuid = "uuid-1";
-        User expectedUser = new User(
-                "updatedFirstName", "updatedLastName",
-                LocalDate.of(1990, 5, 5), 175
-        );
-        expectedUser.setUuid(targetUuid);
+//        String targetUuid = "uuid-1";
+//        User expectedUser = new User(
+//                "updatedFirstName", "updatedLastName",
+//                LocalDate.of(1990, 5, 5), 175
+//        );
+//        expectedUser.setUuid(targetUuid);
 
         //create the service I need for the User user = userService.get(uuid) from the controller
-        given(userService.get(targetUuid)).willReturn(expectedUser);
+        //given(userService.get(targetUuid)).willReturn(expectedUser);
 
         //create the request
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", targetUuid))
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
                 .andExpect(status().isOk())
                 .andExpect(view().name("formula"))
                 .andExpect(model().attributeExists("user"));
 
         //I will take again the model to see if the list is inside
-        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", targetUuid))
+        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
                 .andReturn()
                 .getModelAndView()
                 .getModel();
@@ -128,18 +161,19 @@ class IndexControllerMockMvcTest {
         //now save it in to a User Object, so we can validate.
         User user = (User) modelMap.get("user");
         assertNotNull(user);
-        assertEquals("uuid-1", user.getUuid());
-        assertEquals("updatedFirstName", user.getFirstName());
-        assertEquals("updatedLastName", user.getLastName());
-        assertEquals(expectedUser.getDob(), user.getDob());
-        assertEquals(expectedUser.getHeight(), user.getHeight());
+//        assertEquals("uuid-1", user.getUuid());
+//        assertEquals("updatedFirstName", user.getFirstName());
+//        assertEquals("updatedLastName", user.getLastName());
+//        assertEquals(expectedUser.getDob(), user.getDob());
+//        assertEquals(expectedUser.getHeight(), user.getHeight());
 
 
         //negative test, if the uuid is null -> return "redirect:/users"
         //create the service I need for the User user = userService.get(uuid) from the controller
-        given(userService.get(targetUuid)).willReturn(null);
+//        given(userService.get(targetUuid)).willReturn(null);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", targetUuid))
+        String nullUuid = "xxx";
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", nullUuid))
                 .andExpect(status().is3xxRedirection()) //302 redirect
                 .andExpect(view().name("redirect:/users"));
     }

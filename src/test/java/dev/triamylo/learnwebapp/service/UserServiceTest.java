@@ -1,34 +1,33 @@
 package dev.triamylo.learnwebapp.service;
 
+import dev.triamylo.learnwebapp.AbstractApplicationTests;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-class UserServiceTest {
+class UserServiceTest extends AbstractApplicationTests {
 
 
-    private  UserService userService;
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
+
     @BeforeEach
-    void setUp(){
+    void setUp() {
 
         userRepository.deleteAll();
         userService = new UserServiceImpl(userRepository);
-
     }
-
 
 
     @Test
@@ -36,7 +35,7 @@ class UserServiceTest {
     void testAdd() {
 
         // create a new user
-        User testUser = new User("Tria", "Mylo", LocalDate.of(1970, 1, 1), 195);
+        User testUser = createUser();
 
         //add the user to the service
         userService.add(testUser);
@@ -44,21 +43,20 @@ class UserServiceTest {
         //take the ID of the user that I have added.
         String testUserId = testUser.getUuid();
 
-
         //I get new user from the list that the service saved him.
         User getTheTestUser = userService.get(testUserId);
 
         //I compare the user that I took with the values that I put on the start, so I know everything working good.
         assertNotNull(getTheTestUser);
-        assertEquals(testUser,getTheTestUser);
-        assertEquals("Tria",getTheTestUser.getFirstName());
-        assertEquals("Mylo",getTheTestUser.getLastName());
-        assertEquals(195,getTheTestUser.getHeight());
+        assertEquals(testUser, getTheTestUser);
+        assertEquals("Tria", getTheTestUser.getFirstName());
+        assertEquals("Mylo", getTheTestUser.getLastName());
+        assertEquals(195, getTheTestUser.getHeight());
     }
 
     @Test
     @DisplayName("positive- list() of the service,if it returns a list of Users")
-    void testList(){
+    void testList() {
 
         //I create 3 Users.
         User testUser1 = new User("Tria1", "Mylo1", LocalDate.of(1971, 1, 1), 195);
@@ -75,14 +73,14 @@ class UserServiceTest {
 
         // I see if the list is empty and if is 3 object inside.
         assertFalse(resultUsersList.isEmpty());
-        assertEquals(3,resultUsersList.size());
+        assertEquals(3, resultUsersList.size());
 
         //I compare if the values of the object in the list is same with that I put in the start.
         assertEquals("Tria1", resultUsersList.get(0).getFirstName());
-        assertEquals(LocalDate.of(1971,1,1), resultUsersList.get(0).getDob());
+        assertEquals(LocalDate.of(1971, 1, 1), resultUsersList.get(0).getDob());
 
         assertEquals("Tria2", resultUsersList.get(1).getFirstName());
-        assertEquals(200,resultUsersList.get(1).getHeight());
+        assertEquals(200, resultUsersList.get(1).getHeight());
 
         assertEquals("Mylo3", resultUsersList.get(2).getLastName());
         assertEquals("1973-03-03", resultUsersList.get(2).getDob().toString());
@@ -94,7 +92,7 @@ class UserServiceTest {
     void delete() {
 
         //create a user
-        User testUser1 = new User("Tria1", "Mylo1", LocalDate.of(1971, 1, 1), 195);
+        User testUser1 = createUser();
 
         //add the user to the service list and take this list.
         userService.add(testUser1);
@@ -103,7 +101,7 @@ class UserServiceTest {
         //check if the user is added to the list
         assertFalse(userList.isEmpty());
         assertEquals(1, userList.size());
-        assertEquals("Tria1", userList.get(0).getFirstName());
+        assertEquals("Tria", userList.get(0).getFirstName());
 
         //delete the User from the list. (We need to pass the ID as String for parameter)
         userService.delete(testUser1.getUuid());
@@ -120,7 +118,7 @@ class UserServiceTest {
     void testGet() {
 
         //create a user first of all :)
-        User testUser1 = new User("Tria1", "Mylo1", LocalDate.of(1971, 1, 1), 195);
+        User testUser1 = createUser();
 
         //save the user to the list of the service, so we can play with him later :)
         userService.add(testUser1);
@@ -128,15 +126,15 @@ class UserServiceTest {
         //we take the list to proof that the user saved and his last name it's "Mylo1"
         List<User> userList = userService.list();
         assertFalse(userList.isEmpty());
-        assertEquals("Mylo1", userList.get(0).getLastName());
+        assertEquals("Mylo", userList.get(0).getLastName());
 
         //we get the user from the list by using the get() method we wanna to proof!!!
         User newTestUser = userService.get(userList.get(0).getUuid());
 
         //we check if we have take the user that we saved in the first place, and the method work correct!$§
-        assertEquals("Tria1", newTestUser.getFirstName());
-        assertEquals("Mylo1", newTestUser.getLastName());
-        assertEquals("1971-01-01", newTestUser.getDob().toString());
+        assertEquals("Tria", newTestUser.getFirstName());
+        assertEquals("Mylo", newTestUser.getLastName());
+        assertEquals("1970-01-01", newTestUser.getDob().toString());
         assertEquals(195, newTestUser.getHeight());
 
         //Yes! we did it! we passt all the Test!!!
@@ -174,5 +172,32 @@ class UserServiceTest {
         assertEquals("Mylo2", userList2.get(0).getLastName());
         assertEquals(200, userList2.get(0).getHeight());
 
+    }
+
+    @Test
+    void positivFindByName(){
+
+        User user = createUser();
+        userService.add(user);
+
+        Optional<User> findUser = userService.findByName("Tria");
+        assertTrue(findUser.isPresent());
+        //Der User ist da, ich muss ihn mit .get() nur holen.
+        assertEquals("Tria", findUser.get().getFirstName());
+        assertEquals(user, findUser.get());
+    }
+
+    @Test
+    void negativFindByName(){
+
+        Optional<User> findUser = userService.findByName("NonExistentName");
+        assertNotNull(findUser);
+        assertFalse(findUser.isPresent());
+        assertEquals(findUser, Optional.empty());
+    }
+
+
+    private User createUser(){
+        return new User("Tria", "Mylo", LocalDate.of(1970, 1, 1), 195);
     }
 }

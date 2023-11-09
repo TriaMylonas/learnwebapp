@@ -1,30 +1,29 @@
 package dev.triamylo.learnwebapp.controller;
 
+import dev.triamylo.learnwebapp.AbstractApplicationTests;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.UserService;
-import dev.triamylo.learnwebapp.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.DirectFieldBindingResult;
-import org.springframework.validation.MapBindingResult;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-class IndexControllerTest {
+class IndexControllerTest extends AbstractApplicationTests {
 
     private IndexController controller;
 
     private Model model;
+
+    private Principal principal;
 
     @BeforeEach
     void setUp() {
@@ -81,6 +80,14 @@ class IndexControllerTest {
                     }
                 }
             }
+
+            @Override
+            public Optional<User> findByName(String name) {
+                //ich bringe die Liste
+                List<User> users = list();
+                //ich suche die Liste und gebe zurück das Ergebnis.
+                return users.stream().filter(user -> user.getFirstName().equals(name)).findFirst();
+            }
         });
 
         model = new ConcurrentModel();
@@ -127,7 +134,7 @@ class IndexControllerTest {
     @Test
     void update() {
 
-        var updateSite = controller.update("uuid-1", model);
+        var updateSite = controller.update("uuid-1", model, principal);
         var user = model.getAttribute("user");
 
         //That is important step
@@ -140,7 +147,7 @@ class IndexControllerTest {
         assertNotNull(updateSite);
         assertEquals("formula", updateSite);
 
-        var updateSiteNull = controller.update("", model);
+        var updateSiteNull = controller.update("", model, principal);
 
         assertNotNull(updateSiteNull);
         assertEquals("redirect:/users", updateSiteNull);
@@ -150,7 +157,7 @@ class IndexControllerTest {
     @Test
     void delete() {
 
-        var delete = controller.delete("uuid-1");
+        var delete = controller.delete("uuid-1", principal);
 
         assertNotNull(delete);
         assertEquals("redirect:/users", delete);
@@ -173,7 +180,7 @@ class IndexControllerTest {
         var model = new ConcurrentModel();
 
         // call the method
-        String site = controller.registerSite(newUser, bindingResult, model);
+        String site = controller.registerSite(newUser, bindingResult, model, principal);
         //check the results
         assertNotNull(site);
         assertEquals("redirect:/users", site);
