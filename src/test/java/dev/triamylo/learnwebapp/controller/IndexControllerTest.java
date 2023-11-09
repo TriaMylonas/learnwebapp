@@ -5,15 +5,16 @@ import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 import org.springframework.validation.DirectFieldBindingResult;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -132,9 +133,21 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void update() {
+    void positiveAdminRoleUpdate(){
+        /*  principal instanceof UsernamePasswordAuthenticationToken. Principal ist eine Interface, deswegen mache ich
+            eine Objekt von UsernamePasswordAuthenticationToke und gebe die Parameter die ich möchte.
+            https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/authentication/UsernamePasswordAuthenticationToken.html
+            Konstruktor = UsernamePasswordAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities)
+         */
+        // Define the user's authorities or roles
+        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
+        // Create a UsernamePasswordAuthenticationToken with your principal, credentials, and authorities
+        principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+
 
         var updateSite = controller.update("uuid-1", model, principal);
+
         var user = model.getAttribute("user");
 
         //That is important step
@@ -143,17 +156,19 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertEquals(((User) user).getFirstName(), "firstName-1");
         assertEquals(((User) user).getLastName(), "lastName-1");
         assertEquals(((User) user).getHeight(), 1);
-
         assertNotNull(updateSite);
         assertEquals("formula", updateSite);
+    }
 
+    @Test
+    void negativeUserNullUpdate(){
         var updateSiteNull = controller.update("", model, principal);
 
         assertNotNull(updateSiteNull);
         assertEquals("redirect:/users", updateSiteNull);
-
     }
 
+    //TODO negative update with user not USER_ROLE and user not ADMIN_ROLE
     @Test
     void delete() {
 
