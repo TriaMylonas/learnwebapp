@@ -79,11 +79,10 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void users_ADMIN() throws Exception {
+    void positivUsersAdminRole() throws Exception {
         // I use my custom user list each time will called the userServices.
         // In this Test I don't need to control the Services, only the Controllers
-//        given(userService.list()).willReturn(userList);
-
+        //given(userService.list()).willReturn(userList);
         mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("user"))
@@ -97,54 +96,26 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
         assertFalse(modelMap.isEmpty());
 
-        //i save the model to a list so I can check the values of the list too.
+        //i save the model to a list, so I can check the values of the list too.
         List<User> users = (List<User>) modelMap.get("users");
         assertFalse(users.isEmpty());
         assertNotNull(users);
         assertEquals(10, users.size());
-        assertEquals("firstName-2", users.get(1).getFirstName());
+        assertEquals("2", users.get(1).getFirstName());
     }
+
 
     @Test
     @WithMockUser(roles = "USER")
     void users_USER() throws Exception {
-        // I use my custom user list each time will called the userServices.
-        // In this Test I don't need to control the Services, only the Controllers
-//        given(userService.list()).willReturn(userList);
-
+        //TODO ich muss machen das Test, wenn ich meine controller ändern, damit der Nutzer nur seine Values sehen kann.
         mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andExpect(status().isForbidden());
-
-//        //I will take the model to see if the list is inside
-//        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users"))
-//                .andReturn()
-//                .getModelAndView()
-//                .getModel();
-//
-//        assertFalse(modelMap.isEmpty());
-//
-//        //i save the model to a list so I can check the values of the list too.
-//        List<User> users = (List<User>) modelMap.get("users");
-//        assertFalse(users.isEmpty());
-//        assertNotNull(users);
-//        assertEquals(10, users.size());
-//        assertEquals("firstName-2", users.get(1).getFirstName());
     }
 
     @Test
-    @WithUserDetails("2")
-    void update() throws Exception {
-
-        // create a user with a specific UUID that I expect to be returned by my service
-//        String targetUuid = "uuid-1";
-//        User expectedUser = new User(
-//                "updatedFirstName", "updatedLastName",
-//                LocalDate.of(1990, 5, 5), 175
-//        );
-//        expectedUser.setUuid(targetUuid);
-
-        //create the service I need for the User user = userService.get(uuid) from the controller
-        //given(userService.get(targetUuid)).willReturn(expectedUser);
+    @WithMockUser(roles = "ADMIN")
+    void updateAdminPositiv() throws Exception {
 
         //create the request
         mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
@@ -161,11 +132,6 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         //now save it in to a User Object, so we can validate.
         User user = (User) modelMap.get("user");
         assertNotNull(user);
-//        assertEquals("uuid-1", user.getUuid());
-//        assertEquals("updatedFirstName", user.getFirstName());
-//        assertEquals("updatedLastName", user.getLastName());
-//        assertEquals(expectedUser.getDob(), user.getDob());
-//        assertEquals(expectedUser.getHeight(), user.getHeight());
 
 
         //negative test, if the uuid is null -> return "redirect:/users"
@@ -179,6 +145,22 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     }
 
     @Test
+    void updateNegative() throws Exception{
+        //create request without roles
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
+                .andExpect(status().is3xxRedirection()); //302 redirect
+    }
+    @Test
+    @WithMockUser(roles = "USER")
+    void updateUserPositiv() throws Exception{
+        //create request without roles
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
+                .andExpect(status().isOk())
+                .andExpect(view().name("/error/ErrorNotAuthorized"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     void delete() throws Exception {
 
         // create a user with a specific UUID that I expect to be returned by my service
@@ -192,13 +174,22 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     void registerSite() throws Exception {
-
-        // Create a user like the browser as a string and send it to the /formula with post
-        String formData = "uuid=&firstName=testName&lastName=testLastname&dob=1995-05-05&height=55";
+//
+//        // Create a user like the browser as a string and send it to the /formula with post
+//        String formData = "uuid=&firstName=testName&lastName=testLastname&dob=1995-05-05&height=55";
+//
+//        mockMvc.perform(MockMvcRequestBuilders.post("/formula",formData)
+//                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+//                        .content(formData))
+//                .andExpect(status().is3xxRedirection())
+//                .andExpect(redirectedUrl("/users"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .content(formData))
+                        .param("uuid", "someUuid")
+                        .param("firstName", "John")
+                        .param("lastName", "Doe")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/users"));
     }
