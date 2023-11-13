@@ -27,7 +27,8 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/formula", "/images/**").permitAll()
                         .requestMatchers("/users/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
-                        .requestMatchers("users", "/users/update/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("users").hasRole("ADMIN")
+                        .requestMatchers( "/users/update/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest()
                         .authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)  // das ist die default site from the security. (permitAll) I don't need to have permit to access in the login form.
