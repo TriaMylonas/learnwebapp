@@ -67,13 +67,19 @@ public class IndexController {
     @GetMapping("/me")
     public String seeOnlyYourData(Model model, Principal principal){
         String username = principal.getName();
-        Optional<User> optionalUser = userService.findByFirstName(username);
+
+        //TODO hier ich muss in verbindung die username mit der aktual User Objekt bringen. Jetzt mache ich test.
+        Optional<User> optionalUser = userService.findByFirstName("tria");
         User user;
 
         if(optionalUser.isPresent()){
             user = (User) optionalUser.get();
-            //if the user is "ROLE_USER" (just a user) then he can update only his stats
-            if(hasUserRole(principal)){
+            //only to test!!!!!
+            user.setUsername("tria");
+            username = "tria";
+
+            //if the user is "ROLE_USER" (just a user) and has the same username as the login user, he can update only his stats
+            if(hasUserRole(principal) && user.getUsername().equals(username)){
 
                 model.addAttribute("user", user);
                 addDoBRanges(model);
