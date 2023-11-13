@@ -86,7 +86,7 @@ class IndexControllerTest extends AbstractApplicationTests {
             }
 
             @Override
-            public Optional<User> findByName(String name) {
+            public Optional<User> findByUserName(String name) {
                 //ich bringe die Liste
                 List<User> users = list();
                 //ich suche die Liste und gebe zurück das Ergebnis.

@@ -180,7 +180,7 @@ class UserServiceTest extends AbstractApplicationTests {
         User user = createUser();
         userService.add(user);
 
-        Optional<User> findUser = userService.findByName("Tria");
+        Optional<User> findUser = userService.findByUserName("Tria");
         assertTrue(findUser.isPresent());
         //Der User ist da, ich muss ihn mit .get() nur holen.
         assertEquals("Tria", findUser.get().getFirstName());
@@ -190,7 +190,7 @@ class UserServiceTest extends AbstractApplicationTests {
     @Test
     void negativFindByName(){
 
-        Optional<User> findUser = userService.findByName("NonExistentName");
+        Optional<User> findUser = userService.findByUserName("NonExistentName");
         assertNotNull(findUser);
         assertFalse(findUser.isPresent());
         assertEquals(findUser, Optional.empty());
