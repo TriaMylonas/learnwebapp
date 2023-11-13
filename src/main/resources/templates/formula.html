@@ -103,10 +103,10 @@
 
     <span>
         <a th:href="@{/users}">
-    <!--    Button visible only to authenticated users.-->
+    <!--    Button visible only to Admin users.-->
 
             <button type="button" class="btn btn-warning"
-                    sec:authorize="isAuthenticated()">
+                    sec:authorize="hasRole('ADMIN')">
                 Zur List
             </button>
         </a>
