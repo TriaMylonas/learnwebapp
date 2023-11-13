@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.DirectFieldBindingResult;
 
 import java.security.Principal;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class IndexControllerTest extends AbstractApplicationTests {
 
@@ -140,13 +143,14 @@ class IndexControllerTest extends AbstractApplicationTests {
             Konstruktor = UsernamePasswordAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities)
          */
         // Define the user's authorities or roles
-        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
 
         // Create a UsernamePasswordAuthenticationToken with your principal, credentials, and authorities
         principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
+        var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
 
-        var updateSite = controller.update("uuid-1", model, principal);
+        var updateSite = controller.update("uuid-1", model, mockPrincipal);
 
         var user = model.getAttribute("user");
 
@@ -160,6 +164,13 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertEquals("formula", updateSite);
     }
 
+    private static UsernamePasswordAuthenticationToken getMockPrincipal(String role) {
+        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+        UsernamePasswordAuthenticationToken mockPrincipal = mock(UsernamePasswordAuthenticationToken.class);
+        when(mockPrincipal.getAuthorities()).thenReturn(authorities);
+        return mockPrincipal;
+    }
+
     @Test
     void negativeUserNullUpdate(){
         var updateSiteNull = controller.update("", model, principal);
@@ -168,21 +179,37 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertEquals("redirect:/users", updateSiteNull);
     }
 
-    //TODO negative update with user not USER_ROLE and user not ADMIN_ROLE
     @Test
-    void delete() {
+    void positiveNoRoleUpdate(){
+        // I give the user no role
+        principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("NONE")));
+
+        var update = controller.update("uuid-1",model,principal);
+        assertNotNull(update);
+        assertEquals("redirect:/users", update);
+    }
+
+    @Test
+    void deleteAdminRole() {
+
+        principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
         var delete = controller.delete("uuid-1", principal);
 
         assertNotNull(delete);
         assertEquals("redirect:/users", delete);
-
     }
 
     @Test
-    void registerSite() {
+    void deleteNoRole(){
+        var delete = controller.delete("uuid-1", principal);
+        assertNotNull(delete);
+        assertEquals("redirect:/error/ErrorNotAuthorized", delete);
+    }
+    @Test
+    void registerSitePositive() {
 
-        //create the user
+        //create the parameters for the method
         User newUser = new User();
         newUser.setUuid("uuid-test");
         newUser.setFirstName("testFirstName");
@@ -190,28 +217,38 @@ class IndexControllerTest extends AbstractApplicationTests {
         newUser.setDob(LocalDate.of(1999, 5, 5));
         newUser.setHeight(185);
 
-        //create the parameters for the method
         var bindingResult = new DirectFieldBindingResult(null, "");
+
         var model = new ConcurrentModel();
+
 
         // call the method
         String site = controller.registerSite(newUser, bindingResult, model, principal);
         //check the results
         assertNotNull(site);
         assertEquals("redirect:/users", site);
+    }
 
-        //I can't check if the user add to the list I have no access to the model and I don't know why? It is null...
-        var user = model.getAttribute("user");
-        assertNotNull(user);
-        assertTrue(user instanceof User);
-        assertNotNull(((User) user).getUuid());
-        assertNotNull(((User) user).getFirstName());
-        assertNotNull(((User) user).getLastName());
-        assertNotNull(((User) user).getDob());
-        assertEquals(185, ((User) user).getHeight());
+    @Test
+    void registerSiteNegative(){
+        //create the parameters for the method
+        User newUser = new User();
+        newUser.setUuid("uuid-test");
+        newUser.setFirstName("testFirstName");
+        newUser.setLastName("testLastName");
+        newUser.setDob(LocalDate.of(1999, 5, 5));
+        newUser.setHeight(185);
 
-        // Ich glaube, ich muss die bindingResult auch mit ein Fehler, als parameter zu geben,
-        // um die andere return zu testen.
+        //create an error in the binding results
+        var bindingResult = mock(BindingResult.class);
+        when(bindingResult.hasErrors()).thenReturn(true);
 
+        var model = new ConcurrentModel();
+
+        // call the method
+        String site = controller.registerSite(newUser, bindingResult, model, principal);
+        //check the results
+        assertNotNull(site);
+        assertEquals("formula", site);
     }
 }
