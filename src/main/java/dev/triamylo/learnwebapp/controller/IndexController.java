@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class IndexController {
@@ -63,7 +64,26 @@ public class IndexController {
     }
 
 
-    // TODO --> test in den Controller
+    @GetMapping("/me")
+    public String seeOnlyYourData(Model model, Principal principal){
+        String username = principal.getName();
+        Optional<User> optionalUser = userService.findByUserName(username);
+        User user;
+
+        if(optionalUser.isPresent()){
+            user = (User) optionalUser.get();
+            //if the user is "ROLE_USER" (just a user) then he can update only his stats
+            if(hasUserRole(principal)){
+
+                model.addAttribute("user", user);
+                addDoBRanges(model);
+                return "formula";
+            }
+            return "/error/ErrorNotAuthorized";
+        }
+        return "index";
+    }
+
 
     @GetMapping("/users/update/{uuid}")
     public String update(@PathVariable String uuid, Model model, Principal principal) {
@@ -77,21 +97,7 @@ public class IndexController {
                 addDoBRanges(model);
                 return "formula";
             }
-
-            //if the user is "ROLE_USER" (just a user) then he can update only his stats
-            if(hasUserRole(principal)){
-                //he must be the same user!
-                if (user.getFirstName().equals(principal.getName())){
-                    model.addAttribute("user", user);
-                    addDoBRanges(model);
-                    return "formula";
-                }
-                return "/error/ErrorNotAuthorized";
-            }
-
         }
-
-
         return "redirect:/users";
     }
 
