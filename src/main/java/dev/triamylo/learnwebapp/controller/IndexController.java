@@ -67,7 +67,7 @@ public class IndexController {
     @GetMapping("/me")
     public String seeOnlyYourData(Model model, Principal principal){
         String username = principal.getName();
-        Optional<User> optionalUser = userService.findByUserName(username);
+        Optional<User> optionalUser = userService.findByFirstName(username);
         User user;
 
         if(optionalUser.isPresent()){

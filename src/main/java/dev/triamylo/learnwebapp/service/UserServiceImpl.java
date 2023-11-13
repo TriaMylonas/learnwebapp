@@ -65,9 +65,9 @@ public class UserServiceImpl implements UserService {
     //find the user objekt by his name from the database
     //TODO --> auch Test für diese Methode !
     @Override
-    public Optional<User> findByUserName(String name) {
+    public Optional<User> findByFirstName(String name) {
 
-        return userRepository.findByusername(name);
+        return userRepository.findByFirstName(name);
 
     }
 
