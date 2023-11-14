@@ -27,7 +27,7 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/formula", "/images/**").permitAll()
                         .requestMatchers("/users/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
-                        .requestMatchers("users").hasRole("ADMIN")
+                        .requestMatchers("/users").hasRole("ADMIN")
                         .requestMatchers( "/users/update/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest()
                         .authenticated())

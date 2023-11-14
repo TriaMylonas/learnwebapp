@@ -125,7 +125,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void users() {
-        var site = controller.users(model);
+        var site = controller.users(model,principal);
         assertNotNull(site);
         assertEquals("user", site);
 

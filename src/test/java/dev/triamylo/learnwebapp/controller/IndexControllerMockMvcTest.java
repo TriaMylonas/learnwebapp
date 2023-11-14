@@ -6,6 +6,7 @@ import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -20,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
 class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     @Autowired
@@ -30,10 +32,6 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     private String uuid;
 
-//    @MockBean
-//    private UserService userService;
-
-//    List<User> userList = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
@@ -58,14 +56,10 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     @Test
     void startSite() throws Exception {
 
-        // I use mockMvc to send a get request to this URL "/formula"
         this.mockMvc.perform(MockMvcRequestBuilders.get("/"))
-                // Expects HTTP 200 OK
                 .andExpect(status().isOk())
-                // Expects the view name to be "formula"
                 .andExpect(view().name("index"));
     }
-
 
     @Test
     void formulaForNewUser() throws Exception {
@@ -73,16 +67,13 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         mockMvc.perform(MockMvcRequestBuilders.get("/formula"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("formula"))
-                // Expects the "user" attribute in the model
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void positivUsersAdminRole() throws Exception {
-        // I use my custom user list each time will called the userServices.
-        // In this Test I don't need to control the Services, only the Controllers
-        //given(userService.list()).willReturn(userList);
+    void usersAdminRole() throws Exception {
+
         mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("user"))
@@ -96,7 +87,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
         assertFalse(modelMap.isEmpty());
 
-        //i save the model to a list, so I can check the values of the list too.
+        //I save the model to a list, so I can check the values of the list too.
         List<User> users = (List<User>) modelMap.get("users");
         assertFalse(users.isEmpty());
         assertNotNull(users);
@@ -104,11 +95,16 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         assertEquals("2", users.get(1).getFirstName());
     }
 
-
     @Test
     @WithMockUser(roles = "USER")
-    void users_USER() throws Exception {
-        //TODO ich muss machen das Test, wenn ich meine controller ändern, damit der Nutzer nur seine Values sehen kann.
+    void usersUserRole() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "NONE")
+    void usersNoneRole() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/users"))
                 .andExpect(status().isForbidden());
     }

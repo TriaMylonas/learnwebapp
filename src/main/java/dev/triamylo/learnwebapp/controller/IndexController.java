@@ -56,11 +56,13 @@ public class IndexController {
 
 
     @GetMapping("/users")
-    public String users(Model model) {
+    public String users(Model model, Principal principal) {
         List<User> users = userService.list();
-
-        model.addAttribute("users", users);
-        return "user";
+        if(hasAdminRole(principal)){
+            model.addAttribute("users", users);
+            return "user";
+        }
+        return "/error/ErrorNotAuthorized";
     }
 
 
@@ -163,7 +165,7 @@ public class IndexController {
         }
 
         //redirect to refresh the page.
-        return "redirect:/users";
+        return "success/SuccessfullyAdded";
 
     }
 
