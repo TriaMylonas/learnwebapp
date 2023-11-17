@@ -70,15 +70,13 @@ public class IndexController {
     public String seeOnlyYourData(Model model, Principal principal){
         String username = principal.getName();
 
-        //TODO hier ich muss in verbindung die username mit der aktual User Objekt bringen. Jetzt mache ich test.
-        Optional<User> optionalUser = userService.findByFirstName("tria");
+        Optional<User> optionalUser = userService.findByFirstName("1");
         User user;
 
         if(optionalUser.isPresent()){
             user = (User) optionalUser.get();
-            //only to test!!!!!
-            user.setUsername("tria");
-            username = "tria";
+
+            user.setUsername("1"); //NUR FÜR KURZ TESTING!!!!!
 
             //if the user is "ROLE_USER" (just a user) and has the same username as the login user, he can update only his stats
             if(hasUserRole(principal) && user.getUsername().equals(username)){
@@ -169,12 +167,14 @@ public class IndexController {
 
     }
 
+
+
+
     //    extra prüfung, dass die Daten die ich von der Form bekomme, sind richtig.
     private void addDoBRanges(Model model) {
         model.addAttribute("dobMin", MIN_DOB_YEAR + "-01-01");
         model.addAttribute("dobMax", MAX_DOB_YEAR + "-01-01");
     }
-
 
     // check if the login user is Admin
     private boolean hasAdminRole(Principal principal) {

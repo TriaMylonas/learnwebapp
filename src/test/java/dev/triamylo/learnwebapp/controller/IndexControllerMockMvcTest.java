@@ -6,10 +6,8 @@ import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -19,6 +17,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -141,18 +141,19 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     }
 
     @Test
-    void updateNegative() throws Exception{
+    void updateNegative() throws Exception {
         //create request without roles
         mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
                 .andExpect(status().is3xxRedirection()); //302 redirect
     }
+
     @Test
-    @WithMockUser(roles = "USER")
-    void updateUserPositiv() throws Exception{
-        //create request without roles
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
+    @WithMockUser(roles = "USER", username = "1")
+    void seeOnlyYourDataPositiv() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/me"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/error/ErrorNotAuthorized"));
+                .andExpect(view().name("formula"));
     }
 
     @Test
@@ -169,37 +170,61 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     }
 
     @Test
-    void registerSite() throws Exception {
-//
-//        // Create a user like the browser as a string and send it to the /formula with post
-//        String formData = "uuid=&firstName=testName&lastName=testLastname&dob=1995-05-05&height=55";
-//
-//        mockMvc.perform(MockMvcRequestBuilders.post("/formula",formData)
-//                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-//                        .content(formData))
-//                .andExpect(status().is3xxRedirection())
-//                .andExpect(redirectedUrl("/users"));
+    @WithMockUser(roles = "ADMIN")
+    void registerSiteAdminRole() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .param("uuid", "someUuid")
+                        .param("username", "1")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
-                        .param("height", "180"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/users"));
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("success/SuccessfullyAdded"));
     }
 
     @Test
-    void registerSiteNegative() throws Exception {
-        // Create a user like the browser as a string and send it to the /formula with post, but this time will be
-        // no valid, so I can make the negative test also. I give without name
-        String falseFormData = "uuid=&firstName=&lastName=testLastname&dob=1995-05-05&height=55";
-        //now I must be redirected to formula because my values was not right
+    @WithMockUser(roles = "USER")
+    void registerSiteUserRole() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .content(falseFormData))
+                        .param("username", "1")
+                        .param("firstName", "John")
+                        .param("lastName", "Doe")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("success/SuccessfullyAdded"));
+    }
+
+    @Test
+    @WithMockUser(roles = "NONE")
+    void registerSiteNoneRole() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+                        .param("username", "1")
+                        .param("firstName", "John")
+                        .param("lastName", "Doe")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("success/SuccessfullyAdded"));
+    }
+
+    @Test
+    @WithMockUser()
+    void registerSiteWrongDayOfBirthNegative() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+                        .param("username", "1")
+                        .param("firstName", "John")
+                        .param("lastName", "Doe")
+                        .param("dob", "0111-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("formula"));
     }
+
+
 }

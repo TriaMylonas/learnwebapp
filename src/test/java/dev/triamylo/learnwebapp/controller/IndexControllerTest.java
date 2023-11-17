@@ -124,8 +124,18 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void users() {
+    void usersNoneRole() {
         var site = controller.users(model,principal);
+        assertNotNull(site);
+        assertEquals("/error/ErrorNotAuthorized", site);
+    }
+
+    @Test
+    void usersAdminRole(){
+
+        var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
+        var site = controller.users(model,mockPrincipal);
+
         assertNotNull(site);
         assertEquals("user", site);
 
@@ -137,16 +147,6 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void positiveAdminRoleUpdate(){
-        /*  principal instanceof UsernamePasswordAuthenticationToken. Principal ist eine Interface, deswegen mache ich
-            eine Objekt von UsernamePasswordAuthenticationToke und gebe die Parameter die ich möchte.
-            https://docs.spring.io/spring-security/site/docs/4.0.x/apidocs/org/springframework/security/authentication/UsernamePasswordAuthenticationToken.html
-            Konstruktor = UsernamePasswordAuthenticationToken(Object principal, Object credentials, Collection<? extends GrantedAuthority> authorities)
-         */
-        // Define the user's authorities or roles
-
-
-        // Create a UsernamePasswordAuthenticationToken with your principal, credentials, and authorities
-        principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
 
@@ -162,13 +162,6 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertEquals(((User) user).getHeight(), 1);
         assertNotNull(updateSite);
         assertEquals("formula", updateSite);
-    }
-
-    private static UsernamePasswordAuthenticationToken getMockPrincipal(String role) {
-        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
-        UsernamePasswordAuthenticationToken mockPrincipal = mock(UsernamePasswordAuthenticationToken.class);
-        when(mockPrincipal.getAuthorities()).thenReturn(authorities);
-        return mockPrincipal;
     }
 
     @Test
@@ -206,6 +199,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertNotNull(delete);
         assertEquals("redirect:/error/ErrorNotAuthorized", delete);
     }
+
     @Test
     void registerSitePositive() {
 
@@ -226,9 +220,8 @@ class IndexControllerTest extends AbstractApplicationTests {
         String site = controller.registerSite(newUser, bindingResult, model, principal);
         //check the results
         assertNotNull(site);
-        assertEquals("redirect:/users", site);
+        assertEquals("success/SuccessfullyAdded", site);
     }
-
     @Test
     void registerSiteNegative(){
         //create the parameters for the method
@@ -250,5 +243,14 @@ class IndexControllerTest extends AbstractApplicationTests {
         //check the results
         assertNotNull(site);
         assertEquals("formula", site);
+    }
+
+    private static UsernamePasswordAuthenticationToken getMockPrincipal(String role) {
+
+        Collection<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+        UsernamePasswordAuthenticationToken mockPrincipal = mock(UsernamePasswordAuthenticationToken.class);
+        when(mockPrincipal.getAuthorities()).thenReturn(authorities);
+
+        return mockPrincipal;
     }
 }
