@@ -35,11 +35,11 @@ public class User {
 
     @NotEmpty
     @NotNull
-    @Size(min = 1, max = 10)
+    @Size(min = 1, max = 20)
     private String firstName;
     @NotEmpty
     @NotNull
-    @Size(min = 2, max = 12)
+    @Size(min = 2, max = 20)
     private String lastName;
 
     @NotNull

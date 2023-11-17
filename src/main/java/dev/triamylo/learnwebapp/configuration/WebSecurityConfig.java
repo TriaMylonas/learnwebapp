@@ -1,6 +1,7 @@
 package dev.triamylo.learnwebapp.configuration;
 
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,9 @@ public class WebSecurityConfig {
                         .authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)  // das ist die default site from the security. (permitAll) I don't need to have permit to access in the login form.
                 .logout((logout) -> logout.logoutSuccessUrl("/").permitAll()); //(permitAll) I don't need to have permit to access in the logout form & goes to the start site again.
+//                .securityMatcher(PathRequest.toH2Console())
+//                .csrf((csrf)-> csrf.disable())
+//                .headers((headers)-> headers.frameOptions((frame)->frame.sameOrigin()));
 
         return http.build();
     }

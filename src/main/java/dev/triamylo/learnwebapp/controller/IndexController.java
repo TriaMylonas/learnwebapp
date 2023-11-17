@@ -135,6 +135,7 @@ public class IndexController {
     @PostMapping("/formula")
     public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model, Principal principal) {
 
+
         // here in the Controller I can also validate the connection between my objects and the model.
         if (aUser.getDob() != null) {
             // that is the value that will come from the form.
@@ -153,18 +154,46 @@ public class IndexController {
             return "formula";
         }
 
-        //that means that is a new user without ID until now.
+        // Admin->
+        if(hasAdminRole(principal)){
+
+            //that means that is a new user without ID until now.
+            if (aUser.getUuid() == null || aUser.getUuid().isEmpty()) {
+                //I add the new user after the validation to my list of users
+                userService.add(aUser);
+            } else {
+
+                userService.update(aUser);
+            }
+            return "success/SuccessfullyAdded";
+        }
+
+        //User ->
+        if(hasUserRole(principal)){
+            //that means that is a new user without ID until now.
+            if (aUser.getUuid() == null || aUser.getUuid().isEmpty()) {
+                userService.add(aUser);
+                return "success/SuccessfullyAdded";
+            }
+            //that means the username of the object is same with the username login
+            else if (aUser.getUsername().equals(principal.getName())) {
+                userService.update(aUser);
+                return "success/SuccessfullyAdded";
+            }
+            else {
+                //don't authorize
+                return "/error/ErrorNotAuthorized";
+            }
+        }
+
+        //None role ->
         if (aUser.getUuid() == null || aUser.getUuid().isEmpty()) {
             //I add the new user after the validation to my list of users
             userService.add(aUser);
-        } else {
-
-            userService.update(aUser);
+            return "success/SuccessfullyAdded";
         }
 
-        //redirect to refresh the page.
-        return "success/SuccessfullyAdded";
-
+        return "/error/ErrorNotAuthorized";
     }
 
 

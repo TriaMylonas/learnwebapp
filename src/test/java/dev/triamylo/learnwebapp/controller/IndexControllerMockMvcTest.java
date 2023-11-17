@@ -3,10 +3,10 @@ package dev.triamylo.learnwebapp.controller;
 import dev.triamylo.learnwebapp.AbstractMockUpTests;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.UserRepository;
+import dev.triamylo.learnwebapp.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -15,10 +15,11 @@ import org.springframework.ui.ModelMap;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -42,7 +43,8 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         for (int i = 1; i < 11; i++) {
             User u = new User();
 //            u.setUuid("uuid-" + i); // Is set by org.hibernate.annotations.UuidGenerator
-            u.setFirstName(String.valueOf(i));
+            u.setUsername(String.valueOf(i));
+            u.setFirstName("firstName-"+i);
             u.setLastName("lastName-" + i);
             u.setDob(LocalDate.of(1992, 1, i));
             u.setHeight(180 + i);
@@ -174,7 +176,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     void registerSiteAdminRole() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .param("username", "1")
+                        .param("username", "11")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
@@ -186,9 +188,9 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser(roles = "USER")
-    void registerSiteUserRole() throws Exception {
+    void registerSiteUserRoleAddNewUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .param("username", "1")
+                        .param("username", "12")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
@@ -225,6 +227,31 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("formula"));
     }
+
+//    noch ein mit eine uuid, da bedeutet update und er darf das nicht.
+    @Test
+    @WithMockUser(username = "1")
+    void registerSiteUserRoleUpdate() throws Exception {
+
+        Optional<User> userOptional =  repository.findByUsername("1");
+
+        assertTrue(userOptional.isPresent());
+//        prüfen, ob in User firstname und lastname is wie ich gespeichert haben.
+        // Perform the request with a user with no roles
+        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+                        .param("uuid", userOptional.get().getUuid())
+                        .param("username", "1")
+                        .param("firstName", "John")
+                        .param("lastName", "Doe")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk());
+
+        //ich prüfen hier das die Änderungen angekommen sind, da ich in meine Test Datenbank die Änderungen gemacht habe.
+//        so ich kann das durch repository. checken!!
+    }
+
 
 
 }
