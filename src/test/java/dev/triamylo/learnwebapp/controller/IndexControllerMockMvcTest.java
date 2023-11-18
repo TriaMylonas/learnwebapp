@@ -94,7 +94,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         assertFalse(users.isEmpty());
         assertNotNull(users);
         assertEquals(10, users.size());
-        assertEquals("2", users.get(1).getFirstName());
+        assertEquals("firstName-2", users.get(1).getFirstName());
     }
 
     @Test
@@ -204,7 +204,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser(roles = "NONE")
     void registerSiteNoneRole() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .param("username", "1")
+                        .param("username", "30")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")

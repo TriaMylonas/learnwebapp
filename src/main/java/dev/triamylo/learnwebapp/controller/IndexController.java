@@ -70,13 +70,11 @@ public class IndexController {
     public String seeOnlyYourData(Model model, Principal principal){
         String username = principal.getName();
 
-        Optional<User> optionalUser = userService.findByFirstName("1");
+        Optional<User> optionalUser = userService.findByUsername("1");
         User user;
 
         if(optionalUser.isPresent()){
             user = (User) optionalUser.get();
-
-            user.setUsername("1"); //NUR FÜR KURZ TESTING!!!!!
 
             //if the user is "ROLE_USER" (just a user) and has the same username as the login user, he can update only his stats
             if(hasUserRole(principal) && user.getUsername().equals(username)){

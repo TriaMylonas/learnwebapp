@@ -92,6 +92,13 @@ class IndexControllerTest extends AbstractApplicationTests {
                 //ich suche die Liste und gebe zurück das Ergebnis.
                 return users.stream().filter(user -> user.getFirstName().equals(name)).findFirst();
             }
+
+            @Override
+            public Optional<User> findByUsername(String name){
+
+                List<User> users = list();
+                return users.stream().filter(user -> user.getUsername().equals(name)).findFirst();
+            }
         });
 
         model = new ConcurrentModel();
@@ -201,11 +208,11 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void registerSitePositive() {
+    void registerSitePositiveNoneRole() {
 
         //create the parameters for the method
         User newUser = new User();
-        newUser.setUuid("uuid-test");
+        newUser.setUsername("null");
         newUser.setFirstName("testFirstName");
         newUser.setLastName("testLastName");
         newUser.setDob(LocalDate.of(1999, 5, 5));
@@ -222,6 +229,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertNotNull(site);
         assertEquals("success/SuccessfullyAdded", site);
     }
+
     @Test
     void registerSiteNegative(){
         //create the parameters for the method
