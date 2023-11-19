@@ -224,9 +224,9 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         var model = new ConcurrentModel();
 
-
         // call the method
         String site = controller.registerSite(newUser, bindingResult, model, principal);
+
         //check the results
         assertNotNull(site);
         assertEquals("success/SuccessfullyAdded", site);
@@ -256,8 +256,29 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void seeOnlyYourDataUserRolePositiv(){
+    void registerSiteWrongDayOfBirth(){
+        //create the parameters for the method
+        User newUser = new User();
+        newUser.setUsername("null");
+        newUser.setFirstName("testFirstName");
+        newUser.setLastName("testLastName");
+        newUser.setDob(LocalDate.of(1119, 5, 5));
+        newUser.setHeight(185);
 
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
+
+        var model = new ConcurrentModel();
+
+        // call the method
+        String site = controller.registerSite(newUser, bindingResult, model, principal);
+
+        //check the results
+        assertNotNull(site);
+        assertEquals("formula", site);
+    }
+
+    @Test
+    void seeOnlyYourDataUserRolePositiv(){
         var mockPrincipal = getMockPrincipal("ROLE_USER");
         when(mockPrincipal.getName()).thenReturn("1");
 
@@ -278,16 +299,16 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void seeOnlyYourDataNoUser(){
-
         var mockPrincipal = mock(Principal.class);
-
         when(mockPrincipal.getName()).thenReturn("asdf");
-
 
         String responseSite = controller.seeOnlyYourData(model, mockPrincipal);
 
         assertEquals("index", responseSite);
     }
+
+
+
 
     private static UsernamePasswordAuthenticationToken getMockPrincipal(String role) {
 
