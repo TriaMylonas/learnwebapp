@@ -58,7 +58,7 @@ public class IndexController {
     @GetMapping("/users")
     public String users(Model model, Principal principal) {
         List<User> users = userService.list();
-        if(hasAdminRole(principal)){
+        if (hasAdminRole(principal)) {
             model.addAttribute("users", users);
             return "user";
         }
@@ -67,17 +67,17 @@ public class IndexController {
 
 
     @GetMapping("/me")
-    public String seeOnlyYourData(Model model, Principal principal){
+    public String seeOnlyYourData(Model model, Principal principal) {
         String username = principal.getName();
 
         Optional<User> optionalUser = userService.findByUsername("1");
         User user;
 
-        if(optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             user = (User) optionalUser.get();
 
             //if the user is "ROLE_USER" (just a user) and has the same username as the login user, he can update only his stats
-            if(hasUserRole(principal) && user.getUsername().equals(username)){
+            if (hasUserRole(principal) && user.getUsername().equals(username)) {
 
                 model.addAttribute("user", user);
                 addDoBRanges(model);
@@ -153,7 +153,7 @@ public class IndexController {
         }
 
         // Admin->
-        if(hasAdminRole(principal)){
+        if (hasAdminRole(principal)) {
 
             //that means that is a new user without ID until now.
             if (aUser.getUuid() == null || aUser.getUuid().isEmpty()) {
@@ -167,7 +167,7 @@ public class IndexController {
         }
 
         //User ->
-        if(hasUserRole(principal)){
+        if (hasUserRole(principal)) {
             //that means that is a new user without ID until now.
             if (aUser.getUuid() == null || aUser.getUuid().isEmpty()) {
                 userService.add(aUser);
@@ -177,8 +177,7 @@ public class IndexController {
             else if (aUser.getUsername().equals(principal.getName())) {
                 userService.update(aUser);
                 return "success/SuccessfullyAdded";
-            }
-            else {
+            } else {
                 //don't authorize
                 return "/error/ErrorNotAuthorized";
             }
@@ -193,8 +192,6 @@ public class IndexController {
 
         return "/error/ErrorNotAuthorized";
     }
-
-
 
 
     //    extra prüfung, dass die Daten die ich von der Form bekomme, sind richtig.
@@ -221,12 +218,12 @@ public class IndexController {
     }
 
     // check if the login user has user role
-    private boolean hasUserRole(Principal principal){
-        if(principal instanceof UsernamePasswordAuthenticationToken user){
+    private boolean hasUserRole(Principal principal) {
+        if (principal instanceof UsernamePasswordAuthenticationToken user) {
             Collection<GrantedAuthority> authorities = user.getAuthorities();
 
-            for (GrantedAuthority role : authorities){
-                if(role.toString().equals("ROLE_USER")){
+            for (GrantedAuthority role : authorities) {
+                if (role.toString().equals("ROLE_USER")) {
                     return true;
                 }
             }
