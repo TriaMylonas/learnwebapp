@@ -233,7 +233,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void registerSiteNegative(){
+    void registerSiteWithBindingErrors(){
         //create the parameters for the method
         User newUser = new User();
         newUser.setUuid("uuid-test");
@@ -275,6 +275,76 @@ class IndexControllerTest extends AbstractApplicationTests {
         //check the results
         assertNotNull(site);
         assertEquals("formula", site);
+    }
+
+    @Test
+    void registerSiteAdminRoleUpdateUser(){
+
+        //create the parameters for the method
+        User newUser = new User();
+        newUser.setUuid("uuid-1");
+        newUser.setUsername("35");
+        newUser.setFirstName("testFirstName");
+        newUser.setLastName("testLastName");
+        newUser.setDob(LocalDate.of(1999, 5, 5));
+        newUser.setHeight(185);
+
+        var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
+
+        var model = new ConcurrentModel();
+
+        // call the method
+        String site = controller.registerSite(newUser, bindingResult, model, mockPrincipal);
+
+        //check the results
+        assertNotNull(site);
+        assertEquals("success/SuccessfullyAdded", site);
+    }
+    @Test
+    void registerSiteAdminRoleAddUser(){
+
+        //create the parameters for the method
+        User newUser = new User();
+        newUser.setUuid("");
+        newUser.setUsername("35");
+        newUser.setFirstName("testFirstName");
+        newUser.setLastName("testLastName");
+        newUser.setDob(LocalDate.of(1999, 5, 5));
+        newUser.setHeight(185);
+
+        var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
+
+        var model = new ConcurrentModel();
+
+        // call the method
+        String site = controller.registerSite(newUser, bindingResult, model, mockPrincipal);
+
+        //check the results
+        assertNotNull(site);
+        assertEquals("success/SuccessfullyAdded", site);
+    }
+
+    @Test
+    void registerSiteNoLoginUpdateUser(){
+        //create the parameters for the method
+        User newUser = new User();
+        newUser.setUuid("SomeRandomUuidInTheUrl");
+        newUser.setUsername("35");
+        newUser.setFirstName("testFirstName");
+        newUser.setLastName("testLastName");
+        newUser.setDob(LocalDate.of(1999, 5, 5));
+        newUser.setHeight(185);
+
+        var mockPrincipal = getMockPrincipal("ROLE_NONE");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
+
+        // call the method
+        String responseSite = controller.registerSite(newUser, bindingResult, model, mockPrincipal);
+
+        assertNotNull(responseSite);
+        assertEquals("/error/ErrorNotAuthorized",responseSite);
     }
 
     @Test
