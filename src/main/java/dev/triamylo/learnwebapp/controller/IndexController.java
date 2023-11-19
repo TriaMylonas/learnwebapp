@@ -70,7 +70,7 @@ public class IndexController {
     public String seeOnlyYourData(Model model, Principal principal) {
         String username = principal.getName();
 
-        Optional<User> optionalUser = userService.findByUsername("1");
+        Optional<User> optionalUser = userService.findByUsername(username);
         User user;
 
         if (optionalUser.isPresent()) {

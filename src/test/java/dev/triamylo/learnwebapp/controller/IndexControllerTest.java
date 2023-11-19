@@ -31,7 +31,8 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @BeforeEach
     void setUp() {
-        // κάναμε to UserService interface kai me auto ton tropo prepei na dosoume zoi se oles tou tis methodous.
+        // κάναμε to UserService interface και με αυτό τον τρόπο είμαστε υποχρεωμένει να υλοποιήσουμε όλες τις
+        // μεθόδους του.
         controller = new IndexController(new UserService() {
 
             private final List<User> list = new ArrayList<>();
@@ -42,6 +43,7 @@ class IndexControllerTest extends AbstractApplicationTests {
                 for (int i = 0; i < 10; i++) {
                     User u = new User();
                     u.setUuid("uuid-" + i);
+                    u.setUsername(String.valueOf(i));
                     u.setFirstName("firstName-" + i);
                     u.setLastName("lastName-" + i);
                     u.setDob(LocalDate.of(i, 1, 1));
@@ -251,6 +253,40 @@ class IndexControllerTest extends AbstractApplicationTests {
         //check the results
         assertNotNull(site);
         assertEquals("formula", site);
+    }
+
+    @Test
+    void seeOnlyYourDataUserRolePositiv(){
+
+        var mockPrincipal = getMockPrincipal("ROLE_USER");
+        when(mockPrincipal.getName()).thenReturn("1");
+
+        String responseSite = controller.seeOnlyYourData(model,mockPrincipal);
+
+        assertEquals("formula", responseSite );
+    }
+
+    @Test
+    void seeOnlyYourDataNoneRole(){
+        var mockPrincipal = getMockPrincipal("NONE_ROLE");
+        when(mockPrincipal.getName()).thenReturn("1");
+
+        String responseSite = controller.seeOnlyYourData(model,mockPrincipal);
+
+        assertEquals("/error/ErrorNotAuthorized", responseSite);
+    }
+
+    @Test
+    void seeOnlyYourDataNoUser(){
+
+        var mockPrincipal = mock(Principal.class);
+
+        when(mockPrincipal.getName()).thenReturn("asdf");
+
+
+        String responseSite = controller.seeOnlyYourData(model, mockPrincipal);
+
+        assertEquals("index", responseSite);
     }
 
     private static UsernamePasswordAuthenticationToken getMockPrincipal(String role) {
