@@ -10,21 +10,22 @@ import java.util.List;
 @Table(name = "role")
 public class Role {
 
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users;
+
 
     @Id
     @UuidGenerator
     private String uuid;
 
 
-
     @Column(unique = true)
     private String roleName;
 
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
 
 
-    public Role(){}
+    public Role() {
+    }
 
     public Role(String uuid, String roleName) {
         this.uuid = uuid;
@@ -45,5 +46,13 @@ public class Role {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }

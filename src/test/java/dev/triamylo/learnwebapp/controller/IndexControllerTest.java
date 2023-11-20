@@ -394,15 +394,4 @@ class IndexControllerTest extends AbstractApplicationTests {
         return mockPrincipal;
     }
 
-    private static User getNewUser() {
-        //create the parameters for the method
-        User newUser = new User();
-        newUser.setUuid("SomeRandomUuidInTheUrl");
-        newUser.setUsername("35");
-        newUser.setFirstName("testFirstName");
-        newUser.setLastName("testLastName");
-        newUser.setDob(LocalDate.of(1999, 5, 5));
-        newUser.setHeight(185);
-        return newUser;
-    }
 }

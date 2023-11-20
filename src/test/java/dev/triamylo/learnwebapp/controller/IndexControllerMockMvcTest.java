@@ -6,6 +6,7 @@ import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -13,11 +14,15 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.ui.ModelMap;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Spliterator;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -99,7 +104,10 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     @Test
     @WithMockUser(roles = "USER")
     void usersUserRole() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users")
+                        .with(csrf()))
                 .andExpect(status().isForbidden());
     }
 
@@ -158,8 +166,26 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     }
 
     @Test
+    @WithMockUser(roles = "NONE" ,username = "1")
+    void seeOnlyYourDataWithNoneRoleSeeOtherUserData() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/me"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/ErrorNotAuthorized"));
+    }
+
+    @Test
+    //We have only user in our test repository with username from 1 to 10
+    @WithMockUser(roles = "User" ,username = "random")
+    void seeOnlyYourDataWithUserRoleSeeOtherRandomUserData() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/me"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"));
+    }
+
+
+    @Test
     @WithMockUser(roles = "ADMIN")
-    void delete() throws Exception {
+    void deleteWithAdminRole() throws Exception {
 
         // create a user with a specific UUID that I expect to be returned by my service
         String targetUuid = "uuid-1";
@@ -168,6 +194,17 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
                 //I give not status ok back, I am redirect only a view.
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/users"));
+    }
+
+    @Test
+    @WithMockUser(roles = "USER")
+    void deleteWithUserRole() throws Exception{
+        Optional<User> optionalUser = repository.findByUsername("1");
+        assertTrue(optionalUser.isPresent());
+
+        String userUuid = optionalUser.get().getUuid();
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/delete/{uudi}",userUuid))
+                .andExpect(status().isForbidden());
     }
 
     @Test

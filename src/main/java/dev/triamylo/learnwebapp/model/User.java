@@ -16,15 +16,6 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
 
-    @Id
-    @UuidGenerator
-    private String uuid;
-
-    @Column(unique = true)
-    private String username;
-
-
-
     @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "user_role",
@@ -33,27 +24,18 @@ public class User {
     )
     private List<Role> roles;
 
+    @Id
+    @UuidGenerator
+    private String uuid;
 
-
-
-
-
-
-
-
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    @Column(unique = true)
+    private String username;
 
     @NotEmpty
     @NotNull
     @Size(min = 1, max = 20)
     private String firstName;
+
     @NotEmpty
     @NotNull
     @Size(min = 2, max = 20)
@@ -62,9 +44,9 @@ public class User {
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
-
     @Min(1)
     private int height;
+
 
     public User() {
 
@@ -77,12 +59,31 @@ public class User {
         this.height = height;
     }
 
+
+
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getUuid() {
         return uuid;
     }
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
 
