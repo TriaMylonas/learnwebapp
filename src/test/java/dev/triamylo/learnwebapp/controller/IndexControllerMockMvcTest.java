@@ -3,7 +3,6 @@ package dev.triamylo.learnwebapp.controller;
 import dev.triamylo.learnwebapp.AbstractMockUpTests;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.UserRepository;
-import dev.triamylo.learnwebapp.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -44,7 +42,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
             User u = new User();
 //            u.setUuid("uuid-" + i); // Is set by org.hibernate.annotations.UuidGenerator
             u.setUsername(String.valueOf(i));
-            u.setFirstName("firstName-"+i);
+            u.setFirstName("firstName-" + i);
             u.setLastName("lastName-" + i);
             u.setDob(LocalDate.of(1992, 1, i));
             u.setHeight(180 + i);
@@ -233,7 +231,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser(username = "1")
     void registerSiteUserRoleUpdate() throws Exception {
 
-        Optional<User> userOptional =  repository.findByUsername("1");
+        Optional<User> userOptional = repository.findByUsername("1");
 
         assertTrue(userOptional.isPresent());
 //        prüfen, ob in User firstname und lastname is wie ich gespeichert haben.
@@ -251,7 +249,6 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         //ich prüfen hier das die Änderungen angekommen sind, da ich in meine Test Datenbank die Änderungen gemacht habe.
 //        so ich kann das durch repository. checken!!
     }
-
 
 
 }
