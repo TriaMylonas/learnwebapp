@@ -210,17 +210,13 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void registerSitePositiveNoneRole() {
+    void registerSiteNoneRoleAddUser() {
 
         //create the parameters for the method
-        User newUser = new User();
-        newUser.setUsername("null");
-        newUser.setFirstName("testFirstName");
-        newUser.setLastName("testLastName");
-        newUser.setDob(LocalDate.of(1999, 5, 5));
-        newUser.setHeight(185);
-
-        var bindingResult = new DirectFieldBindingResult(null, "");
+        User newUser = getNewUser();
+        //set uuid empty, that means the user don't exit and we add him
+        newUser.setUuid("");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
 
         var model = new ConcurrentModel();
 
@@ -235,12 +231,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     @Test
     void registerSiteWithBindingErrors(){
         //create the parameters for the method
-        User newUser = new User();
-        newUser.setUuid("uuid-test");
-        newUser.setFirstName("testFirstName");
-        newUser.setLastName("testLastName");
-        newUser.setDob(LocalDate.of(1999, 5, 5));
-        newUser.setHeight(185);
+        User newUser = getNewUser();
 
         //create an error in the binding results
         var bindingResult = mock(BindingResult.class);
@@ -258,12 +249,8 @@ class IndexControllerTest extends AbstractApplicationTests {
     @Test
     void registerSiteWrongDayOfBirth(){
         //create the parameters for the method
-        User newUser = new User();
-        newUser.setUsername("null");
-        newUser.setFirstName("testFirstName");
-        newUser.setLastName("testLastName");
+        User newUser = getNewUser();
         newUser.setDob(LocalDate.of(1119, 5, 5));
-        newUser.setHeight(185);
 
         var bindingResult = new DirectFieldBindingResult(newUser, "user");
 
@@ -281,13 +268,8 @@ class IndexControllerTest extends AbstractApplicationTests {
     void registerSiteAdminRoleUpdateUser(){
 
         //create the parameters for the method
-        User newUser = new User();
+        User newUser = getNewUser();
         newUser.setUuid("uuid-1");
-        newUser.setUsername("35");
-        newUser.setFirstName("testFirstName");
-        newUser.setLastName("testLastName");
-        newUser.setDob(LocalDate.of(1999, 5, 5));
-        newUser.setHeight(185);
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
         var bindingResult = new DirectFieldBindingResult(newUser, "user");
@@ -305,13 +287,8 @@ class IndexControllerTest extends AbstractApplicationTests {
     void registerSiteAdminRoleAddUser(){
 
         //create the parameters for the method
-        User newUser = new User();
+        User newUser = getNewUser();
         newUser.setUuid("");
-        newUser.setUsername("35");
-        newUser.setFirstName("testFirstName");
-        newUser.setLastName("testLastName");
-        newUser.setDob(LocalDate.of(1999, 5, 5));
-        newUser.setHeight(185);
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
         var bindingResult = new DirectFieldBindingResult(newUser, "user");
@@ -328,15 +305,9 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void registerSiteNoLoginUpdateUser(){
-        //create the parameters for the method
-        User newUser = new User();
-        newUser.setUuid("SomeRandomUuidInTheUrl");
-        newUser.setUsername("35");
-        newUser.setFirstName("testFirstName");
-        newUser.setLastName("testLastName");
-        newUser.setDob(LocalDate.of(1999, 5, 5));
-        newUser.setHeight(185);
-
+        //someone without login try to update a user just sending the url to the server!
+        //but we are thought about that, and we are prepared
+        var newUser = getNewUser();
         var mockPrincipal = getMockPrincipal("ROLE_NONE");
         var bindingResult = new DirectFieldBindingResult(newUser, "user");
 
@@ -345,6 +316,56 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         assertNotNull(responseSite);
         assertEquals("/error/ErrorNotAuthorized",responseSite);
+    }
+
+    @Test
+    void registerSiteWithUserRoleAddNewUser(){
+
+        var newUser = getNewUser();
+        // add new user means until now he has no uuid!
+        newUser.setUuid("");
+
+        var mockPrincipal = getMockPrincipal("ROLE_USER");
+        var bindingResult = new DirectFieldBindingResult(newUser,"user");
+
+        String responseSite = controller.registerSite(newUser,bindingResult,model,mockPrincipal);
+
+        assertNotNull(responseSite);
+        assertEquals("success/SuccessfullyAdded",responseSite);
+    }
+
+    @Test
+    void registerSiteWithUserRoleUpdateHisOwnData(){
+        var newUser = getNewUser();
+        //we have user form 1-10 in our test database!
+        newUser.setUsername("1");
+
+        var mockPrincipal = getMockPrincipal("ROLE_USER");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
+        // mockup that the login username is 1 like the one in the user object...
+        when(mockPrincipal.getName()).thenReturn("1");
+
+        String responseSite = controller.registerSite(newUser,bindingResult,model,mockPrincipal);
+
+        assertNotNull(responseSite);
+        assertEquals("success/SuccessfullyAdded", responseSite);
+    }
+
+    @Test
+    void registerSiteWithUserRoleUpdateOtherUserData(){
+        var newUser = getNewUser();
+        //we have user form 1-10 in our test database!
+        newUser.setUsername("1");
+
+        var mockPrincipal = getMockPrincipal("ROLE_USER");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
+        // mockup that the login username is 1 like the one in the user object...
+        when(mockPrincipal.getName()).thenReturn("2");
+
+        String responseSite = controller.registerSite(newUser,bindingResult,model,mockPrincipal);
+
+        assertNotNull(responseSite);
+        assertEquals("/error/ErrorNotAuthorized", responseSite);
     }
 
     @Test
@@ -387,5 +408,17 @@ class IndexControllerTest extends AbstractApplicationTests {
         when(mockPrincipal.getAuthorities()).thenReturn(authorities);
 
         return mockPrincipal;
+    }
+
+    private static User getNewUser() {
+        //create the parameters for the method
+        User newUser = new User();
+        newUser.setUuid("SomeRandomUuidInTheUrl");
+        newUser.setUsername("35");
+        newUser.setFirstName("testFirstName");
+        newUser.setLastName("testLastName");
+        newUser.setDob(LocalDate.of(1999, 5, 5));
+        newUser.setHeight(185);
+        return newUser;
     }
 }
