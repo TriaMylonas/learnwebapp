@@ -16,7 +16,7 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.PERSIST})
     @JoinTable(
             name = "user_role",
             joinColumns = {@JoinColumn(name = "user_uuid")},
