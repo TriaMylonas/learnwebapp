@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
+// test the github
 class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     @Autowired
@@ -228,7 +228,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(view().name("formula"));
     }
 
-//    noch ein mit eine uuid, da bedeutet update und er darf das nicht.
+    //    noch ein mit eine uuid, da bedeutet update und er darf das nicht.
     @Test
     @WithMockUser(username = "1")
     void registerSiteUserRoleUpdate() throws Exception {
