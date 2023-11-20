@@ -62,7 +62,7 @@ public class IndexController {
             model.addAttribute("users", users);
             return "user";
         }
-        return "/error/ErrorNotAuthorized";
+        return "error/ErrorNotAuthorized";
     }
 
 
@@ -83,7 +83,7 @@ public class IndexController {
                 addDoBRanges(model);
                 return "formula";
             }
-            return "/error/ErrorNotAuthorized";
+            return "error/ErrorNotAuthorized";
         }
         return "index";
     }
@@ -118,8 +118,10 @@ public class IndexController {
             userService.delete(uuid);
             //with redirect, will refresh the page users!
             return "redirect:/users";
-        } else
+        }
+        else{
             return "redirect:/error/ErrorNotAuthorized";
+        }
     }
 
 
@@ -178,7 +180,7 @@ public class IndexController {
                 return "success/SuccessfullyAdded";
             } else {
                 //don't authorize
-                return "/error/ErrorNotAuthorized";
+                return "error/ErrorNotAuthorized";
             }
         }
 
@@ -189,7 +191,7 @@ public class IndexController {
             return "success/SuccessfullyAdded";
         }
 
-        return "/error/ErrorNotAuthorized";
+        return "error/ErrorNotAuthorized";
     }
 
 

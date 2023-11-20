@@ -136,7 +136,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     void usersNoneRole() {
         var site = controller.users(model,principal);
         assertNotNull(site);
-        assertEquals("/error/ErrorNotAuthorized", site);
+        assertEquals("error/ErrorNotAuthorized", site);
     }
 
     @Test
@@ -315,7 +315,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         String responseSite = controller.registerSite(newUser, bindingResult, model, mockPrincipal);
 
         assertNotNull(responseSite);
-        assertEquals("/error/ErrorNotAuthorized",responseSite);
+        assertEquals("error/ErrorNotAuthorized",responseSite);
     }
 
     @Test
@@ -351,22 +351,6 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertEquals("success/SuccessfullyAdded", responseSite);
     }
 
-    @Test
-    void registerSiteWithUserRoleUpdateOtherUserData(){
-        var newUser = getNewUser();
-        //we have user form 1-10 in our test database!
-        newUser.setUsername("1");
-
-        var mockPrincipal = getMockPrincipal("ROLE_USER");
-        var bindingResult = new DirectFieldBindingResult(newUser, "user");
-        // mockup that the login username is 1 like the one in the user object...
-        when(mockPrincipal.getName()).thenReturn("2");
-
-        String responseSite = controller.registerSite(newUser,bindingResult,model,mockPrincipal);
-
-        assertNotNull(responseSite);
-        assertEquals("/error/ErrorNotAuthorized", responseSite);
-    }
 
     @Test
     void seeOnlyYourDataUserRolePositiv(){
@@ -385,7 +369,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         String responseSite = controller.seeOnlyYourData(model,mockPrincipal);
 
-        assertEquals("/error/ErrorNotAuthorized", responseSite);
+        assertEquals("error/ErrorNotAuthorized", responseSite);
     }
 
     @Test

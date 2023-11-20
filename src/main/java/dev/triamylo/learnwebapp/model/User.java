@@ -1,9 +1,6 @@
 package dev.triamylo.learnwebapp.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -24,6 +22,25 @@ public class User {
 
     @Column(unique = true)
     private String username;
+
+
+
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "user_role",
+            joinColumns = {@JoinColumn(name = "user_uuid")},
+            inverseJoinColumns = {@JoinColumn(name = "role_uuid")}
+    )
+    private List<Role> roles;
+
+
+
+
+
+
+
+
+
 
     public String getUsername() {
         return username;

@@ -6,6 +6,7 @@ import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// test the github
+
 class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     @Autowired
@@ -226,16 +227,14 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(view().name("formula"));
     }
 
-    //    noch ein mit eine uuid, da bedeutet update und er darf das nicht.
     @Test
-    @WithMockUser(username = "1")
-    void registerSiteUserRoleUpdate() throws Exception {
-
+    @WithMockUser(username = "1", roles = "USER")
+    void registerSiteWithUserRoleAndUpdateHisOwnData() throws Exception {
+        // I take the user because I don't know the auto generated uuid of the object
         Optional<User> userOptional = repository.findByUsername("1");
 
         assertTrue(userOptional.isPresent());
-//        prüfen, ob in User firstname und lastname is wie ich gespeichert haben.
-        // Perform the request with a user with no roles
+
         mockMvc.perform(MockMvcRequestBuilders.post("/formula")
                         .param("uuid", userOptional.get().getUuid())
                         .param("username", "1")
@@ -246,9 +245,80 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
                         .with(csrf()))
                 .andExpect(status().isOk());
 
-        //ich prüfen hier das die Änderungen angekommen sind, da ich in meine Test Datenbank die Änderungen gemacht habe.
-//        so ich kann das durch repository. checken!!
+        //I check if the changes has done, on the test database
+        Optional<User> testUser = repository.findByUsername("1");
+        assertTrue(testUser.isPresent());
+        assertEquals("John", testUser.get().getFirstName());
     }
 
+    @Test
+    @WithMockUser(username = "1", roles = "USER")
+    void registerSiteWithUserRoleAndUpdateOtherUserData() throws Exception {
+        // I take another username.
+        Optional<User> testUser = repository.findByUsername("2");
+        assertTrue(testUser.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+                        .param("uuid", testUser.get().getUuid())
+                        .param("username", "2")
+                        .param("firstName", "TestName")
+                        .param("lastName", "testLastname")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/ErrorNotAuthorized"));
+
+        //check if the user change
+        assertNotEquals("TestName", testUser.get().getFirstName());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void registerSiteWithAdminRoleUpdateOtherUserData() throws Exception {
+        // I take another username.
+        Optional<User> testUser = repository.findByUsername("2");
+        assertTrue(testUser.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+                        .param("uuid", testUser.get().getUuid())
+                        .param("username", "2")
+                        .param("firstName", "TestName")
+                        .param("lastName", "testLastname")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("success/SuccessfullyAdded"));
+
+        //check if the user change
+        User updatedTestUser = repository.findByUsername("2").get();
+
+        assertEquals("TestName", updatedTestUser.getFirstName());
+        assertEquals("testLastname", updatedTestUser.getLastName());
+    }
+
+    @Test
+    @WithAnonymousUser()
+    void registerSiteWithAnonymousUserUpdateOtherUserData() throws Exception{
+
+        Optional<User> testUser = repository.findByUsername("1");
+        assertTrue(testUser.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+                        .param("uuid", testUser.get().getUuid())
+                        .param("username", "1")
+                        .param("firstName", "TestName")
+                        .param("lastName", "testLastname")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("error/ErrorNotAuthorized"));
+
+        User updatedTestUser = repository.findByUsername("1").get();
+        assertEquals(testUser.get().getFirstName(),updatedTestUser.getFirstName());
+        assertEquals(testUser.get().getLastName(), updatedTestUser.getLastName());
+    }
 
 }
