@@ -27,4 +27,15 @@ public abstract class AbstractApplicationTests {
         newUser.setHeight(185);
         return newUser;
     }
+    protected static User getNewUserWithNullUuid(String username) {
+        //create the parameters for the method
+        User newUser = new User();
+        newUser.setUuid(null);
+        newUser.setUsername(username);
+        newUser.setFirstName("testFirstName");
+        newUser.setLastName("testLastName");
+        newUser.setDob(LocalDate.of(1999, 5, 5));
+        newUser.setHeight(185);
+        return newUser;
+    }
 }

@@ -29,8 +29,8 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @BeforeEach
     void setUp() {
-        roleRepository.deleteAll();
-        userRepository.deleteAll();
+//        roleRepository.deleteAll();
+//        userRepository.deleteAll();
     }
 
     @Test
@@ -266,7 +266,8 @@ class RoleRepositoryTest extends AbstractApplicationTests {
     void userDeletedButNotTheRolesWithHim() {
 
         //each transaction write or read something in the DB
-        //fist transaction with the DB, create user and role.
+
+        //1 transaction with the DB,|->create user, role and save .
         transaction.execute(status -> {
 
             // User created without roles
@@ -284,7 +285,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             return null;
         });
 
-        //second transaction with the DB, assign a role in the user
+        //2 transaction with the DB,|-> assign a role in the user and save
         transaction.execute(status -> {
             //read user from the database.
             var optionalUser = userRepository.findByUsername("tria");
@@ -307,20 +308,21 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
             return null;
         });
-        //third transaction with the database, delete the user
+
+        //3 transaction with the DB,|-> only read and check
         transaction.execute(status -> {
             //Read the user from the database and check if he has role
             var optionalUser = userRepository.findByUsername("tria");
             assertTrue(optionalUser.isPresent());
             var user = optionalUser.get();
+            assertFalse(user.getRoles().isEmpty());
+            assertEquals(1, user.getRoles().size());
 
-            assertEquals(1,user.getRoles().size());
 
             // Reload updates the role and check if the has a user
             var optionalRole = roleRepository.findByRoleName("role1");
             assertTrue(optionalRole.isPresent());
             var role1 = optionalRole.get();
-
             assertFalse(role1.getUsers().isEmpty());
             assertEquals(1, role1.getUsers().size());
             assertEquals(user.getUuid(), role1.getUsers().get(0).getUuid());
@@ -328,14 +330,14 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             return null;
         });
 
-        //fourth transaction we are deleting the user
+        //4  transaction with the DB,|->get the user and delete him.
         transaction.execute(status -> {
             //get the user
             var optionalUser = userRepository.findByUsername("tria");
             assertTrue(optionalUser.isPresent());
             var user = optionalUser.get();
 
-            assertEquals(1,user.getRoles().size());
+            assertEquals(1, user.getRoles().size());
 
             // Delete the existing user
             userRepository.delete(user);
@@ -347,6 +349,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             return null;
         });
 
+        //5 transaction with the DB|-> read from the DB and check
         transaction.execute(status -> {
             // Reload updates the role
             var optionalRole = roleRepository.findByRoleName("role1");
@@ -357,4 +360,276 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             return null;
         });
     }
+
+
+    @Test
+    void twoUserWithTwoRolesWeDeleteOneUserAndTheTwoRoleStay() {
+
+        //1 transaction with the DB, | we create and save the 2 users and the 2 roles
+        transaction.execute(execute -> {
+
+            User user3 = getNewUserWithNullUuid("user3");
+            userRepository.save(user3);
+
+            User user4 = getNewUserWithNullUuid("user4");
+            userRepository.save(user4);
+
+            Role role3 = new Role("role3");
+            roleRepository.save(role3);
+
+            Role role4 = new Role("role4");
+            roleRepository.save(role4);
+
+            return null;
+        });
+
+        /*2 transaction with the DB|-> I check the DB, add the roles to the users and save */
+        transaction.execute(execute -> {
+
+            var optionalUser3 = userRepository.findByUsername("user3");
+            assertTrue(optionalUser3.isPresent());
+            var user3 = optionalUser3.get();
+
+            var optionalUser4 = userRepository.findByUsername("user4");
+            assertTrue(optionalUser4.isPresent());
+            var user4 = optionalUser4.get();
+
+            var optionalRole3 = roleRepository.findByRoleName("role3");
+            assertTrue(optionalRole3.isPresent());
+            var role3 = optionalRole3.get();
+
+            var optionalRole4 = roleRepository.findByRoleName("role4");
+            assertTrue(optionalRole4.isPresent());
+            var role4 = optionalRole4.get();
+
+
+            user3.getRoles().add(role3);
+            user3.getRoles().add(role4);
+
+            user4.getRoles().add(role3);
+            user4.getRoles().add(role4);
+
+            userRepository.save(user3);
+            userRepository.save(user4);
+
+            return null;
+        });
+
+        /*3 transaction with DB|-> check if the users have the roles, and delete one user*/
+        transaction.execute(execute -> {
+
+            var optionalUser3 = userRepository.findByUsername("user3");
+            assertTrue(optionalUser3.isPresent());
+            var user3 = optionalUser3.get();
+
+            var optionalUser4 = userRepository.findByUsername("user4");
+            assertTrue(optionalUser4.isPresent());
+            var user4 = optionalUser4.get();
+
+            var optionalRole3 = roleRepository.findByRoleName("role3");
+            assertTrue(optionalRole3.isPresent());
+            var role3 = optionalRole3.get();
+
+            var optionalRole4 = roleRepository.findByRoleName("role4");
+            assertTrue(optionalRole4.isPresent());
+            var role4 = optionalRole4.get();
+
+            assertEquals(2,user3.getRoles().size());
+            assertTrue(user3.getRoles().contains(role3));
+            assertTrue(user3.getRoles().contains(role4));
+
+            assertEquals(2,user4.getRoles().size());
+            assertTrue(user4.getRoles().contains(role3));
+            assertTrue(user4.getRoles().contains(role4));
+
+            userRepository.delete(user3);
+            assertFalse(userRepository.findByUsername("user3").isPresent());
+
+            return null;
+        });
+
+        /*4 transaction with DB|-> check if the two roles are there but only the one user*/
+        transaction.execute(execute ->{
+
+            var optionalUser3 = userRepository.findByUsername("user3");
+            assertFalse(optionalUser3.isPresent());
+
+
+            var optionalUser4 = userRepository.findByUsername("user4");
+            assertTrue(optionalUser4.isPresent());
+            var user4 = optionalUser4.get();
+
+            var optionalRole3 = roleRepository.findByRoleName("role3");
+            assertTrue(optionalRole3.isPresent());
+            var role3 = optionalRole3.get();
+
+            var optionalRole4 = roleRepository.findByRoleName("role4");
+            assertTrue(optionalRole4.isPresent());
+            var role4 = optionalRole4.get();
+
+            assertEquals(2,user4.getRoles().size());
+            assertTrue(user4.getRoles().contains(role3));
+            assertTrue(user4.getRoles().contains(role4));
+
+            assertEquals(1,role3.getUsers().size());
+            assertEquals(1,role4.getUsers().size());
+
+            return null;
+        });
+    }
+
+    @Test
+    void twoUserWithTwoRolesWeDeleteOneRoleAndTheTwoUsersStay(){
+
+        /*1 transaction with the DB -> create the users, roles and save them to DB */
+        transaction.execute(execute -> {
+
+            User user5 = getNewUserWithNullUuid("user5");
+            userRepository.save(user5);
+
+            User user6 = getNewUserWithNullUuid("user6");
+            userRepository.save(user6);
+
+            Role role5 = new Role("role5");
+            roleRepository.save(role5);
+
+            Role role6 = new Role("role6");
+            roleRepository.save(role6);
+
+            return null;
+        });
+        /*2 transaction with the DB -> check if the users and the roles exist and assign the roles to the users */
+        transaction.execute(execute ->{
+
+            var optionUser5 = userRepository.findByUsername("user5");
+            assertTrue(optionUser5.isPresent());
+            var user5 = optionUser5.get();
+
+            var optionUser6 = userRepository.findByUsername("user6");
+            assertTrue(optionUser6.isPresent());
+            var user6 = optionUser6.get();
+
+            var optionRole5 = roleRepository.findByRoleName("role5");
+            assertTrue(optionRole5.isPresent());
+            var role5 = optionRole5.get();
+
+            var optionRole6 = roleRepository.findByRoleName("role6");
+            assertTrue(optionRole6.isPresent());
+            var role6 = optionRole6.get();
+
+
+            user5.getRoles().add(role5);
+            user5.getRoles().add(role6);
+            userRepository.save(user5);
+
+            user6.getRoles().add(role5);
+            user6.getRoles().add(role6);
+            userRepository.save(user6);
+
+            return null;
+        });
+
+        /*3 transaction with the DB -> check if the users have the roles and then delete one Role(role5)*/
+        transaction.execute(execute ->{
+
+            var optionUser5 = userRepository.findByUsername("user5");
+            assertTrue(optionUser5.isPresent());
+            var user5 = optionUser5.get();
+
+            var optionUser6 = userRepository.findByUsername("user6");
+            assertTrue(optionUser6.isPresent());
+            var user6 = optionUser6.get();
+
+            var optionRole5 = roleRepository.findByRoleName("role5");
+            assertTrue(optionRole5.isPresent());
+            var role5 = optionRole5.get();
+
+            var optionRole6 = roleRepository.findByRoleName("role6");
+            assertTrue(optionRole6.isPresent());
+            var role6 = optionRole6.get();
+
+            assertEquals(2, user5.getRoles().size());
+            assertTrue(user5.getRoles().contains(role5));
+            assertTrue(user5.getRoles().contains(role6));
+
+            assertEquals(2, user6.getRoles().size());
+            assertTrue(user6.getRoles().contains(role5));
+            assertTrue(user6.getRoles().contains(role6));
+
+            // HERE IS NOT DELETING THE FUCKING ROLE!!!! and I don't know why!
+            roleRepository.delete(role5);
+            assertFalse(roleRepository.findByRoleName("role5").isPresent());
+
+            return null;
+        });
+
+        /*4 transaction with the DB -> check if the user have one role and the remain role has two users */
+        transaction.execute(execute -> {
+
+            var optionUser5 = userRepository.findByUsername("user5");
+            assertTrue(optionUser5.isPresent());
+            var user5 = optionUser5.get();
+
+            var optionUser6 = userRepository.findByUsername("user6");
+            assertTrue(optionUser6.isPresent());
+            var user6 = optionUser6.get();
+
+            var optionRole5 = roleRepository.findByRoleName("role5");
+            assertTrue(optionRole5.isPresent());
+            var role5 = optionRole5.get();
+
+            var optionRole6 = roleRepository.findByRoleName("role6");
+            assertTrue(optionRole6.isPresent());
+            var role6 = optionRole6.get();
+
+            assertEquals(1,user5.getRoles().size());
+            assertTrue(user5.getRoles().contains(role6));
+
+            assertEquals(1,user6.getRoles().size());
+            assertTrue(user6.getRoles().contains(role6));
+
+
+            return null;
+        });
+
+
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
