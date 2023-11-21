@@ -356,28 +356,5 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
             return null;
         });
-
-//        roles.add(role1);
-//
-//        Role role2 = new Role("role2");
-//        role2.setUsers(users);
-//        roleRepository.save(role2);
-//        assertTrue(roleRepository.findByRoleName("role2").isPresent());
-//        assertTrue(roleRepository.findByRoleName("role2").get().getUsers().contains(user));
-//
-//        roles.add(role2);
-//
-//        //delete user
-//        userRepository.delete(user);
-//        assertFalse(userRepository.findByUsername("tria").isPresent());
-
-
-//        assertEquals(2, roleRepository.count());
-//
-//        assertTrue(roleRepository.findByRoleName("role1").isPresent());
-//        assertFalse(roleRepository.findByRoleName("role1").get().getUsers().contains(user));
-//
-//        assertTrue(roleRepository.findByRoleName("role2").isPresent());
-//        assertFalse(roleRepository.findByRoleName("role2").get().getUsers().contains(user));
     }
 }
