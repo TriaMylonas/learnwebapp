@@ -9,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,13 +17,13 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
 
-    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH})
     @JoinTable(
             name = "user_role",
             joinColumns = {@JoinColumn(name = "user_uuid")},
             inverseJoinColumns = {@JoinColumn(name = "role_uuid")}
     )
-    private List<Role> roles;
+    private List<Role> roles = new ArrayList<>();
 
     @Id
     @UuidGenerator
@@ -58,8 +59,6 @@ public class User {
         this.dob = dob;
         this.height = height;
     }
-
-
 
 
     public String getUsername() {

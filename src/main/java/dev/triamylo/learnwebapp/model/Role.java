@@ -4,14 +4,15 @@ package dev.triamylo.learnwebapp.model;
 import jakarta.persistence.*;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "role")
 public class Role {
 
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    @ManyToMany(mappedBy = "roles", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private List<User> users = new ArrayList<>();
 
 
     @Id
@@ -23,12 +24,10 @@ public class Role {
     private String roleName;
 
 
-
     public Role() {
     }
 
-    public Role(String uuid, String roleName) {
-        this.uuid = uuid;
+    public Role(String roleName) {
         this.roleName = roleName;
     }
 

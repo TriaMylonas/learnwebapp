@@ -7,8 +7,8 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,9 +16,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-
 class RoleRepositoryTest extends AbstractApplicationTests {
 
+    @Autowired
+    private TransactionTemplate transaction;
 
     @Autowired
     RoleRepository roleRepository;
@@ -27,13 +28,14 @@ class RoleRepositoryTest extends AbstractApplicationTests {
     UserRepository userRepository;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         roleRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
-    @Transactional  //richtig!!!
+    @Transactional
+        //richtig!!!
     void addNewRoleInTheDatabase() {
 
         Role testRole = new Role();
@@ -52,14 +54,14 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @Test
     @Transactional
-    void addOneNewRoleInOneNewUser(){
+    void addOneNewRoleInOneNewUser() {
 
         //save role in the DB and check it
         Role testRole = new Role();
         assertNull(testRole.getUuid());
         testRole.setRoleName("roleName");
         roleRepository.save(testRole);
-        Optional<Role>  optionalRole = roleRepository.findByRoleName("roleName");
+        Optional<Role> optionalRole = roleRepository.findByRoleName("roleName");
         assertTrue(optionalRole.isPresent());
 
         //save user in the DB and check it
@@ -87,7 +89,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @Test
     @Transactional
-    void addManyRolesInOneNewUser(){
+    void addManyRolesInOneNewUser() {
 
         //create the roles and saved them to DB
         Role role1 = new Role();
@@ -121,7 +123,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
         //after check if he has the roles
         var check = userRepository.findByUsername("tria").get();
-        assertEquals(3,check.getRoles().size());
+        assertEquals(3, check.getRoles().size());
         assertTrue(check.getRoles().contains(role1));
         assertTrue(check.getRoles().contains(role2));
         assertTrue(check.getRoles().contains(role3));
@@ -129,7 +131,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @Test
     @Transactional
-    void oneRoleInManyUser(){
+    void oneRoleInManyUser() {
         //create the role, add him in DB and then check it
         Role role = new Role();
         role.setRoleName("role1");
@@ -170,7 +172,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @Test
     @Transactional
-    void oneUserWithOneRoleGetsOneMoreRole(){
+    void oneUserWithOneRoleGetsOneMoreRole() {
         // first role
         Role role1 = new Role();
         role1.setRoleName("role1");
@@ -202,7 +204,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @Test
     @Transactional
-    void oneUserWithOneRoleChangeThatRole(){
+    void oneUserWithOneRoleChangeThatRole() {
 
         Role role1 = new Role();
         role1.setRoleName("role1");
@@ -225,7 +227,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
         roleRepository.save(role2);
         assertTrue(roleRepository.findByRoleName("role2").isPresent());
 
-        roles.set(0,role2);
+        roles.set(0, role2);
         testuser.setRoles(roles);
         userRepository.save(testuser);
         assertFalse(userRepository.findByUsername("tria").get().getRoles().contains(role1));
@@ -234,7 +236,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @Test
     @Transactional
-    void oneUserWithOneRoleDeleteThatRole(){
+    void oneUserWithOneRoleDeleteThatRole() {
 
         Role role1 = new Role();
         role1.setRoleName("role1");
@@ -261,39 +263,121 @@ class RoleRepositoryTest extends AbstractApplicationTests {
     }
 
     @Test
-    @Transactional
-    void userDeletedButNotTheRolesWithHim(){
+    void userDeletedButNotTheRolesWithHim() {
 
-        List<Role> roles = new ArrayList<>();
-        List<User> users =new ArrayList<>();
+        //each transaction write or read something in the DB
+        //fist transaction with the DB, create user and role.
+        transaction.execute(status -> {
+
+            // User created without roles
+            User user = getNewUser();
+            user.setUuid(null);
+            user.setUsername("tria");
+            userRepository.save(user);
+
+            // Create new role without users
+            Role role1 = new Role();
+            role1.setRoleName("role1");
+            roleRepository.save(role1);
+
+            //write those two in the DB
+            return null;
+        });
+
+        //second transaction with the DB, assign a role in the user
+        transaction.execute(status -> {
+            //read user from the database.
+            var optionalUser = userRepository.findByUsername("tria");
+            assertTrue(optionalUser.isPresent());
+            var user = optionalUser.get();
+            assertTrue(user.getRoles().isEmpty());
+
+            // Read new role from database
+            var optionalRole = roleRepository.findByRoleName("role1");
+            assertTrue(optionalRole.isPresent());
+            var role1 = optionalRole.get();
+            assertTrue(role1.getUsers().isEmpty());
+
+            // Assign user a role
+            user.getRoles().add(role1);
+            userRepository.save(user);
+
+            // Important - existing role is not automatically updates
+            assertTrue(role1.getUsers().isEmpty());
+
+            return null;
+        });
+        //third transaction with the database, delete the user
+        transaction.execute(status -> {
+            //Read the user from the database and check if he has role
+            var optionalUser = userRepository.findByUsername("tria");
+            assertTrue(optionalUser.isPresent());
+            var user = optionalUser.get();
+
+            assertEquals(1,user.getRoles().size());
+
+            // Reload updates the role and check if the has a user
+            var optionalRole = roleRepository.findByRoleName("role1");
+            assertTrue(optionalRole.isPresent());
+            var role1 = optionalRole.get();
+
+            assertFalse(role1.getUsers().isEmpty());
+            assertEquals(1, role1.getUsers().size());
+            assertEquals(user.getUuid(), role1.getUsers().get(0).getUuid());
+
+            return null;
+        });
+
+        //fourth transaction we are deleting the user
+        transaction.execute(status -> {
+            //get the user
+            var optionalUser = userRepository.findByUsername("tria");
+            assertTrue(optionalUser.isPresent());
+            var user = optionalUser.get();
+
+            assertEquals(1,user.getRoles().size());
+
+            // Delete the existing user
+            userRepository.delete(user);
+            optionalUser = userRepository.findByUsername(user.getUsername());
+            assertFalse(optionalUser.isPresent());
+
+            // Important - existing role1.getUsers() is not automatically delete!
+
+            return null;
+        });
+
+        transaction.execute(status -> {
+            // Reload updates the role
+            var optionalRole = roleRepository.findByRoleName("role1");
+            assertTrue(optionalRole.isPresent());
+            var role1 = optionalRole.get();
+            assertTrue(role1.getUsers().isEmpty());
+
+            return null;
+        });
+
+//        roles.add(role1);
+//
+//        Role role2 = new Role("role2");
+//        role2.setUsers(users);
+//        roleRepository.save(role2);
+//        assertTrue(roleRepository.findByRoleName("role2").isPresent());
+//        assertTrue(roleRepository.findByRoleName("role2").get().getUsers().contains(user));
+//
+//        roles.add(role2);
+//
+//        //delete user
+//        userRepository.delete(user);
+//        assertFalse(userRepository.findByUsername("tria").isPresent());
 
 
-        Role role1 = new Role();
-        role1.setRoleName("role1");
-        roleRepository.save(role1);
-        assertTrue(roleRepository.findByRoleName("role1").isPresent());
-
-        roles.add(role1);
-
-        Role role2 = new Role();
-        role2.setRoleName("role2");
-        roleRepository.save(role2);
-        assertTrue(roleRepository.findByRoleName("role2").isPresent());
-
-        roles.add(role2);
-
-        User user = getNewUser();
-        user.setUuid(null);
-        user.setUsername("tria");
-        user.setRoles(roles);
-        userRepository.save(user);
-        assertTrue(userRepository.findByUsername("tria").isPresent());
-
-        userRepository.delete(user);
-        assertFalse(userRepository.findByUsername("tria").isPresent());
-
-        assertEquals(2, roleRepository.count());
-        assertTrue(roleRepository.findByRoleName("role1").isPresent());
-        assertTrue(roleRepository.findByRoleName("role2").isPresent());
+//        assertEquals(2, roleRepository.count());
+//
+//        assertTrue(roleRepository.findByRoleName("role1").isPresent());
+//        assertFalse(roleRepository.findByRoleName("role1").get().getUsers().contains(user));
+//
+//        assertTrue(roleRepository.findByRoleName("role2").isPresent());
+//        assertFalse(roleRepository.findByRoleName("role2").get().getUsers().contains(user));
     }
 }
