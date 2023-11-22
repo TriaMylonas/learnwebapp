@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <title>Learn Web development</title>
+</head>
+<body>
+
+
+<!-- I use the container class from Bootstrap to be more response my web app.  -->
+<!-- also I use the existing classes from Bootstrap to change the style on my html web side quick and easy
+    I want to learn working a little with them-->
+<div class="m-2" >
+    <div class="h2 container-lg  bg-primary p-2 text-white bg-opacity-75">
+        I am learning Web Application Entwicklung!
+    </div>
+</div>
+
+<div class="h4 container mt-5 mb-5">
+    Hier ist eine Form zum Ausfüllen!
+</div>
+
+
+<!-- action="#" means that the form will do nothing on the action, but it will the thymeleaf and redirect this to the
+    register site with the post method. That means that the values will be post from the client to server.
+    The object define with that object from our program is the values connected. For each input we define one property
+    of our model object-->
+<!--/*@thymesVar id="user" type="user"*/-->
+<form class="container" th:action="@{/roleFormula}" th:object="${role}" method="POST">
+
+
+    <!--    das in sehr interessant!-->
+    <input type="hidden" th:field="*{uuid}" th:id="uuid"/>
+
+
+
+
+    <!-- the first field of the form, the role name -->
+    <div class="mb-3">
+        <label for="firstName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+               style="--bs-bg-opacity:.5" th:text="Role Name">Role Name</label>
+        <input type="text" th:field="*{roleName}" class="form-control border border-secondary rounded" id="firstName"
+               placeholder="Vorname"/>
+
+        <!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
+        <div class="container" th:if="${#fields.hasErrors('roleName')}" th:errors="${role.roleName}">
+        </div>
+
+
+
+    </div>
+
+
+    <!-- the second field of the form, the description name  -->
+    <div class="mb-3">
+        <label for="lastName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+               style="--bs-bg-opacity:.5">Beschreibung</label>
+        <input type="text" th:field="${role.roleDescription}" id="lastName" class="form-control  border border-secondary rounded"
+               placeholder="Nachname">
+        <div class="container" th:if="${#fields.hasErrors('roleDescription')}" th:errors="${role.roleDescription}">
+        </div>
+    </div>
+
+
+
+    <div class="container mt-5 mb-5 d-flex justify-content-between">
+        <button type="submit" class="btn btn-primary ">
+            Submit
+        </button>
+
+        <span>
+        <a th:href="@{/rolelist}">
+    <!--    Button visible only to Admin users.-->
+
+            <button type="button" class="btn btn-warning"
+                    sec:authorize="hasRole('ADMIN')">
+                Zur List
+            </button>
+        </a>
+    </span>
+
+
+
+        <span>
+         <a th:href="@{/}">
+            <button type="button" class=" btn btn-secondary ">
+                Zurück
+            </button>
+        </a>
+    </span>
+
+    </div>
+
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+</body>
+
+
+</html>
