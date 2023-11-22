@@ -2,10 +2,12 @@ package dev.triamylo.learnwebapp.service;
 
 import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.repository.RoleRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class RoleServiceImp implements RoleService{
 
     private final RoleRepository roleRepository;

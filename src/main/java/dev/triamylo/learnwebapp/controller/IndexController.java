@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-public class IndexController {
+public class IndexController extends AbstractController {
 
     private static final int MIN_DOB_YEAR = 1980;
     private static final int MAX_DOB_YEAR = 2000;
@@ -199,37 +199,6 @@ public class IndexController {
     private void addDoBRanges(Model model) {
         model.addAttribute("dobMin", MIN_DOB_YEAR + "-01-01");
         model.addAttribute("dobMax", MAX_DOB_YEAR + "-01-01");
-    }
-
-    // check if the login user is Admin
-    private boolean hasAdminRole(Principal principal) {
-
-        if (principal instanceof UsernamePasswordAuthenticationToken user) {
-
-            Collection<GrantedAuthority> authorities = user.getAuthorities();
-
-            for (GrantedAuthority role : authorities) {
-                if (role.toString().equals("ROLE_ADMIN")) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    // check if the login user has user role
-    private boolean hasUserRole(Principal principal) {
-        if (principal instanceof UsernamePasswordAuthenticationToken user) {
-            Collection<GrantedAuthority> authorities = user.getAuthorities();
-
-            for (GrantedAuthority role : authorities) {
-                if (role.toString().equals("ROLE_USER")) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
 }
