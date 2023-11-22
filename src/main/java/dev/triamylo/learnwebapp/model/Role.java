@@ -24,7 +24,7 @@ public class Role {
     @Column(unique = true)
     private String roleName;
 
-    @Size(min = 1, max = 200)
+    @Size( max = 200)
     private String roleDescription;
 
 
