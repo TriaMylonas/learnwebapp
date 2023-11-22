@@ -557,8 +557,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             assertTrue(user6.getRoles().contains(role5));
             assertTrue(user6.getRoles().contains(role6));
 
-            // HERE IS NOT DELETING THE ROLE!!!! and I don't know why!
-
+            // I must de coupling the user from the roles and the roles from the user before I delete something
             role5.getUsers().forEach(user -> user.getRoles().remove(role5));
             role5.getUsers().clear();
             roleRepository.delete(role5);
@@ -567,16 +566,6 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             return null;
         });
 
-//        transaction.execute(execute -> {
-//            var optionRole5 = roleRepository.findByRoleName("role5");
-//            assertTrue(optionRole5.isPresent());
-//            var role5 = optionRole5.get();
-//
-//            role5.getUsers().clear();
-//            roleRepository.delete(role5);
-//            assertFalse(roleRepository.findByRoleName("role5").isPresent());
-//            return null;
-//                });
 
         /*4 transaction with the DB -> check if the user have one role and the remain role has two users */
         transaction.execute(execute -> {
