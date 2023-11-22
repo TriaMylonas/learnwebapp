@@ -23,6 +23,8 @@ public class Role {
     @Column(unique = true)
     private String roleName;
 
+    private String beschreibung; // kurz was das role macht. vielleicht bis 100char zb.
+
 
     public Role() {
     }

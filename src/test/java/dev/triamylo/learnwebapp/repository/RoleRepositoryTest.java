@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,8 +27,11 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
     @BeforeEach
     void setUp() {
-//        roleRepository.deleteAll();
-//        userRepository.deleteAll();
+        transaction.execute(status -> {
+            roleRepository.deleteAll();
+            userRepository.deleteAll();
+            return null;
+        });
     }
 
     @Test
@@ -434,11 +435,11 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             assertTrue(optionalRole4.isPresent());
             var role4 = optionalRole4.get();
 
-            assertEquals(2,user3.getRoles().size());
+            assertEquals(2, user3.getRoles().size());
             assertTrue(user3.getRoles().contains(role3));
             assertTrue(user3.getRoles().contains(role4));
 
-            assertEquals(2,user4.getRoles().size());
+            assertEquals(2, user4.getRoles().size());
             assertTrue(user4.getRoles().contains(role3));
             assertTrue(user4.getRoles().contains(role4));
 
@@ -449,7 +450,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
         });
 
         /*4 transaction with DB|-> check if the two roles are there but only the one user*/
-        transaction.execute(execute ->{
+        transaction.execute(execute -> {
 
             var optionalUser3 = userRepository.findByUsername("user3");
             assertFalse(optionalUser3.isPresent());
@@ -467,19 +468,19 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             assertTrue(optionalRole4.isPresent());
             var role4 = optionalRole4.get();
 
-            assertEquals(2,user4.getRoles().size());
+            assertEquals(2, user4.getRoles().size());
             assertTrue(user4.getRoles().contains(role3));
             assertTrue(user4.getRoles().contains(role4));
 
-            assertEquals(1,role3.getUsers().size());
-            assertEquals(1,role4.getUsers().size());
+            assertEquals(1, role3.getUsers().size());
+            assertEquals(1, role4.getUsers().size());
 
             return null;
         });
     }
 
     @Test
-    void twoUserWithTwoRolesWeDeleteOneRoleAndTheTwoUsersStay(){
+    void twoUserWithTwoRolesWeDeleteOneRoleAndTheTwoUsersStay() {
 
         /*1 transaction with the DB -> create the users, roles and save them to DB */
         transaction.execute(execute -> {
@@ -499,7 +500,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             return null;
         });
         /*2 transaction with the DB -> check if the users and the roles exist and assign the roles to the users */
-        transaction.execute(execute ->{
+        transaction.execute(execute -> {
 
             var optionUser5 = userRepository.findByUsername("user5");
             assertTrue(optionUser5.isPresent());
@@ -530,7 +531,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
         });
 
         /*3 transaction with the DB -> check if the users have the roles and then delete one Role(role5)*/
-        transaction.execute(execute ->{
+        transaction.execute(execute -> {
 
             var optionUser5 = userRepository.findByUsername("user5");
             assertTrue(optionUser5.isPresent());
@@ -556,12 +557,26 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             assertTrue(user6.getRoles().contains(role5));
             assertTrue(user6.getRoles().contains(role6));
 
-            // HERE IS NOT DELETING THE FUCKING ROLE!!!! and I don't know why!
+            // HERE IS NOT DELETING THE ROLE!!!! and I don't know why!
+
+            role5.getUsers().forEach(user -> user.getRoles().remove(role5));
+            role5.getUsers().clear();
             roleRepository.delete(role5);
             assertFalse(roleRepository.findByRoleName("role5").isPresent());
 
             return null;
         });
+
+//        transaction.execute(execute -> {
+//            var optionRole5 = roleRepository.findByRoleName("role5");
+//            assertTrue(optionRole5.isPresent());
+//            var role5 = optionRole5.get();
+//
+//            role5.getUsers().clear();
+//            roleRepository.delete(role5);
+//            assertFalse(roleRepository.findByRoleName("role5").isPresent());
+//            return null;
+//                });
 
         /*4 transaction with the DB -> check if the user have one role and the remain role has two users */
         transaction.execute(execute -> {
@@ -575,17 +590,16 @@ class RoleRepositoryTest extends AbstractApplicationTests {
             var user6 = optionUser6.get();
 
             var optionRole5 = roleRepository.findByRoleName("role5");
-            assertTrue(optionRole5.isPresent());
-            var role5 = optionRole5.get();
+            assertFalse(optionRole5.isPresent());
 
             var optionRole6 = roleRepository.findByRoleName("role6");
             assertTrue(optionRole6.isPresent());
             var role6 = optionRole6.get();
 
-            assertEquals(1,user5.getRoles().size());
+            assertEquals(1, user5.getRoles().size());
             assertTrue(user5.getRoles().contains(role6));
 
-            assertEquals(1,user6.getRoles().size());
+            assertEquals(1, user6.getRoles().size());
             assertTrue(user6.getRoles().contains(role6));
 
 
@@ -594,6 +608,8 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
 
     }
+
+
 
 
 }
