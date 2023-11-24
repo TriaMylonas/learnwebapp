@@ -5,6 +5,7 @@ import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,7 +24,10 @@ import static org.mockito.Mockito.when;
 
 class IndexControllerTest extends AbstractApplicationTests {
 
-    private IndexController controller;
+    private UserController controller;
+
+    @Autowired
+    private IndexController indexController;
 
     private Model model;
 
@@ -33,7 +37,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     void setUp() {
         // κάναμε to UserService interface και με αυτό τον τρόπο είμαστε υποχρεωμένει να υλοποιήσουμε όλες τις
         // μεθόδους του.
-        controller = new IndexController(new UserService() {
+        controller = new UserController(new UserService() {
 
             private final List<User> list = new ArrayList<>();
 
@@ -110,7 +114,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     @Test
     void startSite() {
 
-        var site = controller.home();
+        var site = indexController.home();
 
         assertNotNull(site);
         assertEquals("index", site);
