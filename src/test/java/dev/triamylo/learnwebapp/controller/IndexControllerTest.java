@@ -110,7 +110,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     @Test
     void startSite() {
 
-        var site = controller.startSite();
+        var site = controller.home();
 
         assertNotNull(site);
         assertEquals("index", site);
@@ -118,7 +118,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void formulaForNewUser() {
-        var site = controller.formulaForNewUser(model);
+        var site = controller.createObject(model);
         assertNotNull(site);
         assertEquals("formula", site);
 
@@ -134,7 +134,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void usersNoneRole() {
-        var site = controller.users(model,principal);
+        var site = controller.getList(model,principal);
         assertNotNull(site);
         assertEquals("error/ErrorNotAuthorized", site);
     }
@@ -143,7 +143,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     void usersAdminRole(){
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
-        var site = controller.users(model,mockPrincipal);
+        var site = controller.getList(model,mockPrincipal);
 
         assertNotNull(site);
         assertEquals("user", site);
@@ -159,7 +159,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
 
-        var updateSite = controller.update("uuid-1", model, mockPrincipal);
+        var updateSite = controller.updateObject("uuid-1", model, mockPrincipal);
 
         var user = model.getAttribute("user");
 
@@ -175,7 +175,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void negativeUserNullUpdate(){
-        var updateSiteNull = controller.update("", model, principal);
+        var updateSiteNull = controller.updateObject("", model, principal);
 
         assertNotNull(updateSiteNull);
         assertEquals("redirect:/users", updateSiteNull);
@@ -186,7 +186,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         // I give the user no role
         principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("NONE")));
 
-        var update = controller.update("uuid-1",model,principal);
+        var update = controller.updateObject("uuid-1",model,principal);
         assertNotNull(update);
         assertEquals("redirect:/users", update);
     }
@@ -196,7 +196,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
-        var delete = controller.delete("uuid-1", principal);
+        var delete = controller.deleteObject("uuid-1", principal);
 
         assertNotNull(delete);
         assertEquals("redirect:/users", delete);
@@ -204,7 +204,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
     @Test
     void deleteNoRole(){
-        var delete = controller.delete("uuid-1", principal);
+        var delete = controller.deleteObject("uuid-1", principal);
         assertNotNull(delete);
         assertEquals("redirect:/error/ErrorNotAuthorized", delete);
     }
@@ -221,7 +221,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var model = new ConcurrentModel();
 
         // call the method
-        String site = controller.registerSite(newUser, bindingResult, model, principal);
+        String site = controller.postObject(newUser, bindingResult, model, principal);
 
         //check the results
         assertNotNull(site);
@@ -240,7 +240,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var model = new ConcurrentModel();
 
         // call the method
-        String site = controller.registerSite(newUser, bindingResult, model, principal);
+        String site = controller.postObject(newUser, bindingResult, model, principal);
         //check the results
         assertNotNull(site);
         assertEquals("formula", site);
@@ -257,7 +257,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var model = new ConcurrentModel();
 
         // call the method
-        String site = controller.registerSite(newUser, bindingResult, model, principal);
+        String site = controller.postObject(newUser, bindingResult, model, principal);
 
         //check the results
         assertNotNull(site);
@@ -277,7 +277,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var model = new ConcurrentModel();
 
         // call the method
-        String site = controller.registerSite(newUser, bindingResult, model, mockPrincipal);
+        String site = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         //check the results
         assertNotNull(site);
@@ -296,7 +296,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var model = new ConcurrentModel();
 
         // call the method
-        String site = controller.registerSite(newUser, bindingResult, model, mockPrincipal);
+        String site = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         //check the results
         assertNotNull(site);
@@ -312,7 +312,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var bindingResult = new DirectFieldBindingResult(newUser, "user");
 
         // call the method
-        String responseSite = controller.registerSite(newUser, bindingResult, model, mockPrincipal);
+        String responseSite = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         assertNotNull(responseSite);
         assertEquals("error/ErrorNotAuthorized",responseSite);
@@ -328,7 +328,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var mockPrincipal = getMockPrincipal("ROLE_USER");
         var bindingResult = new DirectFieldBindingResult(newUser,"user");
 
-        String responseSite = controller.registerSite(newUser,bindingResult,model,mockPrincipal);
+        String responseSite = controller.postObject(newUser,bindingResult,model,mockPrincipal);
 
         assertNotNull(responseSite);
         assertEquals("success/SuccessfullyAdded",responseSite);
@@ -345,7 +345,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         // mockup that the login username is 1 like the one in the user object...
         when(mockPrincipal.getName()).thenReturn("1");
 
-        String responseSite = controller.registerSite(newUser,bindingResult,model,mockPrincipal);
+        String responseSite = controller.postObject(newUser,bindingResult,model,mockPrincipal);
 
         assertNotNull(responseSite);
         assertEquals("success/SuccessfullyAdded", responseSite);
@@ -357,7 +357,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var mockPrincipal = getMockPrincipal("ROLE_USER");
         when(mockPrincipal.getName()).thenReturn("1");
 
-        String responseSite = controller.seeOnlyYourData(model,mockPrincipal);
+        String responseSite = controller.readObject(model,mockPrincipal);
 
         assertEquals("formula", responseSite );
     }
@@ -367,7 +367,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var mockPrincipal = getMockPrincipal("NONE_ROLE");
         when(mockPrincipal.getName()).thenReturn("1");
 
-        String responseSite = controller.seeOnlyYourData(model,mockPrincipal);
+        String responseSite = controller.readObject(model,mockPrincipal);
 
         assertEquals("error/ErrorNotAuthorized", responseSite);
     }
@@ -377,7 +377,7 @@ class IndexControllerTest extends AbstractApplicationTests {
         var mockPrincipal = mock(Principal.class);
         when(mockPrincipal.getName()).thenReturn("asdf");
 
-        String responseSite = controller.seeOnlyYourData(model, mockPrincipal);
+        String responseSite = controller.readObject(model, mockPrincipal);
 
         assertEquals("index", responseSite);
     }

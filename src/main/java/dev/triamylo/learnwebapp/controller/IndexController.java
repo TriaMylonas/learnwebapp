@@ -5,8 +5,6 @@ import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,18 +29,19 @@ public class IndexController extends AbstractController {
         this.userService = userService;
     }
 
+
     /*get method is when the client ask for the current url and I must (server side) give him something back.
      * When it is a @Controller I must give the client html view back.
      * When it is a @RestController I give back Object as JSON in the regel.
      */
     @GetMapping("/")
-    public String startSite() {
+    public String home() {
         return "index";
     }
 
 
     @GetMapping("/formula")
-    public String formulaForNewUser(Model model) {
+    public String createObject(Model model) {
 
         // I initialise one object, so that the form in the html can bind with it.
         User user = new User();
@@ -55,19 +53,8 @@ public class IndexController extends AbstractController {
     }
 
 
-    @GetMapping("/users")
-    public String users(Model model, Principal principal) {
-        List<User> users = userService.list();
-        if (hasAdminRole(principal)) {
-            model.addAttribute("users", users);
-            return "user";
-        }
-        return "error/ErrorNotAuthorized";
-    }
-
-
     @GetMapping("/me")
-    public String seeOnlyYourData(Model model, Principal principal) {
+    public String readObject(Model model, Principal principal) {
         String username = principal.getName();
 
         Optional<User> optionalUser = userService.findByUsername(username);
@@ -90,7 +77,7 @@ public class IndexController extends AbstractController {
 
 
     @GetMapping("/users/update/{uuid}")
-    public String update(@PathVariable String uuid, Model model, Principal principal) {
+    public String updateObject(@PathVariable String uuid, Model model, Principal principal) {
         User user = userService.get(uuid);
 
         if (user != null) {
@@ -105,8 +92,9 @@ public class IndexController extends AbstractController {
         return "redirect:/users";
     }
 
+
     @GetMapping("/users/delete/{uuid}")
-    public String delete(@PathVariable String uuid, Principal principal) {
+    public String deleteObject(@PathVariable String uuid, Principal principal) {
 
         /* Trainings reasons!
          * that's not necessary because I only allow admin access to delete in the securityConfig!
@@ -125,6 +113,17 @@ public class IndexController extends AbstractController {
     }
 
 
+    @GetMapping("/users")
+    public String getList(Model model, Principal principal) {
+        List<User> users = userService.list();
+        if (hasAdminRole(principal)) {
+            model.addAttribute("users", users);
+            return "user";
+        }
+        return "error/ErrorNotAuthorized";
+    }
+
+
     /* with post method I take values from the client to server side.
      * here I take the values that the client put in the form on formula.html
      * when he clicks Submit in the form the values will go to the /register url
@@ -133,7 +132,7 @@ public class IndexController extends AbstractController {
      * call it from this method.
      */
     @PostMapping("/formula")
-    public String registerSite(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model, Principal principal) {
+    public String postObject(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model, Principal principal) {
 
         // here in the Controller I can also validate the connection between my objects and the model.
         if (aUser.getDob() != null) {
