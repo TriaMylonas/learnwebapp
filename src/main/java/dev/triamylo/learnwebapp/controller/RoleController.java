@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
@@ -27,9 +28,36 @@ public class RoleController extends AbstractController {
 
 
 
+    @GetMapping("/roleFormula")
+    public String createObject(Model model) {
+
+        Role role = new Role();
+        model.addAttribute("role", role);
+        return "roleFormula";
+    }
+
+
+    @GetMapping("/role/read/{uuid}")
+    public String readObject(@PathVariable String uuid){
+        return null;
+    }
+
+
+    @GetMapping("/role/update/{uuid}")
+    public String updateObject(@PathVariable String uuid){
+        return null;
+    }
+
+
+    @GetMapping("/role/delete/{uuid}")
+    public String deleteObject(@PathVariable String uuid){
+        return null;
+    }
+
+
     @GetMapping("/rolesList")
     public String getList(Model model,
-                                    Principal principal) {
+                          Principal principal) {
 
         List<Role> testRoles = new ArrayList<>();
         Role role1 = new Role("normalUser");
@@ -52,19 +80,10 @@ public class RoleController extends AbstractController {
         return "error/ErrorNotAuthorized";
     }
 
-    @GetMapping("/roleFormula")
-    public String getFormula(Model model) {
-
-        Role role = new Role();
-        model.addAttribute("role", role);
-        return "roleFormula";
-    }
-
-
     @PostMapping("/addRole")
-    public String postFormula(@Valid @ModelAttribute("role") Role role,
-                                     BindingResult bindingResult,
-                                     Principal principal) {
+    public String postObject(@Valid @ModelAttribute("role") Role role,
+                             BindingResult bindingResult,
+                             Principal principal) {
 
         if (!hasAdminRole(principal)) {
             return "error/ErrorNotAuthorized";
@@ -85,8 +104,4 @@ public class RoleController extends AbstractController {
         }
     }
 
-//    @GetMapping("/role/update/{uuid}")
-//    @GetMapping("/role/delete/{uuid}"
-//    create
-//    read
 }
