@@ -25,6 +25,8 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
 
+
+
     @Id
     @UuidGenerator
     private String uuid;

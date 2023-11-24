@@ -47,7 +47,7 @@
         <td th:text="${role.roleDescription}"></td>
 
         <td class="table-cell">
-            <a th:href="@{'/users/delete/'+ ${role.getUuid()}}">
+            <a th:href="@{'/role/delete/'+ ${role.getUuid()}}">
                 <!--    Button visible only to authorized users (ROLE_ADMIN) only they can delete someone.-->
                 <button type="button" class="btn btn-sm btn-outline-danger me-2"
                         th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
@@ -55,7 +55,7 @@
                 </button>
             </a>
 
-            <a th:href="@{'/users/update/'+ ${role.getUuid()}}">
+            <a th:href="@{'/role/update/'+ ${role.getUuid()}}">
                 <button type="button" class="btn btn-sm btn-outline-primary"
                         th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                     Ändern
@@ -85,7 +85,7 @@
     </a>
 
     <span>
-         <a th:href="@{/}">
+         <a th:href="@{/previousPage}">
         <button type="button" class=" btn btn-secondary mx-2 ">
             Zurück
         </button>

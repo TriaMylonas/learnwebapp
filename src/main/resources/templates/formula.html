@@ -13,7 +13,7 @@
 <!-- I use the container class from Bootstrap to be more response my web app.  -->
 <!-- also I use the existing classes from Bootstrap to change the style on my html web side quick and easy
     I want to learn working a little with them-->
-<div class="m-2" >
+<div class="m-2">
     <div class="h2 container-lg  bg-primary p-2 text-white bg-opacity-75">
         I am learning Web Application Entwicklung!
     </div>
@@ -36,36 +36,34 @@
     <input type="hidden" th:field="*{uuid}" th:id="uuid"/>
 
 
-
-
-<!-- the first field of the form, the first name -->
+    <!-- the first field of the form, the first name -->
     <div class="mb-3">
         <label for="firstName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
                style="--bs-bg-opacity:.5" th:text="Vorname">Vorname</label>
         <input type="text" th:field="*{firstName}" class="form-control border border-secondary rounded" id="firstName"
                placeholder="Vorname"/>
 
-<!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
+        <!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
         <div class="container" th:if="${#fields.hasErrors('firstName')}" th:errors="${user.firstName}">
         </div>
-
 
 
     </div>
 
 
-<!-- the second field of the form, the last name  -->
+    <!-- the second field of the form, the last name  -->
     <div class="mb-3">
         <label for="lastName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
                style="--bs-bg-opacity:.5">Nachname</label>
-        <input type="text" th:field="${user.lastName}" id="lastName" class="form-control  border border-secondary rounded"
+        <input type="text" th:field="${user.lastName}" id="lastName"
+               class="form-control  border border-secondary rounded"
                placeholder="Nachname">
         <div class="container" th:if="${#fields.hasErrors('lastName')}" th:errors="${user.lastName}">
         </div>
     </div>
 
 
-<!--    the third field of the form, the date of birth-->
+    <!--    the third field of the form, the date of birth-->
     <div class="mb-3">
         <label for="dob" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
                style="--bs-bg-opacity:.5">
@@ -75,33 +73,33 @@
         <input type="date" th:field="*{dob}" id="dob" class="form-control  border border-secondary rounded"
                th:min="${dobMin}" th:max="${dobMax}">
 
-<!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors('dob')}" th:errors="${user.dob}" > </div>
+        <!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
+        <div class="container" th:if="${#fields.hasErrors('dob')}" th:errors="${user.dob}"></div>
 
     </div>
 
 
-<!--    the forth field of the form, the height in cm -->
-    <div class="mb-3" >
+    <!--    the forth field of the form, the height in cm -->
+    <div class="mb-3">
         <label for="height" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-                style="--bs-bg-opacity:.5">
+               style="--bs-bg-opacity:.5">
             height in cm
         </label>
         <input type="number" th:field="*{height}" id="height" class="form-control  border border-secondary rounded"
-            placeholder="height in cm">
+               placeholder="height in cm">
 
-<!--        validation of the height as Denis ask. This will only appear if the is something wrong-->
+        <!--        validation of the height as Denis ask. This will only appear if the is something wrong-->
         <div class="container" th:if="${#fields.hasErrors('height')}" th:errors="${user.height}">
         </div>
     </div>
 
-<div class="container mt-5 mb-5 d-flex justify-content-between">
+    <div class="container mt-5 mb-5 d-flex justify-content-between">
 
-    <button type="submit" class="btn btn-primary ">
-        Submit
-    </button>
+        <button type="submit" class="btn btn-primary ">
+            Submit
+        </button>
 
-    <span>
+        <span>
         <a th:href="@{/users}">
     <!--    Button visible only to Admin users.-->
 
@@ -113,18 +111,46 @@
     </span>
 
 
-
-    <span>
-         <a th:href="@{/}">
+        <span>
+         <a th:href="@{/previousPage}">
             <button type="button" class=" btn btn-secondary ">
                 Zurück
             </button>
         </a>
     </span>
 
-</div>
+    </div>
 
 </form>
+
+
+<!--Divider -->
+<hr class="my-4">
+
+<!-- Login/Logout Buttons -->
+<div class="col-md-12 d-flex justify-content-center align-items-center">
+
+    <!--    Button visible only wenn someone is not login/authenticated-->
+    <th:block th:if="${not #authorization.expression('isAuthenticated()')}">
+        <a th:href="@{/login}">
+            <button type="button" class="btn btn-success mt-5 mx-3 ">
+                Login
+            </button>
+        </a>
+    </th:block>
+
+
+    <!--    Button visible only to authenticated users.-->
+    <a th:href="@{/logout}">
+        <button type="button" class="btn btn-danger mt-5 mx-3"
+                sec:authorize="isAuthenticated()">
+            Logout
+        </button>
+    </a>
+
+</div>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
