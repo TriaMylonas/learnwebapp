@@ -16,20 +16,20 @@ import java.util.List;
 import java.util.Optional;
 
 @Controller
-public class UserController extends AbstractController
-{
+public class UserController extends AbstractController {
     private static final int MIN_DOB_YEAR = 1980;
     private static final int MAX_DOB_YEAR = 2000;
 
     private final UserService userService;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
-    };
+    }
+
+    ;
 
 
-
-    @GetMapping("/formula")
+    @GetMapping("/user/create")
     public String createObject(Model model) {
 
         // I initialise one object, so that the form in the html can bind with it.
@@ -38,11 +38,11 @@ public class UserController extends AbstractController
         // with "user" obj I have bind my form through Thymeleaf to.
         model.addAttribute("user", user);
         addDoBRanges(model);
-        return "formula";
+        return "user/userFormula";
     }
 
 
-    @GetMapping("/me")
+    @GetMapping("/user/read")
     public String readObject(Model model, Principal principal) {
         String username = principal.getName();
 
@@ -57,7 +57,7 @@ public class UserController extends AbstractController
 
                 model.addAttribute("user", user);
                 addDoBRanges(model);
-                return "formula";
+                return "user/userFormula";
             }
             return "error/ErrorNotAuthorized";
         }
@@ -65,7 +65,7 @@ public class UserController extends AbstractController
     }
 
 
-    @GetMapping("/users/update/{uuid}")
+    @GetMapping("/user/update/{uuid}")
     public String updateObject(@PathVariable String uuid, Model model, Principal principal) {
         User user = userService.get(uuid);
 
@@ -75,52 +75,45 @@ public class UserController extends AbstractController
             if (hasAdminRole(principal)) {
                 model.addAttribute("user", user);
                 addDoBRanges(model);
-                return "formula";
+                return "user/userFormula";
             }
         }
-        return "redirect:/users";
+        return "redirect:/user/list";
     }
 
 
-    @GetMapping("/users/delete/{uuid}")
+    @GetMapping("/user/delete/{uuid}")
     public String deleteObject(@PathVariable String uuid, Principal principal) {
+        if(hasAdminRole(principal)){
 
-        /* Trainings reasons!
-         * that's not necessary because I only allow admin access to delete in the securityConfig!
-         *   .requestMatchers("/users/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
-         *  and to redirect to my custom error site I used this:
-         * .exceptionHandling((exceptionHandling) -> exceptionHandling.accessDeniedPage("error/ErrorNotAuthorized"));
-         */
-        if (hasAdminRole(principal)) {
             userService.delete(uuid);
             //with redirect, will refresh the page users!
-            return "redirect:/users";
+            return "redirect:/user/list";
         }
-        else{
-            return "redirect:/error/ErrorNotAuthorized";
-        }
+        return "error/ErrorNotAuthorized";
+
     }
 
 
-    @GetMapping("/users")
+    @GetMapping("/user/list")
     public String getList(Model model, Principal principal) {
         List<User> users = userService.list();
         if (hasAdminRole(principal)) {
             model.addAttribute("users", users);
-            return "user";
+            return "user/userList";
         }
         return "error/ErrorNotAuthorized";
     }
 
 
     /* with post method I take values from the client to server side.
-     * here I take the values that the client put in the form on formula.html
+     * here I take the values that the client put in the form on userFormula.html
      * when he clicks Submit in the form the values will go to the /register url
      * and I will then start the registerSite() method from this controller.
      * if there is a need of a logic I will be writing it in a Service class and
      * call it from this method.
      */
-    @PostMapping("/formula")
+    @PostMapping("/user/post")
     public String postObject(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model, Principal principal) {
 
         // here in the Controller I can also validate the connection between my objects and the model.
@@ -138,7 +131,7 @@ public class UserController extends AbstractController
         // from the form can not agree with my model, will initialise BindingResult object.
         if (bindingResult.hasErrors()) {
             addDoBRanges(model);
-            return "formula";
+            return "user/userFormula";
         }
 
         // Admin->
@@ -152,7 +145,7 @@ public class UserController extends AbstractController
 
                 userService.update(aUser);
             }
-            return "success/SuccessfullyAdded";
+            return "redirect:/user/list";
         }
 
         //User ->

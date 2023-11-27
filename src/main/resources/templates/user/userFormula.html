@@ -29,7 +29,7 @@
     The object define with that object from our program is the values connected. For each input we define one property
     of our model object-->
 <!--/*@thymesVar id="user" type="user"*/-->
-<form class="container" th:action="@{/formula}" th:object="${user}" method="POST">
+<form class="container" th:action="@{/user/post}" th:object="${user}" method="POST">
 
 
     <!--    das in sehr interessant!-->
@@ -100,7 +100,7 @@
         </button>
 
         <span>
-        <a th:href="@{/users}">
+        <a th:href="@{/user/list}">
     <!--    Button visible only to Admin users.-->
 
             <button type="button" class="btn btn-warning"
@@ -112,11 +112,9 @@
 
 
         <span>
-         <a th:href="@{/previousPage}">
-            <button type="button" class=" btn btn-secondary ">
+            <button type="button" class=" btn btn-secondary" onclick="history.back()">
                 Zurück
             </button>
-        </a>
     </span>
 
     </div>

@@ -6,7 +6,6 @@ import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -14,20 +13,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.ui.ModelMap;
 
-import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Spliterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-class IndexControllerMockMvcTest extends AbstractMockUpTests {
+class UserControllerMockMvcTest extends AbstractMockUpTests {
 
     @Autowired
     private UserRepository repository;
@@ -70,23 +66,23 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     @Test
     void formulaForNewUser() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/formula"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/create"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("formula"))
+                .andExpect(view().name("user/userFormula"))
                 .andExpect(MockMvcResultMatchers.model().attributeExists("user"));
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void usersAdminRole() throws Exception {
+    void getListAdminRole() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/list"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("user"))
+                .andExpect(view().name("user/userList"))
                 .andExpect(model().attributeExists("users"));
 
         //I will take the model to see if the list is inside
-        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/user/list"))
                 .andReturn()
                 .getModelAndView()
                 .getModel();
@@ -103,10 +99,9 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser(roles = "USER")
-    void usersUserRole() throws Exception {
+    void getListUserRole() throws Exception {
 
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/users")
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/list")
                         .with(csrf()))
                 .andExpect(status().isForbidden());
     }
@@ -114,7 +109,8 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     @Test
     @WithMockUser(roles = "NONE")
     void usersNoneRole() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/list")
+                .with(csrf()))
                 .andExpect(status().isForbidden());
     }
 
@@ -123,13 +119,13 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     void updateAdminPositiv() throws Exception {
 
         //create the request
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/update/{uuid}", uuid))
                 .andExpect(status().isOk())
-                .andExpect(view().name("formula"))
+                .andExpect(view().name("user/userFormula"))
                 .andExpect(model().attributeExists("user"));
 
         //I will take again the model to see if the list is inside
-        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
+        ModelMap modelMap = (ModelMap) mockMvc.perform(MockMvcRequestBuilders.get("/user/update/{uuid}", uuid))
                 .andReturn()
                 .getModelAndView()
                 .getModel();
@@ -139,20 +135,20 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         assertNotNull(user);
 
 
-        //negative test, if the uuid is null -> return "redirect:/users"
+        //negative test, if the uuid is null -> return "redirect:/user/list"
         //create the service I need for the User user = userService.get(uuid) from the controller
 //        given(userService.get(targetUuid)).willReturn(null);
 
         String nullUuid = "xxx";
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", nullUuid))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/update/{uuid}", nullUuid))
                 .andExpect(status().is3xxRedirection()) //302 redirect
-                .andExpect(view().name("redirect:/users"));
+                .andExpect(view().name("redirect:/user/list"));
     }
 
     @Test
     void updateNegative() throws Exception {
         //create request without roles
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/update/{uuid}", uuid))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/update/{uuid}", uuid))
                 .andExpect(status().is3xxRedirection()); //302 redirect
     }
 
@@ -160,15 +156,15 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser(roles = "USER", username = "1")
     void seeOnlyYourDataPositiv() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/me"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/read"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("formula"));
+                .andExpect(view().name("user/userFormula"));
     }
 
     @Test
     @WithMockUser(roles = "NONE" ,username = "1")
     void seeOnlyYourDataWithNoneRoleSeeOtherUserData() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.get("/me"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/read"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("error/ErrorNotAuthorized"));
     }
@@ -177,7 +173,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     //We have only user in our test repository with username from 1 to 10
     @WithMockUser(roles = "User" ,username = "random")
     void seeOnlyYourDataWithUserRoleSeeOtherRandomUserData() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.get("/me"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/read"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"));
     }
@@ -190,10 +186,19 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         // create a user with a specific UUID that I expect to be returned by my service
         String targetUuid = "uuid-1";
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/delete/{uuid}", targetUuid))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/delete/{uuid}", targetUuid))
                 //I give not status ok back, I am redirect only a view.
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/users"));
+                .andExpect(redirectedUrl("/user/list"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteWithAdminRoleButUserDontExist() throws Exception{
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/delete/{uuid}", "non"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/user/list"));
     }
 
     @Test
@@ -203,29 +208,54 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         assertTrue(optionalUser.isPresent());
 
         String userUuid = optionalUser.get().getUuid();
-        mockMvc.perform(MockMvcRequestBuilders.get("/users/delete/{uudi}",userUuid))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/delete/{uudi}",userUuid))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void registerSiteAdminRole() throws Exception {
+    void postObjectAdminRoleAddNewUser() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("username", "11")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
                         .param("height", "180")
                         .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("success/SuccessfullyAdded"));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/user/list"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void postObjectAdminRoleUpdateOtherUserData() throws Exception {
+        // I take another username.
+        Optional<User> testUser = repository.findByUsername("2");
+        assertTrue(testUser.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
+                        .param("uuid", testUser.get().getUuid())
+                        .param("username", "2")
+                        .param("firstName", "TestName")
+                        .param("lastName", "testLastname")
+                        .param("dob", "1990-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/user/list"));
+
+        //check if the user change
+        User updatedTestUser = repository.findByUsername("2").get();
+
+        assertEquals("TestName", updatedTestUser.getFirstName());
+        assertEquals("testLastname", updatedTestUser.getLastName());
     }
 
     @Test
     @WithMockUser(roles = "USER")
-    void registerSiteUserRoleAddNewUser() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+    void postObjectUserRoleAddNewUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("username", "12")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
@@ -237,42 +267,14 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     }
 
     @Test
-    @WithMockUser(roles = "NONE")
-    void registerSiteNoneRole() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .param("username", "30")
-                        .param("firstName", "John")
-                        .param("lastName", "Doe")
-                        .param("dob", "1990-01-01")
-                        .param("height", "180")
-                        .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("success/SuccessfullyAdded"));
-    }
-
-    @Test
-    @WithMockUser()
-    void registerSiteWrongDayOfBirthNegative() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .param("username", "1")
-                        .param("firstName", "John")
-                        .param("lastName", "Doe")
-                        .param("dob", "0111-01-01")
-                        .param("height", "180")
-                        .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("formula"));
-    }
-
-    @Test
     @WithMockUser(username = "1", roles = "USER")
-    void registerSiteWithUserRoleAndUpdateHisOwnData() throws Exception {
+    void postObjectWithUserRoleUpdateHisOwnData() throws Exception {
         // I take the user because I don't know the auto generated uuid of the object
         Optional<User> userOptional = repository.findByUsername("1");
 
         assertTrue(userOptional.isPresent());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("uuid", userOptional.get().getUuid())
                         .param("username", "1")
                         .param("firstName", "John")
@@ -280,7 +282,8 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
                         .param("dob", "1990-01-01")
                         .param("height", "180")
                         .with(csrf()))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(view().name("success/SuccessfullyAdded"));
 
         //I check if the changes has done, on the test database
         Optional<User> testUser = repository.findByUsername("1");
@@ -295,7 +298,7 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         Optional<User> testUser = repository.findByUsername("2");
         assertTrue(testUser.isPresent());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("uuid", testUser.get().getUuid())
                         .param("username", "2")
                         .param("firstName", "TestName")
@@ -311,38 +314,27 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    void registerSiteWithAdminRoleUpdateOtherUserData() throws Exception {
-        // I take another username.
-        Optional<User> testUser = repository.findByUsername("2");
-        assertTrue(testUser.isPresent());
-
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
-                        .param("uuid", testUser.get().getUuid())
-                        .param("username", "2")
-                        .param("firstName", "TestName")
-                        .param("lastName", "testLastname")
+    @WithMockUser(roles = "NONE")
+    void postObjectNoneRoleAddNewUser() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
+                        .param("username", "30")
+                        .param("firstName", "John")
+                        .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
                         .param("height", "180")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("success/SuccessfullyAdded"));
-
-        //check if the user change
-        User updatedTestUser = repository.findByUsername("2").get();
-
-        assertEquals("TestName", updatedTestUser.getFirstName());
-        assertEquals("testLastname", updatedTestUser.getLastName());
     }
 
     @Test
     @WithAnonymousUser()
-    void registerSiteWithAnonymousUserUpdateOtherUserData() throws Exception{
+    void postObjectNoneRoleUpdateOtherUserData() throws Exception{
 
         Optional<User> testUser = repository.findByUsername("1");
         assertTrue(testUser.isPresent());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/formula")
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("uuid", testUser.get().getUuid())
                         .param("username", "1")
                         .param("firstName", "TestName")
@@ -356,6 +348,20 @@ class IndexControllerMockMvcTest extends AbstractMockUpTests {
         User updatedTestUser = repository.findByUsername("1").get();
         assertEquals(testUser.get().getFirstName(),updatedTestUser.getFirstName());
         assertEquals(testUser.get().getLastName(), updatedTestUser.getLastName());
+    }
+
+    @Test
+    @WithMockUser()
+    void postObjectWrongDayOfBirthNegative() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
+                        .param("username", "1")
+                        .param("firstName", "John")
+                        .param("lastName", "Doe")
+                        .param("dob", "0111-01-01")
+                        .param("height", "180")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("user/userFormula"));
     }
 
 }

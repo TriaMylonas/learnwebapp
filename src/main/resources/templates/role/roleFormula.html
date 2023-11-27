@@ -26,7 +26,7 @@
     </div>
 
     <div class="bg-light-subtle">
-        <form th:action="@{/addRole}" th:object="${role}" method="POST">
+        <form th:action="@{/role/post}" th:object="${role}" method="POST">
 
             <!--    das in sehr interessant!-->
             <input type="hidden" th:field="${role.uuid}" th:id="uuid">
@@ -65,7 +65,7 @@
 
 
                 <span>
-                    <a th:href="@{/rolesList}">
+                    <a th:href="@{/role/rolesList}">
                         <!--    Button visible only to Admin users.-->
                         <button type="button" class="btn btn-warning"
                                 sec:authorize="hasRole('ADMIN')"> Zur List
@@ -74,11 +74,9 @@
                 </span>
 
                 <span>
-                     <a th:href="@{/previousPage}">
-                        <button type="button" class=" btn btn-secondary ">
+                        <button type="button" class=" btn btn-secondary" onclick="history.back()">
                             Zurück
                         </button>
-                     </a>
                 </span>
             </div>
         </form>

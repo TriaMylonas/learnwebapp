@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class IndexControllerTest extends AbstractApplicationTests {
+class UserControllerTest extends AbstractApplicationTests {
 
     private UserController controller;
 
@@ -112,7 +112,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void startSite() {
+    void showTheIndexSite() {
 
         var site = indexController.home();
 
@@ -121,10 +121,10 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void formulaForNewUser() {
+    void callTheUserFormulaToCreateNewUser() {
         var site = controller.createObject(model);
         assertNotNull(site);
-        assertEquals("formula", site);
+        assertEquals("user/userFormula", site);
 
         var user = model.getAttribute("user");
         assertNotNull(user);
@@ -137,20 +137,20 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void usersNoneRole() {
+    void usersWithNoneRoleSeeTheUserList() {
         var site = controller.getList(model,principal);
         assertNotNull(site);
         assertEquals("error/ErrorNotAuthorized", site);
     }
 
     @Test
-    void usersAdminRole(){
+    void usersWithAdminRoleSeeTheUserList(){
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
         var site = controller.getList(model,mockPrincipal);
 
         assertNotNull(site);
-        assertEquals("user", site);
+        assertEquals("user/userList", site);
 
         var users = model.getAttribute("users");
         assertNotNull(users);
@@ -159,7 +159,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void positiveAdminRoleUpdate(){
+    void updateUserWithAdminRole(){
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
 
@@ -174,58 +174,59 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertEquals(((User) user).getLastName(), "lastName-1");
         assertEquals(((User) user).getHeight(), 1);
         assertNotNull(updateSite);
-        assertEquals("formula", updateSite);
+        assertEquals("user/userFormula", updateSite);
     }
 
     @Test
-    void negativeUserNullUpdate(){
+    void updateObjectNullUuid(){
         var updateSiteNull = controller.updateObject("", model, principal);
 
         assertNotNull(updateSiteNull);
-        assertEquals("redirect:/users", updateSiteNull);
+        assertEquals("redirect:/user/list", updateSiteNull);
     }
 
     @Test
-    void positiveNoRoleUpdate(){
-        // I give the user no role
-        principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("NONE")));
+    void updateObjectNoneRole(){
 
-        var update = controller.updateObject("uuid-1",model,principal);
+        var mockPrincipal = getMockPrincipal("ROLE_NONe");
+        var update = controller.updateObject("uuid-1",model,mockPrincipal);
+
         assertNotNull(update);
-        assertEquals("redirect:/users", update);
+        assertEquals("redirect:/user/list", update);
     }
 
     @Test
-    void deleteAdminRole() {
+    void deleteObjectAdminRole() {
 
-        principal = new UsernamePasswordAuthenticationToken(principal, "password", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-
-        var delete = controller.deleteObject("uuid-1", principal);
+        var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
+        var delete = controller.deleteObject("uuid-1", mockPrincipal);
 
         assertNotNull(delete);
-        assertEquals("redirect:/users", delete);
+        assertEquals("redirect:/user/list", delete);
     }
 
     @Test
-    void deleteNoRole(){
-        var delete = controller.deleteObject("uuid-1", principal);
+    void deleteObjectNoRole(){
+
+        var mockPrincipal = getMockPrincipal("ROLE_NONe");
+        var delete = controller.deleteObject("uuid-1", mockPrincipal);
         assertNotNull(delete);
-        assertEquals("redirect:/error/ErrorNotAuthorized", delete);
+        assertEquals("error/ErrorNotAuthorized", delete);
     }
 
     @Test
-    void registerSiteNoneRoleAddUser() {
+    void postObjectNoneRole() {
 
         //create the parameters for the method
         User newUser = getNewUser();
         //set uuid empty, that means the user don't exit and we add him
         newUser.setUuid("");
         var bindingResult = new DirectFieldBindingResult(newUser, "user");
-
+        var mockPrincipal = getMockPrincipal("ROLE_NONE");
         var model = new ConcurrentModel();
 
         // call the method
-        String site = controller.postObject(newUser, bindingResult, model, principal);
+        String site = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         //check the results
         assertNotNull(site);
@@ -233,7 +234,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void registerSiteWithBindingErrors(){
+    void postObjectWithBindingErrors(){
         //create the parameters for the method
         User newUser = getNewUser();
 
@@ -247,11 +248,11 @@ class IndexControllerTest extends AbstractApplicationTests {
         String site = controller.postObject(newUser, bindingResult, model, principal);
         //check the results
         assertNotNull(site);
-        assertEquals("formula", site);
+        assertEquals("user/userFormula", site);
     }
 
     @Test
-    void registerSiteWrongDayOfBirth(){
+    void postObjectWrongDayOfBirth(){
         //create the parameters for the method
         User newUser = getNewUser();
         newUser.setDob(LocalDate.of(1119, 5, 5));
@@ -265,11 +266,11 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         //check the results
         assertNotNull(site);
-        assertEquals("formula", site);
+        assertEquals("user/userFormula", site);
     }
 
     @Test
-    void registerSiteAdminRoleUpdateUser(){
+    void postObjectAdminRoleUpdateUser(){
 
         //create the parameters for the method
         User newUser = getNewUser();
@@ -285,10 +286,10 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         //check the results
         assertNotNull(site);
-        assertEquals("success/SuccessfullyAdded", site);
+        assertEquals("redirect:/user/list", site);
     }
     @Test
-    void registerSiteAdminRoleAddUser(){
+    void postObjectAdminRoleAddUser(){
 
         //create the parameters for the method
         User newUser = getNewUser();
@@ -304,11 +305,11 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         //check the results
         assertNotNull(site);
-        assertEquals("success/SuccessfullyAdded", site);
+        assertEquals("redirect:/user/list", site);
     }
 
     @Test
-    void registerSiteNoLoginUpdateUser(){
+    void postObjectNoLoginUpdateUser(){
         //someone without login try to update a user just sending the url to the server!
         //but we are thought about that, and we are prepared
         var newUser = getNewUser();
@@ -323,7 +324,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void registerSiteWithUserRoleAddNewUser(){
+    void postObjectWithUserRoleAddNewUser(){
 
         var newUser = getNewUser();
         // add new user means until now he has no uuid!
@@ -339,7 +340,7 @@ class IndexControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void registerSiteWithUserRoleUpdateHisOwnData(){
+    void postObjectWithUserRoleUpdateHisOwnData(){
         var newUser = getNewUser();
         //we have user form 1-10 in our test database!
         newUser.setUsername("1");
@@ -355,6 +356,19 @@ class IndexControllerTest extends AbstractApplicationTests {
         assertEquals("success/SuccessfullyAdded", responseSite);
     }
 
+    @Test
+    void postObjectWithUserRoleUpdateOtherData(){
+
+        var newUser = getNewUser();
+        var mockPrincipal = getMockPrincipal("ROLE_USER");
+        var bindingResult = new DirectFieldBindingResult(newUser,"user");
+
+        String responseSite = controller.postObject(newUser,bindingResult,model,mockPrincipal);
+
+        assertNotNull(responseSite);
+        assertEquals("error/ErrorNotAuthorized", responseSite);
+    }
+
 
     @Test
     void seeOnlyYourDataUserRolePositiv(){
@@ -363,7 +377,7 @@ class IndexControllerTest extends AbstractApplicationTests {
 
         String responseSite = controller.readObject(model,mockPrincipal);
 
-        assertEquals("formula", responseSite );
+        assertEquals("user/userFormula", responseSite );
     }
 
     @Test

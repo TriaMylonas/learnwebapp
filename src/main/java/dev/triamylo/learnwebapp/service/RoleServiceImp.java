@@ -29,6 +29,11 @@ public class RoleServiceImp implements RoleService{
     }
 
     @Override
+    public void delete(String uuid){
+        roleRepository.deleteById(uuid);
+    }
+
+    @Override
     public Role get(String uuid) {
         return roleRepository.findById(uuid).orElse(null);
     }

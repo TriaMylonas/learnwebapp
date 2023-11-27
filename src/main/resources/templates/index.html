@@ -32,7 +32,7 @@
 
 <!--Buttons-->
 <div class="col-md-12 d-flex justify-content-evenly align-items-center">
-    <a th:href="@{/users}">
+    <a th:href="@{/user/list}">
         <button type="button" class="btn btn-primary mt-5" sec:authorize="hasRole('ADMIN')">
             Zur List
         </button>
@@ -40,7 +40,7 @@
 </div>
 
 <div class="col-md-12 d-flex justify-content-evenly align-items-center">
-    <a th:href ="@{/me}">
+    <a th:href ="@{/user/read}">
         <button type="button" class="btn btn-info mt-5" sec:authorize="hasRole('USER')">
             Ändern
         </button>
@@ -49,7 +49,7 @@
 </div>
 
 <div class="col-md-12 d-flex justify-content-evenly align-items-center">
-    <a th:href="@{/formula}">
+    <a th:href="@{/user/create}">
         <button type="button" class="btn btn-warning mt-5 mb-5 ">
             Add neue
         </button>

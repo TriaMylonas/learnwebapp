@@ -3,6 +3,7 @@ package dev.triamylo.learnwebapp.controller;
 import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.service.RoleService;
 import jakarta.validation.Valid;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,38 +27,44 @@ public class RoleController extends AbstractController {
     }
 
 
-
-
-    @GetMapping("/roleFormula")
+    @GetMapping("/role/create")
     public String createObject(Model model) {
 
         Role role = new Role();
         model.addAttribute("role", role);
-        return "roleFormula";
+        return "role/roleFormula";
     }
 
 
-    @GetMapping("/role/read/{uuid}")
-    public String readObject(@PathVariable String uuid){
+    @GetMapping("/role/read")
+    public String readObject() {
+        //I don't need that controller. I have just write it for the name convention.
         return null;
     }
 
 
     @GetMapping("/role/update/{uuid}")
-    public String updateObject(@PathVariable String uuid){
-        return null;
+    public String updateObject(@PathVariable String uuid, Model model) {
+
+        Role role = roleService.get(uuid);
+        if(role != null){
+            model.addAttribute("role", role);
+            return "role/roleFormula";
+        }
+        return "redirect:/role/roleList";
     }
 
 
     @GetMapping("/role/delete/{uuid}")
-    public String deleteObject(@PathVariable String uuid){
-        return null;
+    public String deleteObject(@PathVariable String uuid) {
+
+        roleService.delete(uuid);
+        return "redirect:/role/roleList";
     }
 
 
-    @GetMapping("/rolesList")
-    public String getList(Model model,
-                          Principal principal) {
+    @GetMapping("/role/list")
+    public String getList(Model model, Principal principal) {
 
         List<Role> testRoles = new ArrayList<>();
         Role role1 = new Role("normalUser");
@@ -71,37 +78,28 @@ public class RoleController extends AbstractController {
         role3.setRoleDescription("er hat keine rechte zu macht nix!");
         testRoles.add(role3);
 
-        if (hasAdminRole(principal)) {
-            List<Role> roles = roleService.list();
-            model.addAttribute("roles", testRoles);
-            return "roleList";
-        }
+        List<Role> roles = roleService.list();
+        model.addAttribute("roles", testRoles);
+        return "role/roleList";
 
-        return "error/ErrorNotAuthorized";
+
     }
 
-    @PostMapping("/addRole")
-    public String postObject(@Valid @ModelAttribute("role") Role role,
-                             BindingResult bindingResult,
-                             Principal principal) {
+    @PostMapping("/role/post")
+    public String postObject(@Valid @ModelAttribute("role") Role role, BindingResult bindingResult) {
 
-        if (!hasAdminRole(principal)) {
-            return "error/ErrorNotAuthorized";
-        }
-        else {
+        if (!bindingResult.hasErrors()) {
 
-            if(!bindingResult.hasErrors()){
-
-                if(role.getUuid() == null || role.getUuid().isEmpty()){
-                    roleService.add(role);
-                }
-                else {
-                    roleService.update(role);
-                }
-                return "success/SuccessfullyAdded";
+            if (role.getUuid() == null || role.getUuid().isEmpty()) {
+                roleService.add(role);
+            } else {
+                roleService.update(role);
             }
-            return "redirect:/roleFormula";
+            return "success/SuccessfullyAdded";
         }
+
+        return "redirect:role/roleFormula";
     }
+
 
 }

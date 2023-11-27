@@ -2,7 +2,7 @@
 <html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Roles list</title>
+    <title>User list</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -10,14 +10,14 @@
 </head>
 <body>
 <!--header-->
-<div class="m-2">
+<div class="m-2" >
     <div class="h2 container-lg  bg-primary p-2 text-white bg-opacity-75">
         I am learning Web Application Entwicklung!
     </div>
 </div>
 
 <div class="h4 container mt-5 mb-5">
-    Hier ist die Liste mit den Roles!
+    Hier ist die Liste mit dem Nutzer!
 </div>
 
 
@@ -29,35 +29,38 @@
 
 <table class="table table-striped table-bordered container">
     <thead class="table-group-divider">
-    <tr>
+    <tr >
         <th scope="col">#</th>
-        <th scope="col">Role</th>
-        <th scope="col">Beschreibung</th>
+        <th scope="col">Vorname</th>
+        <th scope="col">Nachname</th>
+        <th scope="col">Geburtsdatum</th>
+        <th scope="col">Länge</th>
+        <th scope="col">Optionen</th>
     </tr>
     </thead>
 
     <tbody class="table-group-divider ">
-    <!--    th:each is a foreach loop that go through the list of roles, and pass one at the time in the role variable-->
+    <!--    th:each is a foreach loop that go through the list of users and pass one at the time in the user variable-->
     <!--    I took the list "users" and passed it over here through the model attributs for the controller. -->
     <!-- user is variable for the actual object list, and the status is variable to keep track the Iteration of this loop  -->
-    <tr th:each="role,status:${roles}">
+    <tr  th:each="user,status:${users}">
 
         <td th:text="${status.index + 1}"></td>
-        <td th:text="${role.roleName}"></td>
-        <td th:text="${role.roleDescription}"></td>
+        <td th:text="${user.firstName}"></td>
+        <td th:text="${user.lastName}"></td>
+        <td th:text="${#temporals.format(user.dob, 'dd.MM.yyyy')}"></td>
+        <td th:text="${#numbers.formatInteger(user.height, 0,'POINT') + ' cm'}"></td>
 
         <td class="table-cell">
-            <a th:href="@{'/role/delete/'+ ${role.getUuid()}}">
+            <a th:href="@{'/user/delete/'+ ${user.getUuid()}}">
                 <!--    Button visible only to authorized users (ROLE_ADMIN) only they can delete someone.-->
-                <button type="button" class="btn btn-sm btn-outline-danger me-2"
-                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+                <button type="button" class="btn btn-sm btn-outline-danger me-2" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
                     Löschen
                 </button>
             </a>
 
-            <a th:href="@{'/role/update/'+ ${role.getUuid()}}">
-                <button type="button" class="btn btn-sm btn-outline-primary"
-                        th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+            <a th:href="@{'/user/update/'+ ${user.getUuid()}}">
+                <button type="button" class="btn btn-sm btn-outline-primary ">
                     Ändern
                 </button>
             </a>
@@ -68,28 +71,27 @@
     <!-- this is a footer, and he will go at the end of my table -->
     <tfoot class="table-group-divider">
     <tr>
-        <!--        colspan is to expand this cell in 4 others cells-->
-        <td colspan="4" class="text-right text-bold">Die Summe alle Roles ist:</td>
-        <!--        this is a value that I take from the controller. Here I need the size of the user list.-->
-        <td th:text="${roles.size()}"></td>
+<!--        colspan is to expand this cell in 4 others cells-->
+        <td colspan="4" class="text-right text-bold">Die Summe alle Nutzer ist: </td>
+<!--        this is a value that I take from the controller. Here I need the size of the user list.-->
+        <td th:text="${users.size()}"></td>
     </tr>
     </tfoot>
 </table>
 
 
+
 <div class="container mt-5 mb-5 d-flex justify-content-between">
-    <a th:href="@{/roleFormula}">
+    <a th:href="@{/user/create}">
         <button type="button" class="btn btn-success ">
             Neue
         </button>
     </a>
 
     <span>
-         <a th:href="@{/previousPage}">
-        <button type="button" class=" btn btn-secondary mx-2 ">
+        <button type="button" class=" btn btn-secondary mx-2 " onclick="history.back()">
             Zurück
         </button>
-    </a>
     </span>
 </div>
 

@@ -25,10 +25,10 @@ public class WebSecurityConfig {
         // SOS --> /images/** --> all unter one ordner so that they can authenticate with one's
         //all can use the home page and can add new user, all the others musst be authenticated
         http.authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/formula", "/images/**").permitAll()
-                        .requestMatchers("/users/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
-                        .requestMatchers("/users").hasRole("ADMIN")
-                        .requestMatchers( "/users/update/**").hasAnyRole("ADMIN", "USER")
+                        .requestMatchers("/", "/user/create","/user/post", "/images/**").permitAll()
+                        .requestMatchers("/user/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
+                        .requestMatchers("/user/list").hasRole("ADMIN")
+                        .requestMatchers( "/user/update/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest()
                         .authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)  // das ist die default site from the security. (permitAll) I don't need to have permit to access in the login form.

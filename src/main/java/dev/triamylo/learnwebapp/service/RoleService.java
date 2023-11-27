@@ -11,6 +11,7 @@ public interface RoleService {
     List<Role> list();
     void add(Role role);
     void delete(Role role);
+    void delete(String uuid);
     Role get(String uuid);
     void update(Role role);
     Optional<Role> findByRoleName(String roleName);
