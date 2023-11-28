@@ -1,5 +1,6 @@
 package dev.triamylo.learnwebapp;
 
+import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -32,4 +33,32 @@ public abstract class AbstractApplicationTests {
         newUser.setHeight(185);
         return newUser;
     }
+
+
+
+
+
+
+    protected static Role getNewRole(String uuid, String roleName, String roleDescription ){
+        Role role = new Role(roleName);
+        role.setUuid(uuid);
+        role.setRoleDescription(roleDescription);
+
+        return role;
+    }
+
+    protected static Role getNewRoleWithNullUuid(String roleName){
+        return getNewRole(null,roleName,"description");
+    }
+    protected static Role getNewRole(String roleName){
+        return getNewRole("1",roleName,"description1");
+    }
+    protected static Role getNewRole(String roleName, String description){
+        return getNewRole("1",roleName,description);
+    }
+    protected static Role getNewRole(){
+        return getNewRole("1","role1","description1");
+    }
+
+
 }

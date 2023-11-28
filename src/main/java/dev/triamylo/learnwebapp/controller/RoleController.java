@@ -38,8 +38,9 @@ public class RoleController extends AbstractController {
 
     @GetMapping("/role/read")
     public String readObject() {
+
         //I don't need that controller. I have just write it for the name convention.
-        return null;
+        return "redirect:/role/roleList";
     }
 
 
@@ -58,30 +59,33 @@ public class RoleController extends AbstractController {
     @GetMapping("/role/delete/{uuid}")
     public String deleteObject(@PathVariable String uuid) {
 
-        roleService.delete(uuid);
+        Role role = roleService.get(uuid);
+        if(role != null){
+            roleService.delete(uuid);
+            return "redirect:/role/roleList";
+        }
         return "redirect:/role/roleList";
     }
 
 
     @GetMapping("/role/list")
-    public String getList(Model model, Principal principal) {
-
-        List<Role> testRoles = new ArrayList<>();
-        Role role1 = new Role("normalUser");
-        role1.setUuid("123");
-        role1.setRoleDescription("Beschreibung für die erste  Role! Es ist ein normal Nutzer");
-        testRoles.add(role1);
-        Role role2 = new Role("admin");
-        role2.setRoleDescription("Diese ist der Admin und er kann macht was er will!");
-        testRoles.add(role2);
-        Role role3 = new Role("keinRole");
-        role3.setRoleDescription("er hat keine rechte zu macht nix!");
-        testRoles.add(role3);
+    public String getList(Model model) {
+//
+//        List<Role> testRoles = new ArrayList<>();
+//        Role role1 = new Role("normalUser");
+//        role1.setUuid("123");
+//        role1.setRoleDescription("Beschreibung für die erste  Role! Es ist ein normal Nutzer");
+//        testRoles.add(role1);
+//        Role role2 = new Role("admin");
+//        role2.setRoleDescription("Diese ist der Admin und er kann macht was er will!");
+//        testRoles.add(role2);
+//        Role role3 = new Role("keinRole");
+//        role3.setRoleDescription("er hat keine rechte zu macht nix!");
+//        testRoles.add(role3);
 
         List<Role> roles = roleService.list();
-        model.addAttribute("roles", testRoles);
+        model.addAttribute("roles", roles);
         return "role/roleList";
-
 
     }
 

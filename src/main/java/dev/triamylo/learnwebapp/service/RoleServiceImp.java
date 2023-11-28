@@ -23,10 +23,6 @@ public class RoleServiceImp implements RoleService{
         roleRepository.save(role);
     }
 
-    @Override
-    public void delete(Role role) {
-        roleRepository.delete(role);
-    }
 
     @Override
     public void delete(String uuid){
@@ -52,8 +48,4 @@ public class RoleServiceImp implements RoleService{
         roleRepository.save(oldRole);
     }
 
-    @Override
-    public Optional<Role> findByRoleName(String roleName) {
-        return roleRepository.findByRoleName(roleName);
-    }
 }

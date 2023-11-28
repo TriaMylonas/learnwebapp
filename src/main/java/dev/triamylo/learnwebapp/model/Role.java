@@ -2,6 +2,7 @@ package dev.triamylo.learnwebapp.model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -22,6 +23,7 @@ public class Role {
 
 
     @Column(unique = true)
+    @Size(min = 2, max = 25)
     private String roleName;
 
     @Size( max = 200)
@@ -55,9 +57,6 @@ public class Role {
         return users;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
 
     public String getRoleDescription() {
         return roleDescription;

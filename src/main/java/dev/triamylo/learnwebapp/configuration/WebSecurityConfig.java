@@ -26,7 +26,7 @@ public class WebSecurityConfig {
         //all can use the home page and can add new user, all the others musst be authenticated
         http.authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/user/create","/user/post", "/images/**").permitAll()
-                        .requestMatchers("/user/delete/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
+                        .requestMatchers("/user/delete/**","/role/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
                         .requestMatchers("/user/list").hasRole("ADMIN")
                         .requestMatchers( "/user/update/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest()

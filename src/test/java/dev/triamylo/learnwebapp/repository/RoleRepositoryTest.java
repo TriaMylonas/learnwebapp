@@ -135,9 +135,9 @@ class RoleRepositoryTest extends AbstractApplicationTests {
     void oneRoleInManyUser() {
         //create the role, add him in DB and then check it
         Role role = new Role();
-        role.setRoleName("role1");
+        role.setRoleName("role100");
         roleRepository.save(role); // save him to the DB
-        assertTrue(roleRepository.findByRoleName("role1").isPresent());
+        assertTrue(roleRepository.findByRoleName("role100").isPresent());
 
         List<Role> roles = new ArrayList<>();
         roles.add(role);
@@ -194,7 +194,7 @@ class RoleRepositoryTest extends AbstractApplicationTests {
         Role role2 = new Role();
         role2.setRoleName("role2");
         roleRepository.save(role2);
-        assertTrue(roleRepository.findByRoleName("role1").isPresent());
+        assertTrue(roleRepository.findByRoleName("role2").isPresent());
 
         roles.add(role2);
         testUser.setRoles(roles);
@@ -597,8 +597,6 @@ class RoleRepositoryTest extends AbstractApplicationTests {
 
 
     }
-
-
 
 
 }
