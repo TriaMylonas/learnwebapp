@@ -156,7 +156,7 @@ class RoleControllerTest extends AbstractApplicationTests {
 
         var responseSite = roleController.postObject(testRole,bindingResult);
         assertNotNull(responseSite);
-        assertEquals("success/SuccessfullyAdded", responseSite);
+        assertEquals("redirect:/role/list", responseSite);
     }
 
     @Test
@@ -169,7 +169,7 @@ class RoleControllerTest extends AbstractApplicationTests {
 
         var responseSite = roleController.postObject(testRole,bindingResult);
         assertNotNull(responseSite);
-        assertEquals("success/SuccessfullyAdded", responseSite);
+        assertEquals("redirect:/role/list", responseSite);
     }
 
     @Test
@@ -181,7 +181,7 @@ class RoleControllerTest extends AbstractApplicationTests {
 
         var responseSite = roleController.postObject(testRole,bindingResult);
         assertNotNull(responseSite);
-        assertEquals("redirect:role/roleFormula", responseSite);
+        assertEquals("role/roleFormula", responseSite);
     }
 
 

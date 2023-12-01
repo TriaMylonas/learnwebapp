@@ -96,6 +96,21 @@
 </div>
 
 
+<!--    Button visible only to Admin users.-->
+<div class="container d-flex justify-content-end align-items-center" sec:authorize="hasRole('ADMIN')">
+
+    <!--Divider -->
+    <hr class="my-4">
+
+    <span class="mx-2">zum Roles List:</span>
+    <a th:href="@{/role/list}">
+        <button type="button" class="btn btn-dark">
+            Roles
+        </button>
+    </a>
+</div>
+
+
 <!--Divider -->
 <hr class="my-4">
 

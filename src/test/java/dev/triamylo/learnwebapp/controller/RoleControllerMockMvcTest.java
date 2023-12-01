@@ -203,8 +203,8 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
                         .param("roleName", "testRole")
                         .param("roleDescription", "testDescription")
                         .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("success/SuccessfullyAdded"));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/role/list"));
 
         Assertions.assertNotNull(roleRepository.findByRoleName("testRole"));
         Assertions.assertEquals(roleRepository.findByRoleName("testRole").get().getRoleDescription(),
@@ -221,8 +221,8 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
                         .param("roleName", "1")
                         .param("roleDescription", "testDescription1")
                         .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:role/roleFormula"));
+                .andExpect(status().isOk())
+                .andExpect(view().name("role/roleFormula"));
 
         Assertions.assertFalse(roleRepository.findByRoleName("1").isPresent());
     }
@@ -243,7 +243,7 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void postObjectRoleWithAdminRoleUpdateRole_Positive() throws Exception {
+    void postObjectRoleWithAdminRoleUpdateRolePositive() throws Exception {
 
         Optional<Role> optionalRole = roleRepository.findByRoleName("role1");
         Assertions.assertTrue(optionalRole.isPresent());
@@ -253,8 +253,8 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
                         .param("roleName", "role1")
                         .param("roleDescription", "testDescription1")
                         .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("success/SuccessfullyAdded"));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/role/list"));
 
         Role role = roleRepository.findByRoleName("role1").get();
         Assertions.assertNotNull(role);
@@ -264,7 +264,7 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void postObjectRoleWithAdminRoleUpdateRole_WithBindingErrors() throws Exception {
+    void postObjectRoleWithAdminRoleUpdateRoleWithBindingErrors() throws Exception {
 
         Optional<Role> optionalRole = roleRepository.findByRoleName("role1");
         Assertions.assertTrue(optionalRole.isPresent());
@@ -274,8 +274,8 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
                         .param("roleName", "1")
                         .param("roleDescription", "testDescription1")
                         .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:role/roleFormula"));
+                .andExpect(status().isOk())
+                .andExpect(view().name("role/roleFormula"));
         //the description is not change because the roleName hat a validation problem
         Assertions.assertNotEquals(optionalRole.get().getRoleDescription(),"testDescription1");
     }

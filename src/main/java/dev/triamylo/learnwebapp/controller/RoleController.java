@@ -99,10 +99,10 @@ public class RoleController extends AbstractController {
             } else {
                 roleService.update(role);
             }
-            return "success/SuccessfullyAdded";
+            return "redirect:/role/list";
         }
 
-        return "redirect:role/roleFormula";
+        return "role/roleFormula";
     }
 
 
