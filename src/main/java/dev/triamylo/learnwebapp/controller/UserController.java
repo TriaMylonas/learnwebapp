@@ -187,10 +187,10 @@ public class UserController extends AbstractController {
     public String postUserAddRole(@PathVariable String uuid, @RequestParam String selectedRole) {
         // Get the selected role and add it to the user's roles
         Role role = roleService.findByName(selectedRole);
-
+        //Get the user
         User user = userService.get(uuid);
+        //Add the role to the user
         user.addRole(role);
-
         // Update the user with the new role
         userService.update(user);
 
