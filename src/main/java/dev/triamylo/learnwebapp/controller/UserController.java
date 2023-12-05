@@ -6,13 +6,11 @@ import dev.triamylo.learnwebapp.service.RoleServiceImp;
 import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -186,16 +184,18 @@ public class UserController extends AbstractController {
 
 
     @PostMapping("user/addRole/{uuid}")
-    public String postUserAddRole(@PathVariable String uuid, Model model) {
-        Role newRole = roleService.get(uuid);
+    public String postUserAddRole(@PathVariable String uuid, @RequestParam String selectedRole) {
+        // Get the selected role and add it to the user's roles
+        Role role = roleService.findByName(selectedRole);
 
-        String test = (String) model.getAttribute("usersUuid");
+        User user = userService.get(uuid);
+        user.addRole(role);
 
-        User user = userService.get(test);
+        // Update the user with the new role
+        userService.update(user);
 
-        user.addRole(newRole);
-
-        return "redirect:/user/update/{uuid}";
+        // Redirect to the user update page or any other page as needed
+        return "redirect:/user/update/" + user.getUuid();
     }
 
 

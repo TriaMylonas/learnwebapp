@@ -126,30 +126,31 @@
             </form>
         </div> <!-- USER-FORM ende -->
 
-        <!--   a table to show the available & the  roles for the user -->
+        <!--   a Form to show the available & the  roles for the user -->
         <div th:if="${user.uuid != null}"
              class="col">
             <!-- ERSTE ROW -->
-            <div class="row  justify-content-around">
+            <form th:if="${user.uuid != null}"
+                  th:action="@{'/user/addRole/'+${user.uuid}}" method="post"
+                  class="row  justify-content-around" >
+
                 <!--    DROP DOWN  form to assign the role-->
+                <select th:name="selectedRole"
+                        class="col-4 border border-secondary rounded" >
 
-                <select th:field="${roles}" class=" col-4 border border-secondary rounded " >
-                        <!-- Add a default option -->
-                        <option value="">Select a Role</option>
+                    <!-- Add a default option -->
+                    <option value="">Select a Role</option>
 
-                        <!-- Iterate over the roles and generate options -->
-                        <option th:each ="role:${roles}" th:value="${role}" th:text="${role.roleName}"
-                                >
-
-                        </option>
+                    <!-- Iterate over the roles and generate options -->
+                    <option th:each ="role:${roles}" th:value="${role.roleName}" th:text="${role.roleName}">
+                    </option>
                 </select>
 
-                <button class ="col-3 btn btn-primary">
+                <button type="submit"
+                        class="col-3 border border-secondary rounded btn btn-primary">
                     Addieren
                 </button>
-
-
-            </div>
+            </form>
 
 
             <!-- ZWEITE ROW -->
@@ -218,9 +219,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
+        crossorigin="anonymous">
 
+</script>
 </body>
-
-
 </html>
