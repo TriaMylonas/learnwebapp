@@ -13,154 +13,206 @@
 <!-- I use the container class from Bootstrap to be more response my web app.  -->
 <!-- also I use the existing classes from Bootstrap to change the style on my html web side quick and easy
     I want to learn working a little with them-->
-<div class="m-2">
-    <div class="h2 container-lg  bg-primary p-2 text-white bg-opacity-75">
-        I am learning Web Application Entwicklung!
-    </div>
-</div>
+<div class="container">
 
-<div class="h4 container mt-5 mb-5">
-    Hier ist eine Form zum Ausfüllen!
-</div>
-
-
-<!-- action="#" means that the form will do nothing on the action, but it will the thymeleaf and redirect this to the
-    register site with the post method. That means that the values will be post from the client to server.
-    The object define with that object from our program is the values connected. For each input we define one property
-    of our model object-->
-<!--/*@thymesVar id="user" type="user"*/-->
-<form class="container" th:action="@{/user/post}" th:object="${user}" method="POST">
-
-
-    <!--    das in sehr interessant!-->
-    <input type="hidden" th:field="*{uuid}" th:id="uuid"/>
-
-
-    <!-- the first field of the form, the first name -->
-    <div class="mb-3">
-        <label for="firstName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5" th:text="Vorname">Vorname</label>
-        <input type="text" th:field="*{firstName}" class="form-control border border-secondary rounded" id="firstName"
-               placeholder="Vorname"/>
-
-        <!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors('firstName')}" th:errors="${user.firstName}">
-        </div>
-
-
-    </div>
-
-
-    <!-- the second field of the form, the last name  -->
-    <div class="mb-3">
-        <label for="lastName" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5">Nachname</label>
-        <input type="text" th:field="${user.lastName}" id="lastName"
-               class="form-control  border border-secondary rounded"
-               placeholder="Nachname">
-        <div class="container" th:if="${#fields.hasErrors('lastName')}" th:errors="${user.lastName}">
+    <!-- First Row der Title -->
+    <div class="row">
+        <div class="h2 m-2 container-lg  bg-primary p-2 text-white bg-opacity-75">
+            I am learning Web Application Entwicklung!
         </div>
     </div>
 
-
-    <!--    the third field of the form, the date of birth-->
-    <div class="mb-3">
-        <label for="dob" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5">
-            Day of birth
-        </label>
-        <!-- the type here is date because I need a date input from the user-->
-        <input type="date" th:field="*{dob}" id="dob" class="form-control  border border-secondary rounded"
-               th:min="${dobMin}" th:max="${dobMax}">
-
-        <!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors('dob')}" th:errors="${user.dob}"></div>
-
-    </div>
-
-
-    <!--    the forth field of the form, the height in cm -->
-    <div class="mb-3">
-        <label for="height" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
-               style="--bs-bg-opacity:.5">
-            height in cm
-        </label>
-        <input type="number" th:field="*{height}" id="height" class="form-control  border border-secondary rounded"
-               placeholder="height in cm">
-
-        <!--        validation of the height as Denis ask. This will only appear if the is something wrong-->
-        <div class="container" th:if="${#fields.hasErrors('height')}" th:errors="${user.height}">
+    <!--    Zweites Row die Subtitle-->
+    <div class="row justify-content-center">
+        <div class="col-6 h4 mt-3 mb-4">
+            Hier ist eine Form zum Ausfüllen!!
         </div>
     </div>
 
-    <div class="container mt-5 mb-5 d-flex justify-content-between">
+    <!-- Drittes Row der User-Form & Roles-Form    -->
+    <div class="row justify-content-evenly">
+        <!-- Hier start die User Form       -->
+        <div class="col">
+            <!-- action="#" means that the form will do nothing on the action, but it will the thymeleaf and redirect this to the
+                register site with the post method. That means that the values will be post from the client to server.
+                The object define with that object from our program is the values connected. For each input we define one property
+                of our model object-->
+            <!--/*@thymesVar id="user" type="user"*/-->
+            <form th:action="@{/user/post}" th:object="${user}" method="POST">
 
-        <button type="submit" class="btn btn-primary ">
-            Submit
-        </button>
+                <!--    das in sehr interessant!-->
+                <input type="hidden" th:field="*{uuid}" th:id="uuid"/>
 
-        <span>
-        <a th:href="@{/user/list}">
-    <!--    Button visible only to Admin users.-->
+                <!-- the first field of the form, the first name -->
+                <div class="mb-3">
+                    <label for="firstName"
+                           class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+                           style="--bs-bg-opacity:.5" th:text="Vorname">Vorname
+                    </label>
+                    <input type="text" th:field="*{firstName}" class="form-control border border-secondary rounded"
+                           id="firstName"
+                           placeholder="Vorname"
+                    />
+                    <!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
+                    <div class="container" th:if="${#fields.hasErrors('firstName')}" th:errors="${user.firstName}">
+                    </div>
+                </div>
 
-            <button type="button" class="btn btn-warning"
-                    sec:authorize="hasRole('ADMIN')">
-                Zur List
-            </button>
-        </a>
-    </span>
+                <!-- the second field of the form, the last name  -->
+                <div class="mb-3">
+                    <label for="lastName"
+                           class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+                           style="--bs-bg-opacity:.5">Nachname</label>
+                    <input type="text" th:field="${user.lastName}" id="lastName"
+                           class="form-control  border border-secondary rounded"
+                           placeholder="Nachname">
+                    <div class="container" th:if="${#fields.hasErrors('lastName')}" th:errors="${user.lastName}">
+                    </div>
+                </div>
 
 
-        <span>
-            <button type="button" class=" btn btn-secondary" onclick="history.back()">
-                Zurück
-            </button>
-    </span>
+                <!--    the third field of the form, the date of birth-->
+                <div class="mb-3">
+                    <label for="dob" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+                           style="--bs-bg-opacity:.5">
+                        Day of birth
+                    </label>
+                    <!-- the type here is date because I need a date input from the user-->
+                    <input type="date" th:field="*{dob}" id="dob" class="form-control  border border-secondary rounded"
+                           th:min="${dobMin}" th:max="${dobMax}"
+                    />
+                    <!--        validation of the date as Denis ask. This will only appear if the is something wrong-->
+                    <div class="container" th:if="${#fields.hasErrors('dob')}" th:errors="${user.dob}"></div>
+                </div>
+
+
+                <!--    the forth field of the form, the height in cm -->
+                <div class="mb-3">
+                    <label for="height" class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+                           style="--bs-bg-opacity:.5">
+                        height in cm
+                    </label>
+                    <input type="number" th:field="*{height}" id="height"
+                           class="form-control  border border-secondary rounded"
+                           placeholder="height in cm"
+                    />
+                    <!--        validation of the height as Denis ask. This will only appear if the is something wrong-->
+                    <div class="container" th:if="${#fields.hasErrors('height')}" th:errors="${user.height}">
+                    </div>
+                </div>
+
+                <div class=" d-flex justify-content-between">
+
+                    <button type="submit" class="btn btn-primary ">
+                        Submit
+                    </button>
+
+                    <span>
+                        <a th:href="@{/user/list}">
+                            <!--    Button visible only to Admin users.-->
+                            <button type="button" class="btn btn-warning"
+                                    sec:authorize="hasRole('ADMIN')">
+                                Zur List
+                            </button>
+                        </a>
+                    </span>
+
+                    <span>
+                        <button type="button" class=" btn btn-secondary" onclick="history.back()">
+                            Zurück
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div> <!-- USER-FORM ende -->
+
+        <!--   a table to show the available & the  roles for the user -->
+        <div th:if="${user.uuid != null}"
+             class="col">
+            <!-- ERSTE ROW -->
+            <div class="row  justify-content-around">
+                <!--    DROP DOWN  form to assign the role-->
+
+                <select th:field="${roles}" class=" col-4 border border-secondary rounded " >
+                        <!-- Add a default option -->
+                        <option value="">Select a Role</option>
+
+                        <!-- Iterate over the roles and generate options -->
+                        <option th:each ="role:${roles}" th:value="${role}" th:text="${role.roleName}"
+                                >
+
+                        </option>
+                </select>
+
+                <button type="submit" class ="col-3 btn btn-primary">
+                    Addieren
+                </button>
+
+            </div>
+
+
+            <!-- ZWEITE ROW -->
+            <table class="table table-striped table-bordered mt-5">
+                <!-- TABLE WITH ROLES -->
+                <thead class="table-group-divider">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Beschreibung</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider ">
+                    <!--    th:each is a foreach loop that go through the list of roles, and pass one at the time in the role variable-->
+                    <!--    I took the list "users" and passed it over here through the model attributs for the controller. -->
+                    <!-- user is variable for the actual object list, and the status is variable to keep track the Iteration of this loop  -->
+                    <tr th:each="role,status:${user.getRoles()}">
+                        <td th:text="${status.index + 1}"> </td>
+                        <td th:text="${role.roleName}"></td>
+                        <td th:text="${role.roleDescription}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Viertes Row der Divider -->
+    <div class="row">
+        <hr class="mb-5 mt-3">
+    </div>
+
+    <!-- Fünfte Row der Login/Logout Buttons -->
+    <div class="row justify-content-evenly">
+        <div class="col-2">
+            <!--    Button visible only wenn someone is not login/authenticated-->
+            <th:block th:if="${not #authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/login}">
+                    <button type="button" class="btn btn-success">
+                        Login
+                    </button>
+                </a>
+            </th:block>
+        </div>
+        <div class="col-4">
+            <!--    Button visible only to authenticated users.-->
+            <a th:href="@{/logout}">
+                <button type="button" class="btn btn-danger"
+                        sec:authorize="isAuthenticated()">
+                    Logout
+                </button>
+            </a>
+        </div>
+        <div class="col-2">
+            <a th:href="@{/role/list}" sec:authorize="hasRole('ADMIN')">
+                <button type="button" class="btn btn-dark">
+                    Roles
+                </button>
+            </a>
+        </div>
 
     </div>
 
-</form>
 
-<!--    All of this, the Button and the divider visible only to Admin users.-->
-<div class="container d-flex justify-content-end align-items-center" sec:authorize="hasRole('ADMIN')">
-    <!--Divider -->
-    <hr class="my-4">
-
-    <span class="mx-2">zum Roles List:</span>
-    <a th:href="@{/role/list}">
-        <button type="button" class="btn btn-dark">
-            Roles
-        </button>
-    </a>
-</div>
-
-
-<!--Divider -->
-<hr class="my-4">
-
-<!-- Login/Logout Buttons -->
-<div class="col-md-12 d-flex justify-content-center align-items-center">
-
-    <!--    Button visible only wenn someone is not login/authenticated-->
-    <th:block th:if="${not #authorization.expression('isAuthenticated()')}">
-        <a th:href="@{/login}">
-            <button type="button" class="btn btn-success mt-5 mx-3 ">
-                Login
-            </button>
-        </a>
-    </th:block>
-
-
-    <!--    Button visible only to authenticated users.-->
-    <a th:href="@{/logout}">
-        <button type="button" class="btn btn-danger mt-5 mx-3"
-                sec:authorize="isAuthenticated()">
-            Logout
-        </button>
-    </a>
-
-</div>
-
+</div> <!-- END main container -->
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"

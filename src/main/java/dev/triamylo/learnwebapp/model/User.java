@@ -140,4 +140,8 @@ public class User {
         return Objects.hash(uuid);
     }
 
+    public void addRole(Role role){
+        roles.add(role);
+    }
+
 }

@@ -1,8 +1,11 @@
 package dev.triamylo.learnwebapp.controller;
 
+import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
+import dev.triamylo.learnwebapp.service.RoleServiceImp;
 import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController extends AbstractController {
@@ -22,8 +27,11 @@ public class UserController extends AbstractController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final RoleServiceImp roleService;
+
+    public UserController(UserService userService, RoleServiceImp roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     ;
@@ -71,9 +79,12 @@ public class UserController extends AbstractController {
 
         if (user != null) {
 
+            List<Role> roleList = rolesThatTheUserDoNotHave(user);
+
             //if the user is admin, he can do with all the user.
             if (hasAdminRole(principal)) {
                 model.addAttribute("user", user);
+                model.addAttribute("roles", roleList); // Add the roles to the model
                 addDoBRanges(model);
                 return "user/userFormula";
             }
@@ -84,7 +95,7 @@ public class UserController extends AbstractController {
 
     @GetMapping("/user/delete/{uuid}")
     public String deleteObject(@PathVariable String uuid, Principal principal) {
-        if(hasAdminRole(principal)){
+        if (hasAdminRole(principal)) {
 
             userService.delete(uuid);
             //with redirect, will refresh the page users!
@@ -113,6 +124,7 @@ public class UserController extends AbstractController {
      * if there is a need of a logic I will be writing it in a Service class and
      * call it from this method.
      */
+
     @PostMapping("/user/post")
     public String postObject(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model, Principal principal) {
 
@@ -176,10 +188,35 @@ public class UserController extends AbstractController {
     }
 
 
+    @PostMapping("user/addRole/{uuid}")
+    public String postUserAddRole(@PathVariable String uuid, Model model){
+        Role newRole = roleService.get(uuid);
+
+        String test =(String) model.getAttribute("usersUuid");
+
+        User user = userService.get(test);
+
+        user.addRole(newRole);
+
+        return "redirect:/user/update/{uuid}";
+    }
+
+
+
+
     //    extra prüfung, dass die Daten die ich von der Form bekomme, sind richtig.
+
     private void addDoBRanges(Model model) {
         model.addAttribute("dobMin", MIN_DOB_YEAR + "-01-01");
         model.addAttribute("dobMax", MAX_DOB_YEAR + "-01-01");
+    }
+
+    private List<Role> rolesThatTheUserDoNotHave(User user) {
+        List<Role> allAvailableRoles = roleService.list();
+        List<Role> userRoles = user.getRoles();
+
+        return allAvailableRoles.stream().filter(role -> !userRoles.contains(role))
+                .collect(Collectors.toList());
     }
 
 

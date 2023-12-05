@@ -1,5 +1,6 @@
 package dev.triamylo.learnwebapp.service;
 
+import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -73,5 +74,6 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findByUsername(String name) {
         return userRepository.findByUsername(name);
     }
+
 
 }
