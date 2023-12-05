@@ -5,7 +5,7 @@ import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.RoleServiceImp;
 import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.boot.Banner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,14 +26,12 @@ public class UserController extends AbstractController {
 
     private final UserService userService;
 
-    private final RoleServiceImp roleService;
+    @Autowired
+    private RoleServiceImp roleService;
 
-    public UserController(UserService userService, RoleServiceImp roleService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.roleService = roleService;
     }
-
-    ;
 
 
     @GetMapping("/user/create")
@@ -189,10 +186,10 @@ public class UserController extends AbstractController {
 
 
     @PostMapping("user/addRole/{uuid}")
-    public String postUserAddRole(@PathVariable String uuid, Model model){
+    public String postUserAddRole(@PathVariable String uuid, Model model) {
         Role newRole = roleService.get(uuid);
 
-        String test =(String) model.getAttribute("usersUuid");
+        String test = (String) model.getAttribute("usersUuid");
 
         User user = userService.get(test);
 
@@ -200,8 +197,6 @@ public class UserController extends AbstractController {
 
         return "redirect:/user/update/{uuid}";
     }
-
-
 
 
     //    extra prüfung, dass die Daten die ich von der Form bekomme, sind richtig.
