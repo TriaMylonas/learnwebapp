@@ -12,23 +12,22 @@
 
 
 <div class="container">
-    <!-- 1.ROW der Title -->
-    <div class="row h2 m-2 container-lg  bg-primary p-2 text-white bg-opacity-75">
+    <!-- 1.ROW - Title -->
+    <div class="row justify-content-center h2 m-2 container-lg  bg-primary p-2 text-white bg-opacity-75">
         I am learning Web Application Entwicklung!
     </div>
 
 
-    <!-- 2.ROW die Subtitle-->
+    <!-- 2.ROW - Subtitle -->
     <div class="row justify-content-center h4 mt-3 mb-4">
-        Hier ist eine Form zum Ausfüllen!!
+        Form für Nutzer zum Ausfüllen.
     </div>
 
 
-    <!-- 3.ROW der User-Form & Roles-Form    -->
+    <!-- 3.ROW - USER-Formula -->
     <div class="row justify-content-evenly">
-
-        <!-- USER FORMULA -->
-        <form class="col" th:action="@{/user/post}" th:object="${user}" method="POST">
+        <!-- form -->
+        <form class="col-7" th:action="@{/user/post}" th:object="${user}" method="POST">
 
             <!--    das in sehr interessant!-->
             <input type="hidden" th:field="*{uuid}" th:id="uuid"/>
@@ -114,61 +113,73 @@
                 </span>
             </div>
         </form>
-
-        <!--   ROLE FORMULA -->
-        <div class="col" th:if="${user.uuid != null}">
-
-            <!-- ERSTE ROW -->
-            <form class="my-5" th:action="@{'/user/addRole/'+${user.uuid}}" method="post">
-
-                <!--    DROP DOWN  form to assign the role-->
-                <label class="row justify-content-around">
-                    <select class="col-4 border border-secondary rounded" th:name="selectedRole">
-
-                        <!-- Add a default option -->
-                        <option value="">Select a Role</option>
-
-                        <!-- Iterate over the roles and generate options -->
-                        <option th:each ="role:${roles}" th:value="${role.roleName}" th:text="${role.roleName}"></option>
-                    </select>
-
-                    <button type="submit"
-                            class="col-2 border border-secondary rounded btn btn-primary">
-                        Addieren
-                    </button>
-                </label>
-            </form>
+    </div>
 
 
-            <!-- ZWEITE ROW -->
-            <table class="table table-striped table-bordered mt-5">
+    <!-- Divider -->
+    <hr class="my-5 dotted">
+
+
+    <!-- 4.ROW - ROLE-Formula -->
+    <div class="row justify-content-center" th:if="${user.uuid != null}">
+
+        <!-- Form -->
+        <form class="row justify-content-center my-5" th:action="@{'/user/addRole/'+${user.uuid}}" method="post">
+
+            <!--    DROP DOWN  form to assign the role-->
+            <label class="row justify-content-around">
+                <select class="col-4 border border-secondary rounded" th:name="selectedRole">
+
+                    <!-- Add a default option -->
+                    <option value="">Select a Role</option>
+
+                    <!-- Iterate over the roles and generate options -->
+                    <option th:each ="role:${roles}" th:value="${role.roleName}" th:text="${role.roleName}"></option>
+                </select>
+
+                <button type="submit"
+                        class="col-2 border border-secondary rounded btn btn-primary">
+                    Addieren
+                </button>
+            </label>
+        </form>
+
+
+        <!-- Table -->
+        <div class="col-10  ">
+            <table class="table table-striped table-bordered text-center mt-5">
                 <!-- TABLE WITH ROLES -->
                 <thead class="table-group-divider">
-                    <tr>
+                    <tr class="text-center">
                         <th scope="col">#</th>
                         <th scope="col">Role</th>
                         <th scope="col">Beschreibung</th>
+                        <th scope="col">Delete</th>
                     </tr>
                 </thead>
+
                 <tbody class="table-group-divider ">
                     <tr th:each="role,status:${user.getRoles()}">
                         <td th:text="${status.index + 1}">Nr. </td>
                         <td th:text="${role.roleName}">Name</td>
                         <td th:text="${role.roleDescription}">Beschreibung</td>
+                        <td style="width: 10%;">
+                            <button class="btn btn-danger">Löschen</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Viertes Row der Divider -->
-    <div class="row">
-        <hr class="mb-5 mt-3">
-    </div>
 
-    <!-- Fünfte Row der Login/Logout Buttons -->
-    <div class="row justify-content-evenly">
-        <div class="col-2">
+    <!-- Divider -->
+    <hr class="mb-5 mt-3">
+
+
+    <!-- 5.ROW Login/Logout Buttons -->
+    <div class="row m-3 d-flex justify-content-between ">
+        <div class="col-4">
             <!--    Button visible only wenn someone is not login/authenticated-->
             <th:block th:if="${not #authorization.expression('isAuthenticated()')}">
                 <a th:href="@{/login}">
@@ -180,14 +191,14 @@
         </div>
         <div class="col-4">
             <!--    Button visible only to authenticated users.-->
-            <a th:href="@{/logout}">
-                <button type="button" class="btn btn-danger"
+            <a th:href="@{/logout}" class="">
+                <button type="button" class="btn btn-danger justify-self-center"
                         sec:authorize="isAuthenticated()">
                     Logout
                 </button>
             </a>
         </div>
-        <div class="col-2">
+        <div class="col-1">
             <a th:href="@{/role/list}" sec:authorize="hasRole('ADMIN')">
                 <button type="button" class="btn btn-dark">
                     Roles
