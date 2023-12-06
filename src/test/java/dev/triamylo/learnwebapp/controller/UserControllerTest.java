@@ -1,7 +1,9 @@
 package dev.triamylo.learnwebapp.controller;
 
 import dev.triamylo.learnwebapp.AbstractApplicationTests;
+import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
+import dev.triamylo.learnwebapp.service.RoleService;
 import dev.triamylo.learnwebapp.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,10 @@ import org.springframework.validation.DirectFieldBindingResult;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -37,8 +42,56 @@ class UserControllerTest extends AbstractApplicationTests {
     void setUp() {
         // κάναμε to UserService interface και με αυτό τον τρόπο είμαστε υποχρεωμένει να υλοποιήσουμε όλες τις
         // μεθόδους του.
-        controller = new UserController(new UserService() {
 
+
+        RoleService roleService = new RoleService() {
+
+            private final ArrayList<Role> roles = new ArrayList<>();
+
+            @Override
+            public List<Role> list() {
+                Role role1 = new Role("role1");
+                roles.add(role1);
+                Role role2 = new Role("role2");
+                roles.add(role2);
+                Role role3 = new Role("role3");
+                roles.add(role3);
+                return roles;
+            }
+
+            @Override
+            public void add(Role role) {
+                roles.add(role);
+            }
+
+            @Override
+            public void delete(String uuid) {
+                roles.remove(get(uuid));
+            }
+
+            @Override
+            public Role get(String uuid) {
+                List<Role> roles = list();
+                return roles.stream().filter(role -> role.getUuid().equals(uuid)).findFirst().orElse(null);
+            }
+
+            @Override
+            public void update(Role role) {
+                for (Role oldRole : list()) {
+                    if (oldRole.getUuid().equals(role.getUuid())) {
+                        oldRole.setRoleName(role.getRoleName());
+                        oldRole.setRoleDescription(role.getRoleDescription());
+                    }
+                }
+            }
+
+            @Override
+            public Role findByName(String selectedRole) {
+                List<Role> roles = list();
+                return roles.stream().filter(role -> role.getRoleName().equals(selectedRole)).findFirst().orElse(null);
+            }
+        };
+        UserService userService = new UserService() {
             private final List<User> list = new ArrayList<>();
 
             //     προσθέτουμε user se mia lista san na einai i database mas
@@ -70,17 +123,12 @@ class UserControllerTest extends AbstractApplicationTests {
 
             @Override
             public User get(String uuid) {
-                for (User user : list()) {
-                    if (user.getUuid().equals(uuid)) {
-                        return user;
-                    }
-                }
-                return null;
+                List<User> users = list();
+                return users.stream().filter(user -> user.getUuid().equals(uuid)).findFirst().orElse(null);
             }
 
             @Override
             public void update(User aUser) {
-
                 for (User user : list()) {
                     if (user.getUuid().equals(aUser.getUuid())) {
                         user.setFirstName(aUser.getFirstName());
@@ -100,12 +148,15 @@ class UserControllerTest extends AbstractApplicationTests {
             }
 
             @Override
-            public Optional<User> findByUsername(String name){
+            public Optional<User> findByUsername(String name) {
 
                 List<User> users = list();
                 return users.stream().filter(user -> user.getUsername().equals(name)).findFirst();
             }
-        });
+        };
+
+
+        controller = new UserController(userService, roleService);
 
         model = new ConcurrentModel();
 
@@ -138,16 +189,16 @@ class UserControllerTest extends AbstractApplicationTests {
 
     @Test
     void usersWithNoneRoleSeeTheUserList() {
-        var site = controller.getList(model,principal);
+        var site = controller.getList(model, principal);
         assertNotNull(site);
         assertEquals("error/ErrorNotAuthorized", site);
     }
 
     @Test
-    void usersWithAdminRoleSeeTheUserList(){
+    void usersWithAdminRoleSeeTheUserList() {
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
-        var site = controller.getList(model,mockPrincipal);
+        var site = controller.getList(model, mockPrincipal);
 
         assertNotNull(site);
         assertEquals("user/userList", site);
@@ -159,7 +210,7 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void updateUserWithAdminRole(){
+    void updateUserWithAdminRole() {
 
         var mockPrincipal = getMockPrincipal("ROLE_ADMIN");
 
@@ -178,7 +229,7 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void updateObjectNullUuid(){
+    void updateObjectNullUuid() {
         var updateSiteNull = controller.updateObject("", model, principal);
 
         assertNotNull(updateSiteNull);
@@ -186,10 +237,10 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void updateObjectNoneRole(){
+    void updateObjectNoneRole() {
 
         var mockPrincipal = getMockPrincipal("ROLE_NONe");
-        var update = controller.updateObject("uuid-1",model,mockPrincipal);
+        var update = controller.updateObject("uuid-1", model, mockPrincipal);
 
         assertNotNull(update);
         assertEquals("redirect:/user/list", update);
@@ -206,7 +257,7 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void deleteObjectNoRole(){
+    void deleteObjectNoRole() {
 
         var mockPrincipal = getMockPrincipal("ROLE_NONe");
         var delete = controller.deleteObject("uuid-1", mockPrincipal);
@@ -234,7 +285,7 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void postObjectWithBindingErrors(){
+    void postObjectWithBindingErrors() {
         //create the parameters for the method
         User newUser = getNewUser();
 
@@ -252,7 +303,7 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void postObjectWrongDayOfBirth(){
+    void postObjectWrongDayOfBirth() {
         //create the parameters for the method
         User newUser = getNewUser();
         newUser.setDob(LocalDate.of(1119, 5, 5));
@@ -270,7 +321,7 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void postObjectAdminRoleUpdateUser(){
+    void postObjectAdminRoleUpdateUser() {
 
         //create the parameters for the method
         User newUser = getNewUser();
@@ -288,8 +339,9 @@ class UserControllerTest extends AbstractApplicationTests {
         assertNotNull(site);
         assertEquals("redirect:/user/list", site);
     }
+
     @Test
-    void postObjectAdminRoleAddUser(){
+    void postObjectAdminRoleAddUser() {
 
         //create the parameters for the method
         User newUser = getNewUser();
@@ -309,7 +361,7 @@ class UserControllerTest extends AbstractApplicationTests {
     }
 
     @Test
-    void postObjectNoLoginUpdateUser(){
+    void postObjectNoLoginUpdateUser() {
         //someone without login try to update a user just sending the url to the server!
         //but we are thought about that, and we are prepared
         var newUser = getNewUser();
@@ -320,27 +372,27 @@ class UserControllerTest extends AbstractApplicationTests {
         String responseSite = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         assertNotNull(responseSite);
-        assertEquals("error/ErrorNotAuthorized",responseSite);
+        assertEquals("error/ErrorNotAuthorized", responseSite);
     }
 
     @Test
-    void postObjectWithUserRoleAddNewUser(){
+    void postObjectWithUserRoleAddNewUser() {
 
         var newUser = getNewUser();
         // add new user means until now he has no uuid!
         newUser.setUuid("");
 
         var mockPrincipal = getMockPrincipal("ROLE_USER");
-        var bindingResult = new DirectFieldBindingResult(newUser,"user");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
 
-        String responseSite = controller.postObject(newUser,bindingResult,model,mockPrincipal);
+        String responseSite = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         assertNotNull(responseSite);
-        assertEquals("success/SuccessfullyAdded",responseSite);
+        assertEquals("success/SuccessfullyAdded", responseSite);
     }
 
     @Test
-    void postObjectWithUserRoleUpdateHisOwnData(){
+    void postObjectWithUserRoleUpdateHisOwnData() {
         var newUser = getNewUser();
         //we have user form 1-10 in our test database!
         newUser.setUsername("1");
@@ -350,20 +402,20 @@ class UserControllerTest extends AbstractApplicationTests {
         // mockup that the login username is 1 like the one in the user object...
         when(mockPrincipal.getName()).thenReturn("1");
 
-        String responseSite = controller.postObject(newUser,bindingResult,model,mockPrincipal);
+        String responseSite = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         assertNotNull(responseSite);
         assertEquals("success/SuccessfullyAdded", responseSite);
     }
 
     @Test
-    void postObjectWithUserRoleUpdateOtherData(){
+    void postObjectWithUserRoleUpdateOtherData() {
 
         var newUser = getNewUser();
         var mockPrincipal = getMockPrincipal("ROLE_USER");
-        var bindingResult = new DirectFieldBindingResult(newUser,"user");
+        var bindingResult = new DirectFieldBindingResult(newUser, "user");
 
-        String responseSite = controller.postObject(newUser,bindingResult,model,mockPrincipal);
+        String responseSite = controller.postObject(newUser, bindingResult, model, mockPrincipal);
 
         assertNotNull(responseSite);
         assertEquals("error/ErrorNotAuthorized", responseSite);
@@ -371,27 +423,27 @@ class UserControllerTest extends AbstractApplicationTests {
 
 
     @Test
-    void seeOnlyYourDataUserRolePositiv(){
+    void seeOnlyYourDataUserRolePositiv() {
         var mockPrincipal = getMockPrincipal("ROLE_USER");
         when(mockPrincipal.getName()).thenReturn("1");
 
-        String responseSite = controller.readObject(model,mockPrincipal);
+        String responseSite = controller.readObject(model, mockPrincipal);
 
-        assertEquals("user/userFormula", responseSite );
+        assertEquals("user/userFormula", responseSite);
     }
 
     @Test
-    void seeOnlyYourDataNoneRole(){
+    void seeOnlyYourDataNoneRole() {
         var mockPrincipal = getMockPrincipal("NONE_ROLE");
         when(mockPrincipal.getName()).thenReturn("1");
 
-        String responseSite = controller.readObject(model,mockPrincipal);
+        String responseSite = controller.readObject(model, mockPrincipal);
 
         assertEquals("error/ErrorNotAuthorized", responseSite);
     }
 
     @Test
-    void seeOnlyYourDataNoUser(){
+    void seeOnlyYourDataNoUser() {
         var mockPrincipal = mock(Principal.class);
         when(mockPrincipal.getName()).thenReturn("asdf");
 
@@ -399,8 +451,6 @@ class UserControllerTest extends AbstractApplicationTests {
 
         assertEquals("index", responseSite);
     }
-
-
 
 
     private static UsernamePasswordAuthenticationToken getMockPrincipal(String role) {

@@ -2,11 +2,9 @@ package dev.triamylo.learnwebapp.controller;
 
 import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
-import dev.triamylo.learnwebapp.service.RoleServiceImp;
+import dev.triamylo.learnwebapp.service.RoleService;
 import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,9 +22,9 @@ public class UserController extends AbstractController {
 
     private final UserService userService;
 
-    private final RoleServiceImp roleService;
+    private final RoleService roleService;
 
-    public UserController(UserService userService, RoleServiceImp roleService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
     }
@@ -199,7 +197,7 @@ public class UserController extends AbstractController {
     }
 
     @PostMapping("user/{userUuid}/deleteRole/{roleUuid}")
-    public String deleteRoleFromUser(@PathVariable String userUuid, @PathVariable String roleUuid){
+    public String deleteRoleFromUser(@PathVariable String userUuid, @PathVariable String roleUuid) {
         // get the user from db
         User user = userService.get(userUuid);
         //get the role from db
@@ -210,7 +208,7 @@ public class UserController extends AbstractController {
         userService.update(user);
 
         //redirect to the user update page
-        return "redirect:/user/update/"+ userUuid;
+        return "redirect:/user/update/" + userUuid;
     }
 
 
