@@ -24,11 +24,11 @@ public class UserController extends AbstractController {
 
     private final UserService userService;
 
-    @Autowired
-    private RoleServiceImp roleService;
+    private final RoleServiceImp roleService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleServiceImp roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
 
