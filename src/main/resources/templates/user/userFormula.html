@@ -128,13 +128,13 @@
 
             <!--    DROP DOWN  form to assign the role-->
             <label class="row justify-content-around">
-                <select class="col-4 border border-secondary rounded" th:name="selectedRole">
+                <select class="col-4 border border-secondary rounded" th:name="roleUuid">
 
                     <!-- Add a default option -->
                     <option value="">Select a Role</option>
 
                     <!-- Iterate over the roles and generate options -->
-                    <option th:each ="role:${roles}" th:value="${role.roleName}" th:text="${role.roleName}"></option>
+                    <option th:each ="role:${notAssignRoles}" th:value="${role.uuid}" th:text="${role.roleName}"></option>
                 </select>
 
                 <button type="submit"

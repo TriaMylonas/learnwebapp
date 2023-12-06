@@ -72,12 +72,12 @@ public class UserController extends AbstractController {
 
         if (user != null) {
 
-            List<Role> roleList = rolesThatTheUserDoNotHave(user);
+            List<Role> notAssignRoles = rolesThatTheUserDoNotHave(user);
 
             //if the user is admin, he can do with all the user.
             if (hasAdminRole(principal)) {
                 model.addAttribute("user", user);
-                model.addAttribute("roles", roleList); // Add the roles to the model
+                model.addAttribute("notAssignRoles", notAssignRoles); // Add the roles to the model
                 addDoBRanges(model);
                 return "user/userFormula";
             }
@@ -182,9 +182,9 @@ public class UserController extends AbstractController {
 
 
     @PostMapping("user/{uuid}/addRole")
-    public String postUserAddRole(@PathVariable String uuid, @RequestParam String selectedRole) {
+    public String postUserAddRole(@PathVariable String uuid, @RequestParam String roleUuid) {
         // Get the selected role and add it to the user's roles
-        Role role = roleService.findByName(selectedRole);
+        Role role = roleService.get(roleUuid);
         //Get the user
         User user = userService.get(uuid);
         //Add the role to the user

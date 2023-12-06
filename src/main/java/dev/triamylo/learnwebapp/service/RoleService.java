@@ -15,4 +15,5 @@ public interface RoleService {
     void update(Role role);
 
     Role findByName(String selectedRole);
+
 }
