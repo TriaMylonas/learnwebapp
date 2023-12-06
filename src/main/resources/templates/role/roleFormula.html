@@ -63,15 +63,14 @@
                     Submit
                 </button>
 
-
-                <span>
-                    <a th:href="@{/role/list}">
-                        <!--    Button visible only to Admin users.-->
-                        <button type="button" class="btn btn-warning"
-                                sec:authorize="hasRole('ADMIN')"> Zur List
-                        </button>
-                    </a>
-                </span>
+<!--                <span>-->
+<!--                    <a th:href="@{/role/list}">-->
+<!--                        &lt;!&ndash;    Button visible only to Admin users.&ndash;&gt;-->
+<!--                        <button type="button" class="btn btn-warning"-->
+<!--                                sec:authorize="hasRole('ADMIN')"> Zur List-->
+<!--                        </button>-->
+<!--                    </a>-->
+<!--                </span>-->
 
                 <span>
                         <button type="button" class=" btn btn-secondary" onclick="history.back()">
