@@ -40,9 +40,6 @@ class UserControllerTest extends AbstractApplicationTests {
 
     @BeforeEach
     void setUp() {
-        // κάναμε to UserService interface και με αυτό τον τρόπο είμαστε υποχρεωμένει να υλοποιήσουμε όλες τις
-        // μεθόδους του.
-
 
         RoleService roleService = new RoleService() {
 

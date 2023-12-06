@@ -34,6 +34,9 @@ public class User {
     @Column(unique = true)
     private String username;
 
+    @NotNull
+    @NotEmpty
+    private String password;
     @NotEmpty
     @NotNull
     @Size(min = 1, max = 20)
@@ -120,6 +123,14 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override
