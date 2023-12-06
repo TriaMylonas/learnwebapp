@@ -72,6 +72,16 @@ class RoleControllerTest extends AbstractApplicationTests {
                 }
             }
 
+            @Override
+            public Role findByName(String selectedRole) {
+                for (Role role : list()) {
+                    if (role.getRoleName().equals(selectedRole)) {
+                        return role;
+                    }
+                }
+                return null;
+            }
+
         });
     }
 
