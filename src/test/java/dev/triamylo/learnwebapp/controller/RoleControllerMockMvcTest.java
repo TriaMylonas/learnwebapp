@@ -126,7 +126,7 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/role/delete/{uuid}", uuid))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/role/roleList"));
+                .andExpect(view().name("redirect:/role/list"));
 
         Assertions.assertTrue(roleRepository.findByRoleName("role1").isPresent());
         Assertions.assertFalse(roleRepository.findByRoleName("role2").isPresent());
@@ -142,7 +142,7 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/role/delete/{uuid}", uuid))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/role/roleList"));
+                .andExpect(view().name("redirect:/role/list"));
         //nothing in the testDB deleted
         Assertions.assertTrue(roleRepository.findByRoleName("role1").isPresent());
         Assertions.assertTrue(roleRepository.findByRoleName("role2").isPresent());

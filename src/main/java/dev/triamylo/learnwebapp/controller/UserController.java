@@ -181,7 +181,7 @@ public class UserController extends AbstractController {
     }
 
 
-    @PostMapping("user/{uuid}/addRole")
+    @PostMapping("/user/{uuid}/addRole")
     public String postUserAddRole(@PathVariable String uuid, @RequestParam String roleUuid) {
         // Get the selected role and add it to the user's roles
         Role role = roleService.get(roleUuid);
@@ -196,7 +196,7 @@ public class UserController extends AbstractController {
         return "redirect:/user/update/" + user.getUuid();
     }
 
-    @PostMapping("user/{userUuid}/deleteRole/{roleUuid}")
+    @PostMapping("/user/{userUuid}/deleteRole/{roleUuid}")
     public String deleteRoleFromUser(@PathVariable String userUuid, @PathVariable String roleUuid) {
         // get the user from db
         User user = userService.get(userUuid);
@@ -213,7 +213,6 @@ public class UserController extends AbstractController {
 
 
     //    extra prüfung, dass die Daten die ich von der Form bekomme, sind richtig.
-
     private void addDoBRanges(Model model) {
         model.addAttribute("dobMin", MIN_DOB_YEAR + "-01-01");
         model.addAttribute("dobMax", MAX_DOB_YEAR + "-01-01");

@@ -1,7 +1,9 @@
 package dev.triamylo.learnwebapp.controller;
 
 import dev.triamylo.learnwebapp.AbstractMockUpTests;
+import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
+import dev.triamylo.learnwebapp.repository.RoleRepository;
 import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,11 +31,14 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     private UserRepository repository;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private MockMvc mockMvc;
 
     private String uuid;
 
-
+    private String roleUuid;
     @BeforeEach
     void setUp() {
         // Clean database before test
@@ -52,6 +57,13 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
             uuid = u.getUuid();
         }
         assertEquals(10, repository.count());
+
+
+        roleRepository.deleteAll();
+        Role role1 = new Role("role1");
+        role1.setRoleDescription("description1");
+        roleRepository.save(role1);
+        roleUuid = role1.getUuid();
     }
 
 
@@ -363,5 +375,37 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/userFormula"));
     }
+
+
+    @Test
+    @WithMockUser
+    void postUserAddRole() throws Exception{
+
+        Optional<User> testUser = repository.findByUsername("1");
+        assertTrue(testUser.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/"+testUser.get().getUuid()+"/addRole")
+                .param("roleUuid", "1")
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/user/update/"+testUser.get().getUuid()));
+    }
+
+    @Test
+    @WithMockUser
+    void deleteRoleFromUser() throws Exception{
+
+        Optional<User> testUser = repository.findByUsername("1");
+        assertTrue(testUser.isPresent());
+
+        Optional<Role> optionalRole = roleRepository.findById(roleUuid);
+        assertTrue(optionalRole.isPresent());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/"+testUser.get().getUuid()+"/deleteRole/"+optionalRole.get().getUuid())
+                .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("redirect:/user/update/"+testUser.get().getUuid()));
+    }
+
 
 }

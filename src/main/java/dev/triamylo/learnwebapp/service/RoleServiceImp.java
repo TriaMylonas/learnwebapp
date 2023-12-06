@@ -50,9 +50,4 @@ public class RoleServiceImp implements RoleService{
         roleRepository.save(oldRole);
     }
 
-    @Override
-    public Role findByName(String selectedRole) {
-        return roleRepository.findByRoleName(selectedRole).orElse(null);
-    }
-
 }

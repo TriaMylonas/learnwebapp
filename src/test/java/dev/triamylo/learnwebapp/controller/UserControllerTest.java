@@ -4,6 +4,7 @@ import dev.triamylo.learnwebapp.AbstractApplicationTests;
 import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.RoleService;
+import dev.triamylo.learnwebapp.service.RoleServiceImp;
 import dev.triamylo.learnwebapp.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,10 +49,13 @@ class UserControllerTest extends AbstractApplicationTests {
             @Override
             public List<Role> list() {
                 Role role1 = new Role("role1");
+                role1.setUuid("1");
                 roles.add(role1);
                 Role role2 = new Role("role2");
+                role2.setUuid("2");
                 roles.add(role2);
                 Role role3 = new Role("role3");
+                role3.setUuid("3");
                 roles.add(role3);
                 return roles;
             }
@@ -80,12 +84,6 @@ class UserControllerTest extends AbstractApplicationTests {
                         oldRole.setRoleDescription(role.getRoleDescription());
                     }
                 }
-            }
-
-            @Override
-            public Role findByName(String selectedRole) {
-                List<Role> roles = list();
-                return roles.stream().filter(role -> role.getRoleName().equals(selectedRole)).findFirst().orElse(null);
             }
         };
         UserService userService = new UserService() {
@@ -448,6 +446,24 @@ class UserControllerTest extends AbstractApplicationTests {
 
         assertEquals("index", responseSite);
     }
+
+    @Test
+    void  addRoleToUser(){
+
+        String responseSite = controller.postUserAddRole("uuid-1","1");
+        assertNotNull(responseSite);
+        assertEquals("redirect:/user/update/uuid-1", responseSite);
+    }
+
+    @Test
+    void  deleteRoleFromUser(){
+
+        String responseSite = controller.deleteRoleFromUser("uuid-1","1");
+        assertNotNull(responseSite);
+        assertEquals("redirect:/user/update/uuid-1", responseSite);
+    }
+
+
 
 
     private static UsernamePasswordAuthenticationToken getMockPrincipal(String role) {

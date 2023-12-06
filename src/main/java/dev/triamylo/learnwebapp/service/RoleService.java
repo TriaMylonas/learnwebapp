@@ -13,7 +13,4 @@ public interface RoleService {
     void delete(String uuid);
     Role get(String uuid);
     void update(Role role);
-
-    Role findByName(String selectedRole);
-
 }
