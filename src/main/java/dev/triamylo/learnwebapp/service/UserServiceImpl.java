@@ -3,6 +3,7 @@ package dev.triamylo.learnwebapp.service;
 import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -11,6 +12,7 @@ import java.util.*;
  * This service can add, update or delete users. The service shows the know user.
  */
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
 
@@ -65,9 +67,7 @@ public class UserServiceImpl implements UserService {
     //find the user objekt by his name from the database
     @Override
     public Optional<User> findByFirstName(String name) {
-
         return userRepository.findByFirstName(name);
-
     }
 
     @Override

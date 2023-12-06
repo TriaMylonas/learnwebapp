@@ -124,7 +124,7 @@
     <div class="row justify-content-center" th:if="${user.uuid != null}">
 
         <!-- Form -->
-        <form class="row justify-content-center my-5" th:action="@{'/user/addRole/'+${user.uuid}}" method="post">
+        <form class="row justify-content-center my-5" th:action="@{'/user/' +${user.uuid} +'/addRole'}" method="post">
 
             <!--    DROP DOWN  form to assign the role-->
             <label class="row justify-content-around">
@@ -164,7 +164,10 @@
                         <td th:text="${role.roleName}">Name</td>
                         <td th:text="${role.roleDescription}">Beschreibung</td>
                         <td style="width: 10%;">
-                            <button class="btn btn-danger">Löschen</button>
+                            <!-- Add a form for each delete/change request in our server, with post request the parameters is not in the url  -->
+                            <form th:action="@{'/user/'+${user.uuid}+'/deleteRole/'+ ${role.uuid}}" method="post">
+                                <button class="btn btn-danger">Löschen</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>

@@ -183,7 +183,7 @@ public class UserController extends AbstractController {
     }
 
 
-    @PostMapping("user/addRole/{uuid}")
+    @PostMapping("user/{uuid}/addRole")
     public String postUserAddRole(@PathVariable String uuid, @RequestParam String selectedRole) {
         // Get the selected role and add it to the user's roles
         Role role = roleService.findByName(selectedRole);
@@ -194,8 +194,23 @@ public class UserController extends AbstractController {
         // Update the user with the new role
         userService.update(user);
 
-        // Redirect to the user update page or any other page as needed
+        // Redirect to the user update page
         return "redirect:/user/update/" + user.getUuid();
+    }
+
+    @PostMapping("user/{userUuid}/deleteRole/{roleUuid}")
+    public String deleteRoleFromUser(@PathVariable String userUuid, @PathVariable String roleUuid){
+        // get the user from db
+        User user = userService.get(userUuid);
+        //get the role from db
+        Role role = roleService.get(roleUuid);
+        //remove the role from users roleList
+        user.getRoles().remove(role);
+        // update the user
+        userService.update(user);
+
+        //redirect to the user update page
+        return "redirect:/user/update/"+ userUuid;
     }
 
 
