@@ -1,12 +1,14 @@
 package dev.triamylo.learnwebapp.service;
 
-import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This service can add, update or delete users. The service shows the know user.
@@ -15,6 +17,8 @@ import java.util.*;
 @Transactional
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
 
@@ -23,15 +27,15 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-
     @Override
-    public List<User> list(){
-     return (List<User>) userRepository.findAll();
+    public List<User> list() {
+        return (List<User>) userRepository.findAll();
     }
 
     @Override
-    public void add(User user){
+    public void add(User user) {
+        //ich hash der password erstmal, und dann schicke ich zu DB
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -41,26 +45,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User get(String uuid){
+    public User get(String uuid) {
         return userRepository.findById(uuid).orElse(null);
     }
 
 
     @Override
     public void update(User aUser) {
-
-        User altUser = userRepository.findById(aUser.getUuid()).orElse(null);
-
-        if(altUser == null){
+        User existingUser = userRepository.findById(aUser.getUuid()).orElse(null);
+        if(existingUser == null){
             return;
         }
 
-        altUser.setFirstName(aUser.getFirstName());
-        altUser.setLastName(aUser.getLastName());
-        altUser.setDob(aUser.getDob());
-        altUser.setHeight(aUser.getHeight());
+        // Update changes
+        existingUser.setFirstName(aUser.getFirstName());
+        existingUser.setLastName(aUser.getLastName());
+        existingUser.setUsername(aUser.getUsername());
+        existingUser.setDob(aUser.getDob());
+        existingUser.setHeight(aUser.getHeight());
 
-        userRepository.save(altUser);
+        // Update password and encode password, if password is set
+        if (aUser.getPassword() != null && !aUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(aUser.getPassword()));
+        }
+
+        userRepository.save(existingUser);
     }
 
 

@@ -297,9 +297,8 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
         Role role = roleRepository.findByRoleName("role1").get();
         Assertions.assertNotNull(role);
         Assertions.assertEquals(role.getRoleDescription(),"description1");
-
-
     }
+
 
 
 

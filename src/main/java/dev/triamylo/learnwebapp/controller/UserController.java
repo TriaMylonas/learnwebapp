@@ -76,6 +76,7 @@ public class UserController extends AbstractController {
 
             //if the user is admin, he can do with all the user.
             if (hasAdminRole(principal)) {
+                user.setPassword(null);
                 model.addAttribute("user", user);
                 model.addAttribute("notAssignRoles", notAssignRoles); // Add the roles to the model
                 addDoBRanges(model);

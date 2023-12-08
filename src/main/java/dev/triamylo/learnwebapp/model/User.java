@@ -17,7 +17,7 @@ import java.util.Objects;
 @Table(name = "users")
 public class User {
 
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH},fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_role",
             joinColumns = {@JoinColumn(name = "user_uuid")},
@@ -26,17 +26,17 @@ public class User {
     private List<Role> roles = new ArrayList<>();
 
 
-
     @Id
     @UuidGenerator
     private String uuid;
 
     @Column(unique = true)
+    @NotNull
+    @NotEmpty
     private String username;
 
-//    @NotNull
-//    @NotEmpty
-//    private String password;
+    @Column(nullable = false)
+    private String password;
     @NotEmpty
     @NotNull
     @Size(min = 1, max = 20)
@@ -125,13 +125,13 @@ public class User {
         this.lastName = lastName;
     }
 
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     @Override
     public String toString() {
@@ -151,7 +151,7 @@ public class User {
         return Objects.hash(uuid);
     }
 
-    public void addRole(Role role){
+    public void addRole(Role role) {
         roles.add(role);
     }
 

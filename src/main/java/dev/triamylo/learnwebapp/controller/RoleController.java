@@ -1,7 +1,9 @@
 package dev.triamylo.learnwebapp.controller;
 
 import dev.triamylo.learnwebapp.model.Role;
+import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.RoleService;
+import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,7 +57,25 @@ public class RoleController extends AbstractController {
 
     @GetMapping("/role/delete/{uuid}")
     public String deleteObject(@PathVariable String uuid) {
-        roleService.delete(uuid);
+
+        Role role = roleService.get(uuid);
+
+        if(role != null ){
+
+            //löscht die Role auch von des Users
+            List<User> userWithThisRole = role.getUsers();
+
+            for (User user : userWithThisRole) {
+                user.getRoles().remove(role);
+            }
+
+            userWithThisRole.clear();
+            //Die Änderungen muss wieder in der DB gespeichert werden.
+            roleService.update(role);
+            //Jetzt kann ich der Role Löschen
+            roleService.delete(uuid);
+        }
+
         return "redirect:/role/list";
     }
 

@@ -6,20 +6,22 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
-public class RoleServiceImp implements RoleService{
+public class RoleServiceImp implements RoleService {
 
     private final RoleRepository roleRepository;
-    public RoleServiceImp(RoleRepository roleRepository){
+
+    public RoleServiceImp(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
+
     @Override
     public List<Role> list() {
         return (List<Role>) roleRepository.findAll();
     }
+
     @Override
     public void add(Role role) {
         roleRepository.save(role);
@@ -27,7 +29,7 @@ public class RoleServiceImp implements RoleService{
 
 
     @Override
-    public void delete(String uuid){
+    public void delete(String uuid) {
         roleRepository.deleteById(uuid);
     }
 
@@ -38,16 +40,7 @@ public class RoleServiceImp implements RoleService{
 
     @Override
     public void update(Role role) {
-        Role oldRole = roleRepository.findById(role.getUuid()).orElse(null);
-
-        if(oldRole == null){
-            return;
-        }
-
-        oldRole.setRoleName(role.getRoleName());
-        oldRole.setRoleDescription(role.getRoleDescription());
-
-        roleRepository.save(oldRole);
+        roleRepository.save(role);
     }
 
 }

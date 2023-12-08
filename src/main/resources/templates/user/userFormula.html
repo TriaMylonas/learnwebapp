@@ -10,7 +10,6 @@
 <body>
 
 
-
 <div class="container">
     <!-- 1.ROW - Title -->
     <div class="row justify-content-center h2 m-2 container-lg  bg-primary p-2 text-white bg-opacity-75">
@@ -31,6 +30,21 @@
 
             <!--    das in sehr interessant!-->
             <input type="hidden" th:field="*{uuid}" th:id="uuid"/>
+
+            <!-- the first field of the form, the first name -->
+            <div class="mb-3">
+                <label for="username"
+                       class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+                       style="--bs-bg-opacity:.5" th:text="Username">Username
+                </label>
+                <input type="text" th:field="*{username}" class="form-control border border-secondary rounded"
+                       id="username"
+                       placeholder="Username"
+                />
+                <!--        validation of the name as Denis ask. This will only appear if the is something wrong-->
+                <div class="container" th:if="${#fields.hasErrors('username')}" th:errors="${user.username}">
+                </div>
+            </div>
 
             <!-- the first field of the form, the first name -->
             <div class="mb-3">
@@ -56,6 +70,33 @@
                        class="form-control  border border-secondary rounded"
                        placeholder="Nachname">
                 <div class="container" th:if="${#fields.hasErrors('lastName')}" th:errors="${user.lastName}">
+                </div>
+            </div>
+
+            <!-- the password field of the form, the password  -->
+            <div class="mb-3">
+                <label for="password"
+                       class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+                       style="--bs-bg-opacity:.5">Passwort</label>
+                <input type="password" th:field="${user.password}" id="password"
+                       class="form-control  border border-secondary rounded"
+                       placeholder="Passwort"
+                       onchange="checkPassword()">
+                <div class="container" th:if="${#fields.hasErrors('password')}" th:errors="${user.password}">
+                </div>
+            </div>
+
+            <!-- the confirmation password field of the form, the password  -->
+            <div class="mb-3">
+                <label for="confirmPassword"
+                       class="form-label pt-1 pb-1 px-3 bg-secondary  border border-secondary rounded"
+                       style="--bs-bg-opacity:.5">Bestätige Passwort</label>
+                <input type="password" id="confirmPassword"
+                       onchange="checkPassword()"
+                       class="form-control  border border-secondary rounded"
+                       placeholder="Bestätige Passwort">
+                <div class="container" id="confirmPasswordError" hidden="hidden">
+                    Die Passwörter stimmen nicht überein.
                 </div>
             </div>
 
@@ -92,19 +133,19 @@
 
             <div class=" d-flex justify-content-between">
 
-                <button type="submit" class="btn btn-primary ">
+                <button type="submit" class="btn btn-primary" id="submitButton">
                     Submit
                 </button>
 
-<!--                <span>-->
-<!--                    <a th:href="@{/user/list}">-->
-<!--                        &lt;!&ndash;    Button visible only to Admin users.&ndash;&gt;-->
-<!--                        <button type="button" class="btn btn-warning"-->
-<!--                                sec:authorize="hasRole('ADMIN')">-->
-<!--                            Zur List-->
-<!--                        </button>-->
-<!--                    </a>-->
-<!--                </span>-->
+                <!--                <span>-->
+                <!--                    <a th:href="@{/user/list}">-->
+                <!--                        &lt;!&ndash;    Button visible only to Admin users.&ndash;&gt;-->
+                <!--                        <button type="button" class="btn btn-warning"-->
+                <!--                                sec:authorize="hasRole('ADMIN')">-->
+                <!--                            Zur List-->
+                <!--                        </button>-->
+                <!--                    </a>-->
+                <!--                </span>-->
 
                 <span>
                     <button type="button" class=" btn btn-secondary" onclick="history.back()">
@@ -134,7 +175,8 @@
                     <option value="">Select a Role</option>
 
                     <!-- Iterate over the roles and generate options -->
-                    <option th:each ="role:${notAssignRoles}" th:value="${role.uuid}" th:text="${role.roleName}"></option>
+                    <option th:each="role:${notAssignRoles}" th:value="${role.uuid}"
+                            th:text="${role.roleName}"></option>
                 </select>
 
                 <button type="submit"
@@ -150,26 +192,26 @@
             <table class="table table-striped table-bordered text-center mt-5">
                 <!-- TABLE WITH ROLES -->
                 <thead class="table-group-divider">
-                    <tr class="text-center">
-                        <th scope="col">#</th>
-                        <th scope="col">Role</th>
-                        <th scope="col">Beschreibung</th>
-                        <th scope="col">Delete</th>
-                    </tr>
+                <tr class="text-center">
+                    <th scope="col">#</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Beschreibung</th>
+                    <th scope="col">Delete</th>
+                </tr>
                 </thead>
 
                 <tbody class="table-group-divider ">
-                    <tr th:each="role,status:${user.getRoles()}">
-                        <td th:text="${status.index + 1}">Nr. </td>
-                        <td th:text="${role.roleName}">Name</td>
-                        <td th:text="${role.roleDescription}">Beschreibung</td>
-                        <td style="width: 10%;">
-                            <!-- Add a form for each delete/change request in our server, with post request the parameters is not in the url  -->
-                            <form th:action="@{'/user/'+${user.uuid}+'/deleteRole/'+ ${role.uuid}}" method="post">
-                                <button class="btn btn-danger">Löschen</button>
-                            </form>
-                        </td>
-                    </tr>
+                <tr th:each="role,status:${user.getRoles()}">
+                    <td th:text="${status.index + 1}">Nr.</td>
+                    <td th:text="${role.roleName}">Name</td>
+                    <td th:text="${role.roleDescription}">Beschreibung</td>
+                    <td style="width: 10%;">
+                        <!-- Add a form for each delete/change request in our server, with post request the parameters is not in the url  -->
+                        <form th:action="@{'/user/'+${user.uuid}+'/deleteRole/'+ ${role.uuid}}" method="post">
+                            <button class="btn btn-danger">Löschen</button>
+                        </form>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
@@ -220,5 +262,22 @@
         crossorigin="anonymous">
 
 </script>
+
+<script type="text/javascript">
+    function checkPassword() {
+        var password = document.getElementById("password").value;
+        var confirmPassword = document.getElementById("confirmPassword").value;
+        var passwordError = document.getElementById("confirmPasswordError");
+
+        if (password === confirmPassword) {
+            passwordError.hidden = true;
+            document.getElementById("submitButton").disabled = false;
+        } else {
+            passwordError.hidden = false;
+            document.getElementById("submitButton").disabled = true;
+        }
+    }
+</script>
+
 </body>
 </html>
