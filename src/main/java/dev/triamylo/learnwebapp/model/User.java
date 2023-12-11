@@ -58,12 +58,15 @@ public class User {
 
     }
 
-    public User(String firstName, String lastName, LocalDate dob, int height) {
+    public User(String username, String password, String firstName, String lastName, LocalDate dob, int height) {
+        this.username = username;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.dob = dob;
         this.height = height;
     }
+
 
 
     public String getUsername() {

@@ -2,7 +2,9 @@ package dev.triamylo.learnwebapp.controller;
 
 import dev.triamylo.learnwebapp.AbstractMockUpTests;
 import dev.triamylo.learnwebapp.model.Role;
+import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.RoleRepository;
+import dev.triamylo.learnwebapp.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -26,11 +28,15 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    UserRepository userRepository;
+
 
     @BeforeEach
     void setUp() {
         //clean database before each testing
         roleRepository.deleteAll();
+        userRepository.deleteAll();
 
         //Prepare roles in the database for the testing
         Role role1 = getNewRole("role1", "description1");
@@ -39,6 +45,10 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
         roleRepository.save(role2);
         Role role3 = getNewRole("role3", "description3");
         roleRepository.save(role3);
+
+        //Prepare a User in the database for the testing
+        User user = getNewUserWithNullUuid("tria");
+        userRepository.save(user);
     }
 
     @AfterEach
@@ -122,7 +132,23 @@ public class RoleControllerMockMvcTest extends AbstractMockUpTests {
     void deleteObjectRoleWithAdminRolePositiv() throws Exception {
 
         String uuid = roleRepository.findByRoleName("role2").get().getUuid();
-        ;
+
+        //I take the role
+        Optional<Role> optionalRole = roleRepository.findByRoleName("role2");
+        Assertions.assertTrue(optionalRole.isPresent());
+        Role role = optionalRole.get();
+
+        // I take the User
+        Optional<User> optionalUser = userRepository.findByUsername("tria");
+        Assertions.assertTrue(optionalUser.isPresent());
+
+        // add the role to the user
+        User user = optionalUser.get();
+        user.getRoles().add(role);
+        // save the user after that to the database
+        userRepository.save(user);
+        Assertions.assertTrue(user.getRoles().contains(role));
+
 
         mockMvc.perform(MockMvcRequestBuilders.get("/role/delete/{uuid}", uuid))
                 .andExpect(status().is3xxRedirection())

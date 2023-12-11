@@ -167,8 +167,6 @@ class RoleRepositoryTest extends AbstractApplicationTests {
         userRepository.save(user3);
         assertTrue(userRepository.findByUsername("user3").isPresent());
         assertTrue(userRepository.findByUsername("user3").get().getRoles().contains(role));
-
-
     }
 
     @Test

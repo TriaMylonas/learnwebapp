@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,11 +24,15 @@ class UserServiceTest extends AbstractApplicationTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
     @BeforeEach
     void setUp() {
 
         userRepository.deleteAll();
-        userService = new UserServiceImpl(userRepository);
+        userService = new UserServiceImpl(userRepository, passwordEncoder);
     }
 
 
@@ -59,9 +65,9 @@ class UserServiceTest extends AbstractApplicationTests {
     void testList() {
 
         //I create 3 Users.
-        User testUser1 = new User("Tria1", "Mylo1", LocalDate.of(1971, 1, 1), 195);
-        User testUser2 = new User("Tria2", "Mylo2", LocalDate.of(1972, 2, 2), 200);
-        User testUser3 = new User("Tria3", "Mylo3", LocalDate.of(1973, 3, 3), 205);
+        User testUser1 = new User("user1", "pass1", "Tria1" ,"Mylo1", LocalDate.of(1971, 1, 1), 195);
+        User testUser2 = new User("user2", "pass2","Tria2", "Mylo2", LocalDate.of(1972, 2, 2), 200);
+        User testUser3 = new User("user3", "pass3","Tria3", "Mylo3", LocalDate.of(1973, 3, 3), 205);
 
         //add the users to the service list.
         userService.add(testUser1);
@@ -145,7 +151,7 @@ class UserServiceTest extends AbstractApplicationTests {
     void update() {
 
         //create a user
-        User testUser1 = new User("Tria1", "Mylo1", LocalDate.of(1971, 1, 1), 195);
+        User testUser1 = new User("user1","pass1","Tria1", "Mylo1", LocalDate.of(1971, 1, 1), 195);
 
         //add them to the service list. get this list for testing.
         userService.add(testUser1);
@@ -158,7 +164,7 @@ class UserServiceTest extends AbstractApplicationTests {
         assertEquals("Tria1", userList.get(0).getFirstName());
 
         //create a new deference user.
-        User testUser2 = new User("Tria2", "Mylo2", LocalDate.of(1972, 2, 2), 200);
+        User testUser2 = new User("user2", "pass2", "Tria2", "Mylo2", LocalDate.of(1972, 2, 2), 200);
         //we change the id of the second object, so that the update method things is the same with difference values.
         testUser2.setUuid(testUser1Uuid);
 
@@ -198,6 +204,6 @@ class UserServiceTest extends AbstractApplicationTests {
 
 
     private User createUser(){
-        return new User("Tria", "Mylo", LocalDate.of(1970, 1, 1), 195);
+        return new User("Tria", "pass", "Tria","Mylo", LocalDate.of(1970, 1, 1), 195);
     }
 }

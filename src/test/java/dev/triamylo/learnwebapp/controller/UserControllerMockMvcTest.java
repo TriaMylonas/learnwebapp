@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,6 +38,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     private String uuid;
 
     private String roleUuid;
+
     @BeforeEach
     void setUp() {
         // Clean database before test
@@ -49,6 +49,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
             User u = new User();
 //            u.setUuid("uuid-" + i); // Is set by org.hibernate.annotations.UuidGenerator
             u.setUsername(String.valueOf(i));
+            u.setPassword("pass-" + i);
             u.setFirstName("firstName-" + i);
             u.setLastName("lastName-" + i);
             u.setDob(LocalDate.of(1992, 1, i));
@@ -122,7 +123,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser(roles = "NONE")
     void usersNoneRole() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/user/list")
-                .with(csrf()))
+                        .with(csrf()))
                 .andExpect(status().isForbidden());
     }
 
@@ -174,8 +175,8 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     }
 
     @Test
-    @WithMockUser(roles = "NONE" ,username = "1")
-    void seeOnlyYourDataWithNoneRoleSeeOtherUserData() throws Exception{
+    @WithMockUser(roles = "NONE", username = "1")
+    void seeOnlyYourDataWithNoneRoleSeeOtherUserData() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/user/read"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("error/ErrorNotAuthorized"));
@@ -183,8 +184,8 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     //We have only user in our test repository with username from 1 to 10
-    @WithMockUser(roles = "User" ,username = "random")
-    void seeOnlyYourDataWithUserRoleSeeOtherRandomUserData() throws Exception{
+    @WithMockUser(roles = "User", username = "random")
+    void seeOnlyYourDataWithUserRoleSeeOtherRandomUserData() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/user/read"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"));
@@ -206,7 +207,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void deleteWithAdminRoleButUserDontExist() throws Exception{
+    void deleteWithAdminRoleButUserDontExist() throws Exception {
 
         mockMvc.perform(MockMvcRequestBuilders.get("/user/delete/{uuid}", "non"))
                 .andExpect(status().is3xxRedirection())
@@ -215,12 +216,12 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser(roles = "USER")
-    void deleteWithUserRole() throws Exception{
+    void deleteWithUserRole() throws Exception {
         Optional<User> optionalUser = repository.findByUsername("1");
         assertTrue(optionalUser.isPresent());
 
         String userUuid = optionalUser.get().getUuid();
-        mockMvc.perform(MockMvcRequestBuilders.get("/user/delete/{uudi}",userUuid))
+        mockMvc.perform(MockMvcRequestBuilders.get("/user/delete/{uudi}", userUuid))
                 .andExpect(status().isForbidden());
     }
 
@@ -230,6 +231,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("username", "11")
+                        .param("password","password")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
@@ -269,6 +271,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     void postObjectUserRoleAddNewUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("username", "12")
+                        .param("password", "pass")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
@@ -330,6 +333,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     void postObjectNoneRoleAddNewUser() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("username", "30")
+                        .param("password", "pass")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
@@ -341,7 +345,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithAnonymousUser()
-    void postObjectNoneRoleUpdateOtherUserData() throws Exception{
+    void postObjectNoneRoleUpdateOtherUserData() throws Exception {
 
         Optional<User> testUser = repository.findByUsername("1");
         assertTrue(testUser.isPresent());
@@ -358,7 +362,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(view().name("error/ErrorNotAuthorized"));
 
         User updatedTestUser = repository.findByUsername("1").get();
-        assertEquals(testUser.get().getFirstName(),updatedTestUser.getFirstName());
+        assertEquals(testUser.get().getFirstName(), updatedTestUser.getFirstName());
         assertEquals(testUser.get().getLastName(), updatedTestUser.getLastName());
     }
 
@@ -367,6 +371,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     void postObjectWrongDayOfBirthNegative() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("username", "1")
+                        .param("password", "pass")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "0111-01-01")
@@ -379,21 +384,21 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
 
     @Test
     @WithMockUser
-    void postUserAddRole() throws Exception{
+    void postUserAddRole() throws Exception {
 
         Optional<User> testUser = repository.findByUsername("1");
         assertTrue(testUser.isPresent());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/user/"+testUser.get().getUuid()+"/addRole")
-                .param("roleUuid", "1")
-                .with(csrf()))
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/" + testUser.get().getUuid() + "/addRole")
+                        .param("roleUuid", "1")
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/user/update/"+testUser.get().getUuid()));
+                .andExpect(view().name("redirect:/user/update/" + testUser.get().getUuid()));
     }
 
     @Test
     @WithMockUser
-    void deleteRoleFromUser() throws Exception{
+    void deleteRoleFromUser() throws Exception {
 
         Optional<User> testUser = repository.findByUsername("1");
         assertTrue(testUser.isPresent());
@@ -401,10 +406,10 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
         Optional<Role> optionalRole = roleRepository.findById(roleUuid);
         assertTrue(optionalRole.isPresent());
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/user/"+testUser.get().getUuid()+"/deleteRole/"+optionalRole.get().getUuid())
-                .with(csrf()))
+        mockMvc.perform(MockMvcRequestBuilders.post("/user/" + testUser.get().getUuid() + "/deleteRole/" + optionalRole.get().getUuid())
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/user/update/"+testUser.get().getUuid()));
+                .andExpect(view().name("redirect:/user/update/" + testUser.get().getUuid()));
     }
 
 

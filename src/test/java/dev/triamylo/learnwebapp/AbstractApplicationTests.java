@@ -3,6 +3,9 @@ package dev.triamylo.learnwebapp;
 import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -27,6 +30,7 @@ public abstract class AbstractApplicationTests {
         User newUser = new User();
         newUser.setUuid(uuid);
         newUser.setUsername(username);
+        newUser.setPassword("password");
         newUser.setFirstName("testFirstName");
         newUser.setLastName("testLastName");
         newUser.setDob(LocalDate.of(1999, 5, 5));
@@ -59,6 +63,5 @@ public abstract class AbstractApplicationTests {
     protected static Role getNewRole(){
         return getNewRole("1","role1","description1");
     }
-
 
 }
