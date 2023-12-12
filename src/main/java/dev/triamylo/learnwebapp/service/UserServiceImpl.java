@@ -4,6 +4,8 @@ import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void add(User user) {
-        //ich hash der password erstmal, und dann schicke ich zu DB
+        //I hash the password, and then I save it to the database
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -82,6 +84,5 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findByUsername(String name) {
         return userRepository.findByUsername(name);
     }
-
 
 }

@@ -5,9 +5,13 @@ import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.repository.RoleRepository;
 import dev.triamylo.learnwebapp.repository.UserRepository;
+import dev.triamylo.learnwebapp.service.UserDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,10 +31,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerMockMvcTest extends AbstractMockUpTests {
 
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -42,7 +49,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @BeforeEach
     void setUp() {
         // Clean database before test
-        repository.deleteAll();
+        userRepository.deleteAll();
 
         // Prepare users in database
         for (int i = 1; i < 11; i++) {
@@ -54,10 +61,10 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
             u.setLastName("lastName-" + i);
             u.setDob(LocalDate.of(1992, 1, i));
             u.setHeight(180 + i);
-            repository.save(u);
+            userRepository.save(u);
             uuid = u.getUuid();
         }
-        assertEquals(10, repository.count());
+        assertEquals(10, userRepository.count());
 
 
         roleRepository.deleteAll();
@@ -217,7 +224,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @Test
     @WithMockUser(roles = "USER")
     void deleteWithUserRole() throws Exception {
-        Optional<User> optionalUser = repository.findByUsername("1");
+        Optional<User> optionalUser = userRepository.findByUsername("1");
         assertTrue(optionalUser.isPresent());
 
         String userUuid = optionalUser.get().getUuid();
@@ -231,7 +238,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
                         .param("username", "11")
-                        .param("password","password")
+                        .param("password", "password")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
                         .param("dob", "1990-01-01")
@@ -245,7 +252,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser(roles = "ADMIN")
     void postObjectAdminRoleUpdateOtherUserData() throws Exception {
         // I take another username.
-        Optional<User> testUser = repository.findByUsername("2");
+        Optional<User> testUser = userRepository.findByUsername("2");
         assertTrue(testUser.isPresent());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
@@ -260,7 +267,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(view().name("redirect:/user/list"));
 
         //check if the user change
-        User updatedTestUser = repository.findByUsername("2").get();
+        User updatedTestUser = userRepository.findByUsername("2").get();
 
         assertEquals("TestName", updatedTestUser.getFirstName());
         assertEquals("testLastname", updatedTestUser.getLastName());
@@ -285,7 +292,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser(username = "1", roles = "USER")
     void postObjectWithUserRoleUpdateHisOwnData() throws Exception {
         // I take the user because I don't know the auto generated uuid of the object
-        Optional<User> userOptional = repository.findByUsername("1");
+        Optional<User> userOptional = userRepository.findByUsername("1");
 
         assertTrue(userOptional.isPresent());
 
@@ -301,7 +308,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(view().name("success/SuccessfullyAdded"));
 
         //I check if the changes has done, on the test database
-        Optional<User> testUser = repository.findByUsername("1");
+        Optional<User> testUser = userRepository.findByUsername("1");
         assertTrue(testUser.isPresent());
         assertEquals("John", testUser.get().getFirstName());
     }
@@ -310,7 +317,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser(username = "1", roles = "USER")
     void registerSiteWithUserRoleAndUpdateOtherUserData() throws Exception {
         // I take another username.
-        Optional<User> testUser = repository.findByUsername("2");
+        Optional<User> testUser = userRepository.findByUsername("2");
         assertTrue(testUser.isPresent());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
@@ -347,7 +354,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @WithAnonymousUser()
     void postObjectNoneRoleUpdateOtherUserData() throws Exception {
 
-        Optional<User> testUser = repository.findByUsername("1");
+        Optional<User> testUser = userRepository.findByUsername("1");
         assertTrue(testUser.isPresent());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/post")
@@ -361,7 +368,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("error/ErrorNotAuthorized"));
 
-        User updatedTestUser = repository.findByUsername("1").get();
+        User updatedTestUser = userRepository.findByUsername("1").get();
         assertEquals(testUser.get().getFirstName(), updatedTestUser.getFirstName());
         assertEquals(testUser.get().getLastName(), updatedTestUser.getLastName());
     }
@@ -386,7 +393,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser
     void postUserAddRole() throws Exception {
 
-        Optional<User> testUser = repository.findByUsername("1");
+        Optional<User> testUser = userRepository.findByUsername("1");
         assertTrue(testUser.isPresent());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/user/" + testUser.get().getUuid() + "/addRole")
@@ -400,7 +407,7 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
     @WithMockUser
     void deleteRoleFromUser() throws Exception {
 
-        Optional<User> testUser = repository.findByUsername("1");
+        Optional<User> testUser = userRepository.findByUsername("1");
         assertTrue(testUser.isPresent());
 
         Optional<Role> optionalRole = roleRepository.findById(roleUuid);
@@ -410,6 +417,110 @@ class UserControllerMockMvcTest extends AbstractMockUpTests {
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/user/update/" + testUser.get().getUuid()));
+    }
+
+    @Test
+    void loadUserByUserNamePositive() {
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername("1");
+        assertEquals("pass-1", userDetails.getPassword());
+    }
+
+    @Test
+    void loadUserByUserNameNegative() {
+
+        assertThrows(UsernameNotFoundException.class, () -> userDetailsService.loadUserByUsername("dontExist"));
+    }
+
+    @Test
+    void getAuthoritiesPositive() {
+        // I need a user like a labor mouse
+        User laborUser = getNewUserWithNullUuid("laborMouse");
+        userRepository.save(laborUser);
+
+        // add some roles to my laborMouse ! ....!! !"3.1!
+        //make the roles
+        Role testRole1 = roleRepository.save(getNewRoleWithNullUuid("testRole1"));
+        Role role2 = roleRepository.save(getNewRoleWithNullUuid("role2"));
+        Role role3 = roleRepository.save(getNewRoleWithNullUuid("role3"));
+
+        // get the user from the database and add them the roles
+        assertTrue(userRepository.findByUsername("laborMouse").isPresent());
+        laborUser = userRepository.findByUsername("laborMouse").get();
+        laborUser.getRoles().add(testRole1);
+        laborUser.getRoles().add(role2);
+        laborUser.getRoles().add(role3);
+
+        // save the Mouse to the database
+        userRepository.save(laborUser);
+
+        // let's check if all working.... :P
+        assertTrue(userRepository.findByUsername("laborMouse").isPresent());
+        laborUser = userRepository.findByUsername("laborMouse").get();
+
+        var authorities = laborUser.getAuthorities();
+        assertEquals(3, authorities.size());
+        // I add to the roles the "ROLE_" and make them all uppercase
+        assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_TESTROLE1")));
+        assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_ROLE2")));
+        assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_ROLE3")));
+    }
+    @Test
+    void getAuthoritiesNegative() {
+        // I need a user like a labor mouse
+        User laborUser = getNewUserWithNullUuid("laborMouse");
+        userRepository.save(laborUser);
+
+        // let's check if all working.... :P
+        assertTrue(userRepository.findByUsername("laborMouse").isPresent());
+        laborUser = userRepository.findByUsername("laborMouse").get();
+
+        var authorities = laborUser.getAuthorities();
+        assertEquals(0, authorities.size());
+        assertTrue(authorities.isEmpty());
+
+        assertFalse(authorities.contains(new SimpleGrantedAuthority("NoRoles")));
+    }
+
+    @Test
+    void isEnabledTest(){
+        // I need a user like a labor mouse
+        User laborUser = getNewUserWithNullUuid("laborMouse");
+        userRepository.save(laborUser);
+
+        assertTrue(userRepository.findByUsername("laborMouse").isPresent());
+        assertTrue(userRepository.findByUsername("laborMouse").get().isEnabled());
+    }
+
+    @Test
+    void isCredentialsNonExpiredTest(){
+        // I need a user like a labor mouse
+        User laborUser = getNewUserWithNullUuid("laborMouse");
+        userRepository.save(laborUser);
+
+        assertTrue(userRepository.findByUsername("laborMouse").isPresent());
+        assertTrue(userRepository.findByUsername("laborMouse").get().isCredentialsNonExpired());
+    }
+
+
+    @Test
+    void isAccountNonLockedTest(){
+        // I need a user like a labor mouse
+        User laborUser = getNewUserWithNullUuid("laborMouse");
+        userRepository.save(laborUser);
+
+        assertTrue(userRepository.findByUsername("laborMouse").isPresent());
+        assertTrue(userRepository.findByUsername("laborMouse").get().isAccountNonLocked());
+    }
+
+    @Test
+    void isAccountNonExpiredTest(){
+        // I need a user like a labor mouse
+        User laborUser = getNewUserWithNullUuid("laborMouse");
+        userRepository.save(laborUser);
+
+        assertTrue(userRepository.findByUsername("laborMouse").isPresent());
+        assertTrue(userRepository.findByUsername("laborMouse").get().isAccountNonExpired());
     }
 
 

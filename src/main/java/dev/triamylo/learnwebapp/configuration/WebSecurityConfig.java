@@ -43,32 +43,32 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-
-        List<UserDetails> users = new ArrayList<>();
-
-        UserDetails user = User.withUsername("1")
-                .password(encoder().encode("1"))
-                .roles("USER")
-                .build();
-
-        users.add(user);
-
-        UserDetails user2 = User.withUsername("2")
-                .password(encoder().encode("2"))
-                .roles("ADMIN")
-                .build();
-        users.add(user2);
-
-        UserDetails user3 = User.withUsername("user3")
-                .password(encoder().encode("3"))
-                .build();
-
-        users.add(user3);
-
-        return new InMemoryUserDetailsManager(users);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//
+//        List<UserDetails> users = new ArrayList<>();
+//
+//        UserDetails user = User.withUsername("1")
+//                .password(encoder().encode("1"))
+//                .roles("USER")
+//                .build();
+//
+//        users.add(user);
+//
+//        UserDetails user2 = User.withUsername("2")
+//                .password(encoder().encode("2"))
+//                .roles("ADMIN")
+//                .build();
+//        users.add(user2);
+//
+//        UserDetails user3 = User.withUsername("user3")
+//                .password(encoder().encode("3"))
+//                .build();
+//
+//        users.add(user3);
+//
+//        return new InMemoryUserDetailsManager(users);
+//    }
 
     @Bean
     public PasswordEncoder encoder(){

@@ -7,15 +7,19 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.UuidGenerator;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     @JoinTable(
@@ -69,14 +73,44 @@ public class User {
 
 
 
-    public String getUsername() {
-        return username;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // one empty list of GrantedAuthority's
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        // then I fulled this list with my roles
+        for (Role role : roles) {
+            //the roles name must be always uppercase and all authorities are starting with ROLE_
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName().toUpperCase()));
+        }
+        return authorities;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
+    public String getUsername() {
+        return username;
+    }
     public String getUuid() {
         return uuid;
     }

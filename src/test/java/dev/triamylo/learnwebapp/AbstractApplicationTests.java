@@ -30,7 +30,7 @@ public abstract class AbstractApplicationTests {
         User newUser = new User();
         newUser.setUuid(uuid);
         newUser.setUsername(username);
-        newUser.setPassword("password");
+        newUser.setPassword("password ");
         newUser.setFirstName("testFirstName");
         newUser.setLastName("testLastName");
         newUser.setDob(LocalDate.of(1999, 5, 5));
