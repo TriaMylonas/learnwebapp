@@ -3,20 +3,12 @@ package dev.triamylo.learnwebapp.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -28,8 +20,8 @@ public class WebSecurityConfig {
         // SOS --> /images/** --> all unter one ordner so that they can authenticate with one's
         //all can use the home page and can add new user, all the others musst be authenticated
         http.authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/user/create","/user/post", "/images/**").permitAll()
-                        .requestMatchers("/user/delete/**","/role/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
+                        .requestMatchers("/", "/user/create", "/user/post", "/images/**").permitAll()
+                        .requestMatchers("/user/delete/**", "/role/**").hasRole("ADMIN") // die Liste kann von ADMIN ausgerufen und bearbeiten werden.
                         .requestMatchers("/user/list").hasRole("ADMIN")
                         .requestMatchers("/user/update/**").hasAnyRole("ADMIN", "USER")
                         .anyRequest()
@@ -71,7 +63,7 @@ public class WebSecurityConfig {
 //    }
 
     @Bean
-    public PasswordEncoder encoder(){
+    public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 
