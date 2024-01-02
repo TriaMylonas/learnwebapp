@@ -3,7 +3,6 @@ package dev.triamylo.learnwebapp.controller;
 import dev.triamylo.learnwebapp.model.Role;
 import dev.triamylo.learnwebapp.model.User;
 import dev.triamylo.learnwebapp.service.RoleService;
-import dev.triamylo.learnwebapp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,40 +44,21 @@ public class RoleController extends AbstractController {
 
     @GetMapping("/role/update/{uuid}")
     public String updateObject(@PathVariable String uuid, Model model) {
-
         Role role = roleService.get(uuid);
-        if(role != null){
-            model.addAttribute("role", role);
-            return "role/roleFormula";
-        }
-        return "redirect:/role/roleList";
-    }
 
+        return role == null ?
+                "redirect:/role/roleList" : renderRoleForm(model, role);
+    }
 
     @GetMapping("/role/delete/{uuid}")
     public String deleteObject(@PathVariable String uuid) {
-
         Role role = roleService.get(uuid);
-
-        if(role != null ){
-
-            //löscht die Role auch von des Users
-            List<User> userWithThisRole = role.getUsers();
-
-            for (User user : userWithThisRole) {
-                user.getRoles().remove(role);
-            }
-
-            userWithThisRole.clear();
-            //Die Änderungen muss wieder in der DB gespeichert werden.
-            roleService.update(role);
-            //Jetzt kann ich der Role Löschen
+        if (role != null) {
+            detachRoleFromUsers(role);
             roleService.delete(uuid);
         }
-
         return "redirect:/role/list";
     }
-
 
     @GetMapping("/role/list")
     public String getList(Model model) {
@@ -91,19 +71,26 @@ public class RoleController extends AbstractController {
 
     @PostMapping("/role/post")
     public String postObject(@Valid @ModelAttribute("role") Role role, BindingResult bindingResult) {
-
-        if (!bindingResult.hasErrors()) {
-
-            if (role.getUuid() == null || role.getUuid().isEmpty()) {
-                roleService.add(role);
-            } else {
-                roleService.update(role);
-            }
-            return "redirect:/role/list";
-        }
-
-        return "role/roleFormula";
+        return bindingResult.hasErrors() ?
+                "role/roleFormula" : processRoleSubmission(role);
     }
 
+    private void detachRoleFromUsers(Role role) {
+        List<User> userWithThisRole = role.getUsers();
+        for (User user : userWithThisRole) {
+            user.getRoles().remove(role);
+        }
+        userWithThisRole.clear();
+        roleService.update(role);
+    }
 
+    private String processRoleSubmission(Role role) {
+        roleService.update(role);
+        return "redirect:/role/list";
+    }
+
+    private String renderRoleForm(Model model, Role role) {
+        model.addAttribute("role", role);
+        return "role/roleFormula";
+    }
 }
