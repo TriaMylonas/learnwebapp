@@ -120,7 +120,10 @@ public class UserController extends AbstractController {
      */
 
     @PostMapping("/user/post")
-    public String postObject(@Valid @ModelAttribute("user") User aUser, BindingResult bindingResult, Model model, Principal principal) {
+    public String postObject(@Valid @ModelAttribute("user") User aUser,
+                             BindingResult bindingResult,
+                             Model model,
+                             Principal principal) {
 
         // here in the Controller I can also validate the connection between my objects and the model.
         if (aUser.getDob() != null) {
